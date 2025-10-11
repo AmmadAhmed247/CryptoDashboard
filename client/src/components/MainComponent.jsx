@@ -13,7 +13,7 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends }) => {
               label: 'Coin Quality Score',
               value: 72,
               icon: Award,
-              color: 'bg-gradient-to-r from-[#C5A32F] via-[#E4C35E] to-[#D4AF37]',
+              color: 'bg-gradient-to-r from-[#d0b345] via-[#d0b345] to-[#d0b345]',
               status: 'High Quality'
             },
             {
@@ -44,10 +44,8 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends }) => {
                   <div className={`text-sm mb-1 ${isDarkMode ? 'text-zinc-400' : 'text-gray-600'}`}>{card.label}</div>
                   <div className={`text-4xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{card.value}</div>
                 </div>
-                <div className={`p-3 bg-[#E4C35E] border-[#E4C35E] border-1  rounded-xl shadow-lg group-hover:scale-110 transition-all`}>
-                  <card.icon size={24} className="text-black" />
-
-
+                <div className={`p-2 bg-zinc-800 border-2 border-[#d0b345]  rounded-xl shadow-lg group-hover:scale-110 transition-all`}>
+                  <card.icon size={22} className="text-[#d0b345]" />
                 </div>
               </div>
               <div className={`w-full ${isDarkMode ? 'bg-zinc-700' : 'bg-gray-200'} rounded-full h-2 mb-2 overflow-hidden`}>
@@ -62,7 +60,7 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends }) => {
         <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-6 border shadow-lg`}>
           <div className="flex items-center justify-between mb-6">
             <h2 className={`text-xl font-bold flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-              <Radio className="text-yellow-500" />
+              <Radio className="text-yellow-400" />
               Narrative Trends
             </h2>
             {/* <button className="text-transparent bg-gradient-to-r from-orange-400 to-yellow-500 bg-clip-text hover:from-yellow-500 hover:to-yellow-600 text-sm font-semibold transition-all">View All →</button> */}
@@ -94,7 +92,7 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends }) => {
         <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-6 border shadow-lg`}>
           <div className="flex items-center justify-between mb-6">
             <h2 className={`text-xl font-bold flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-              <Flame className="text-yellow-500" />
+              <Flame className="text-[#d0b345]" />
               Hot Coins
             </h2>
             <div className="flex gap-2">
@@ -108,26 +106,32 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends }) => {
 
           <div className="overflow-x-auto custom-scrollbar">
             <table className="w-full">
-              <thead>
-                <tr className={`${isDarkMode ? 'border-zinc-700' : 'border-gray-200'} border-b`}>
-                  {['Coin', 'Price', '24h', 'Volume', 'CQS', 'TS', 'CI', 'RI', 'Moonshot', 'Action', 'Evaluate'].map(header => (
-                    <th key={header} className={`text-middle py-3 px-4 text-sm font-semibold ${isDarkMode ? 'text-zinc-400' : 'text-gray-600'}`}>
-                      {header}
-                    </th>
-                  ))}
+             <thead>
+                <tr className="border-zinc-700 border-b">
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-zinc-400">Coin</th>
+                  <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">Price</th>
+                  <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">24h</th>
+                  <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">Volume</th>
+                  <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">CQS</th>
+                  <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">TS</th>
+                  <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">CI</th>
+                  <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">RI</th>
+                  <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">Moonshot</th>
+                  <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">Action</th>
+                  <th className="text-middle w-12  py-3 px-4  text-sm font-semibold text-zinc-400">Add</th>
                 </tr>
               </thead>
               <tbody>
                 {demoCoins.map((coin, idx) => (
-                  <tr key={idx} className={`${isDarkMode ? 'border-zinc-700 hover:bg-zinc-700/50' : 'border-gray-200 hover:bg-gray-100'} border-b transition-all cursor-pointer group`}>
+                  <tr key={idx} className={`${isDarkMode ? 'border-zinc-700  hover:bg-zinc-700/50' : 'border-gray-200 hover:bg-gray-100'} border-b text-left transition-all cursor-pointer group`}>
                     <td className="py-4 px-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#B8860B] via-[#DAA520] to-[#FFD700]
+                        <div className="w-10 h-10 rounded-full bg-[#d0b345]
  flex items-center justify-center text-white font-bold shadow-lg group-hover:scale-110 transition-all">
                           {coin.icon}
                         </div>
                         <div>
-                          <div className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{coin.name}</div>
+                          <div className={`font-semibold   ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{coin.name}</div>
                           <div className={`text-xs ${isDarkMode ? 'text-zinc-500' : 'text-gray-500'}`}>{coin.narrative}</div>
                         </div>
                       </div>
@@ -167,21 +171,21 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends }) => {
                     <td className="text-right py-4 px-4">
                       <div className="flex items-center justify-end gap-2">
                         <div className={`w-16 ${isDarkMode ? 'bg-zinc-700' : 'bg-gray-200'} rounded-full h-2 overflow-hidden`}>
-                          <div className="bg-gradient-to-r from-[#B8860B] via-[#DAA520] to-[#FFD700]
+                          <div className="bg-[#d0b345]
  h-2 rounded-full shadow-md" style={{ width: `${coin.moonshot}%` }}></div>
                         </div>
-                        <span className="text-xs bg-gradient-to-r from-[#B8860B] via-[#DAA520] to-[#FFD700]
+                        <span className="text-xs bg-[#d0b345]
  bg-clip-text text-transparent font-bold">{coin.moonshot}</span>
                       </div>
                     </td>
                     <td className="text-right py-4 px-4">
-                      <button className="px-4 font-semibold py-2 bg-gradient-to-r from-[#ffd15d] via-[#c59929] to-[#ffd900]
+                      <button className="px-4 font-semibold py-2 bg-[#d0b345]
  rounded-lg text-xs  transition-all shadow-lg hover:shadow-xl hover:scale-110">
                         Entry
                       </button>
                     </td>
-                    <td className="text-right py-4 px-4">
-                      <button className="px-4  py-2 bg-gradient-to-r from-[#ffd15d] via-[#c59929] to-[#ffd900]
+                    <td className="text-right  py-4 px-4">
+                      <button className="px-4   py-2 bg-[#d0b345]
  rounded-lg text-xs font-semibold transition-all shadow-lg hover:shadow-xl hover:scale-110">
                         Add to Analysis
                       </button>

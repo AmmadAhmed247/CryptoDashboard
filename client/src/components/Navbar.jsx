@@ -10,9 +10,12 @@ const Navbar = () => {
     
     {/* Left Section */}
     <div className="flex items-center gap-8">
-      <h1 className="text-3xl text-amber-300 bg-clip-text font-semibold font-mono float-animation">
-        CryptoSignal Pro
+      <div className="flex gap-2 items-center">
+      <img src="Logo.png" className=' w-fit rounded-2xl h-12' alt="" />
+      <h1 className="text-3xl text-[#d0b345] bg-clip-text  font-semibold   ">
+        MEIN KRYPTO
       </h1>
+      </div>
       <div className="flex items-center gap-4 text-sm">
         <div className="flex items-center gap-2">
           <div className="relative">
@@ -33,15 +36,15 @@ const Navbar = () => {
     <div className="flex items-center gap-3">
       <div className={`${isDarkMode ? 'bg-zinc-800 border-zinc-700' : 'bg-gray-100 border-gray-300'} px-4 py-2 rounded-lg border text-sm shadow-md`}>
         <span className={isDarkMode ? 'text-zinc-400' : 'text-gray-600'}>Cycle: </span>
-        <span className={isDarkMode ? 'text-amber-400' : 'text-zinc-600'}>Early Bear</span>
+        <span className={isDarkMode ? 'text-[#d0b345]' : 'text-zinc-600'}>Early Bear</span>
       </div>
       <button 
         onClick={() => setIsDarkMode(!isDarkMode)}
         className={`${isDarkMode ? 'bg-zinc-800 hover:bg-zinc-700' : 'bg-gray-200 hover:bg-gray-300'} p-2 rounded-lg transition-all shadow-md hover:scale-110`}
       >
-        {isDarkMode ? <Sun size={18} className="text-yellow-400 font-semibold" /> : <Moon size={18} className="text-zinc-600" />}
+        {isDarkMode ? <Sun size={18} className="text-[#d0b345] font-semibold" /> : <Moon size={18} className="text-zinc-600" />}
       </button>
-      <button className={isDarkMode ? ' text-amber-400 p-2 rounded-lg transition-all shadow-lg hover:shadow-xl hover:scale-110' : 'text-zinc-500 p-2 rounded-lg transition-all shadow-lg hover:shadow-xl hover:scale-110'}>
+      <button className={isDarkMode ? ' text-[#d0b345] p-2 rounded-lg transition-all shadow-lg hover:shadow-xl hover:scale-110' : 'text-zinc-500 p-2 rounded-lg transition-all shadow-lg hover:shadow-xl hover:scale-110'}>
         <Bell size={18} />
       </button>
     </div>
@@ -55,7 +58,7 @@ const Navbar = () => {
               onClick={() => setActiveTab(tab.toLowerCase())}
               className={`px-6 py-4 font-semibold transition-all relative group ${
                 activeTab === tab.toLowerCase()
-                  ? 'text-transparent bg-gradient-to-r from-yellow-400 to-yellow-500 bg-clip-text'
+                  ? 'text-[#d0b345] bg-gradient-to-r from-yellow-400 to-yellow-500 bg-clip-text'
                   : isDarkMode ? 'text-zinc-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
               }`}
             >

@@ -10,7 +10,7 @@ const RightSide = ({ isDarkMode, selectedCoin }) => {
             <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-orange-500 via-yellow-500 to-yellow-700 flex items-center justify-center text-white font-bold text-xl shadow-lg float-animation">
+                  <div className="w-14 h-14 rounded-full bg-[#d0b345] flex items-center justify-center text-white font-bold text-xl shadow-lg float-animation">
                     ◆
                   </div>
                   <div>
@@ -24,12 +24,12 @@ const RightSide = ({ isDarkMode, selectedCoin }) => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3 mb-4">
+              {/* <div className="grid grid-cols-2 gap-3 mb-4">
                 <ScoreGauge isDarkMode={isDarkMode} value={72} label="CQS" size="sm" />
                 <ScoreGauge isDarkMode={isDarkMode} value={85} label="TS" size="sm" />
                 <ScoreGauge isDarkMode={isDarkMode} value={85} label="CI" size="sm" />
                 <ScoreGauge isDarkMode={isDarkMode} value={55} label="RI" size="sm" />
-              </div>
+              </div> */}
 
               <div className="space-y-2 mb-4">
                 {[
@@ -55,7 +55,7 @@ const RightSide = ({ isDarkMode, selectedCoin }) => {
                 <div className={`text-xs mt-2 ${isDarkMode ? 'text-zinc-400' : 'text-gray-600'}`}>Strong fundamentals + favorable timing</div>
               </div>
 
-              <button className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 py-3 rounded-lg font-semibold transition-all shadow-lg hover:shadow-xl hover:scale-105">
+              <button className="w-full bg-[#d0b345] hover:from-orange-600 hover:to-yellow-900 py-3 rounded-lg font-semibold transition-all shadow-lg hover:shadow-xl hover:scale-105">
                 Add to Portfolio
               </button>
             </div>
@@ -114,10 +114,10 @@ const RightSide = ({ isDarkMode, selectedCoin }) => {
             <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>
               <div className="flex items-center justify-between mb-4">
                 <h3 className={`text-sm font-semibold flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                  <Bell className="text-yellow-500" size={18} />
+                  <Bell className="text-[#d0b345]" size={18} />
                   Active Alerts
                 </h3>
-                <span className="bg-gradient-to-r from-red-500 to-red-600 text-white text-xs px-2 py-1 rounded-full font-bold shadow-lg">3</span>
+                <span className="bg-gradient-to-r from-red-400 to-red-400 text-white text-xs px-2 py-1 rounded-full font-bold shadow-lg">3</span>
               </div>
               <div className="space-y-2">
                 {[
@@ -127,7 +127,7 @@ const RightSide = ({ isDarkMode, selectedCoin }) => {
                 ].map((alert, idx) => (
                   <div key={idx} className={`${isDarkMode ? 'bg-zinc-900' : 'bg-gray-50'} rounded-lg p-3 border-l-4 border-${alert.color}-500 hover:scale-105 transition-all cursor-pointer shadow-md`}>
                     <div className="flex items-start justify-between mb-1">
-                      <span className="text-sm font-semibold bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">{alert.coin}</span>
+                      <span className="text-sm font-semibold bg-[#d0b345] bg-clip-text text-transparent">{alert.coin}</span>
                       <span className={`text-xs ${isDarkMode ? 'text-zinc-500' : 'text-gray-500'}`}>{alert.time}</span>
                     </div>
                     <div className={`text-xs mb-1 ${isDarkMode ? 'text-zinc-300' : 'text-gray-700'}`}>{alert.msg}</div>
@@ -163,14 +163,14 @@ const RightSide = ({ isDarkMode, selectedCoin }) => {
             {/* Developer Activity */}
             <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>
               <h3 className={`text-sm font-semibold mb-4 flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                <GitBranch className="text-yellow-500" size={18} />
+                <GitBranch className="text-[#d0b345]" size={18} />
                 Dev Activity (30d)
               </h3>
               <div className="space-y-3">
                 {[
                   { label: 'Commits', value: 342, percent: 85, color: 'from-green-500 to-emerald-600' },
                   { label: 'Contributors', value: 28, percent: 70, color: 'from-blue-500 to-cyan-600' },
-                  { label: 'Stars', value: '12.4K', percent: 92, color: 'from-yellow-500 to-orange-600' }
+                  { label: 'Stars', value: '12.4K', percent: 92, color: 'bg-[#d0b345]' }
                 ].map((item, idx) => (
                   <div key={idx}>
                     <div className="flex items-center justify-between mb-1">
@@ -188,7 +188,7 @@ const RightSide = ({ isDarkMode, selectedCoin }) => {
             {/* Social Metrics */}
             <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>
               <h3 className={`text-sm font-semibold mb-4 flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                <Users className="text-yellow-500" size={18} />
+                <Users className="text-[#d0b345]" size={18} />
                 Social Metrics (7d)
               </h3>
               <div className="grid grid-cols-2 gap-3">
@@ -210,7 +210,7 @@ const RightSide = ({ isDarkMode, selectedCoin }) => {
             {/* Trading Volume Chart */}
             <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>
               <h3 className={`text-sm font-semibold mb-4 flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                <BarChart3 className="text-yellow-500" size={18} />
+                <BarChart3 className="text-[#d0b345]" size={18} />
                 Volume Trend (7d)
               </h3>
               <div className="flex items-end justify-between h-32 gap-2">
@@ -229,7 +229,7 @@ const RightSide = ({ isDarkMode, selectedCoin }) => {
             {/* Price Alerts Setup */}
             <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>
               <h3 className={`text-sm font-semibold mb-4 flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                <Target className="text-yellow-500" size={18} />
+                <Target className="text-[#d0b345]" size={18} />
                 Quick Alert Setup
               </h3>
               <div className="space-y-3">
@@ -249,7 +249,7 @@ const RightSide = ({ isDarkMode, selectedCoin }) => {
                     Below
                   </button>
                 </div>
-                <button className="w-full bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 py-2 rounded-lg text-sm font-semibold transition-all shadow-lg hover:shadow-xl hover:scale-105">
+                <button className="w-full bg-[#d0b345] py-2 rounded-lg text-sm font-semibold transition-all shadow-lg hover:shadow-xl hover:scale-105">
                   Set Alert
                 </button>
               </div>

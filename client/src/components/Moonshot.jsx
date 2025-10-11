@@ -73,8 +73,8 @@ export default function MoonshotFactorMini() {
       {/* Header */}
       <div className="text-center mb-6">
         <div className="inline-flex items-center gap-2 mb-2">
-          <Rocket className="w-5 h-5 float-animation text-amber-400 drop-shadow-[0_0_3px_#FFD700]/60" />
-          <h2 className="text-2xl font-bold text-[#E4C35E] bg-clip-text bg-gradient-to-r from-[#ffd66f] via-[#ffce51] to-[#FFD700] drop-shadow-[0_0_3px_#FFD700]/40">
+          <Rocket  className="w-8 h-8 float-animation text-amber-400 drop-shadow-[0_0_3px_#FFD700]/60" />
+          <h2 className="text-2xl font-bold text-[text-#d0b345] bg-clip-text bg-gradient-to-r from-[#ffd66f] via-[#ffce51] to-[#FFD700] drop-shadow-[0_0_3px_#FFD700]/40">
   Moonshot Factor
 </h2>
 

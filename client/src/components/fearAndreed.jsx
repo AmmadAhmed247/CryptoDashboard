@@ -10,11 +10,11 @@ const FearGreedGauge = ({ value ,isDarkMode}) => {
     };
     
     const getColor = () => {
-  if (value <= 20) return '#fef08a';  // light pastel yellow
-  if (value <= 40) return '#fde047';  // medium yellow
-  if (value <= 60) return '#facc15';  // bright yellow
-  if (value <= 80) return '#eab308';  // golden yellow
-  return '#ca8a04';                   // dark mustard yellow
+  if (value <= 20) return '#d0b345';  // light pastel yellow
+  if (value <= 40) return '#d0b145';  // medium yellow
+  if (value <= 60) return '#d0b645';  // bright yellow
+  if (value <= 80) return '#d0b145';  // golden yellow
+  return '#d0b345';                   // dark mustard yellow
 };
 
 

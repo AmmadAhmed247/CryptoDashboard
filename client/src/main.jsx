@@ -6,6 +6,9 @@ import './index.css'
 import MainLayout from './layout/mainlayout.jsx'
 import HotCoins from './pages/hotCoins.jsx'
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
+import '@fontsource/montserrat/400.css';
+import '@fontsource/montserrat/700.css';
+
 import {
   QueryClient,
   QueryClientProvider,

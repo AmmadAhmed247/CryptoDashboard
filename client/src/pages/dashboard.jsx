@@ -19,9 +19,9 @@ const CryptoDashboard = () => {
     { name: 'MATIC', icon: '◮', cqs: 74, ts: 76, ci: 78, ri: 52, trend: 'up', price: '$0.82', change: '+9.8%', narrative: 'L2', volume: '$340M', mcap: '$7.6B', moonshot: 73 },
   ];
 
-  const fearGreedIndex = 60;
+  const fearGreedIndex = 100;
   const bitcoinHalving = { days: 142, blocks: 20340, date: 'Apr 2024' };
-  const altSeasonIndex = 35;
+  const altSeasonIndex = 50;
 
   const marketMetrics = [
     { label: 'Total Market Cap', value: '$1.89T', change: '+4.2%', icon: DollarSign },
@@ -31,11 +31,11 @@ const CryptoDashboard = () => {
   ];
 
   const narrativeTrends = [
-    { name: 'AI', score: 92,  trend: 'up', color: 'from-orange-300 via-yellow-500 to-orange-600' },
-    { name: 'DeFi 2.0', score: 78,  trend: 'up', color: 'from-blue-500 via-cyan-400 to-blue-600' },
-    { name: 'L2 Scaling', score: 85,  trend: 'up', color: 'from-green-500 via-emerald-400 to-green-600' },
-    { name: 'GameFi', score: 64,  trend: 'down', color: 'from-orange-500 via-red-400 to-red-500' },
-    { name: 'Meme', score: 88,  trend: 'up', color: 'from-yellow-500 via-orange-400 to-yellow-600' },
+    { name: 'AI', score: 92,  trend: 'up', color: 'bg-[#d0b345]' },
+    { name: 'DeFi 2.0', score: 78,  trend: 'up', color: 'bg-[#d0b345]' },
+    { name: 'L2 Scaling', score: 85,  trend: 'up', color: 'bg-[#d0b345]' },
+    { name: 'GameFi', score: 64,  trend: 'down', color: 'bg-[#d0b345]' },
+    { name: 'Meme', score: 88,  trend: 'up', color: 'bg-[#d0b345]' },
   ];
 
   const topGainers = demoCoins.filter(c => parseFloat(c.change) > 0).slice(0, 7);
