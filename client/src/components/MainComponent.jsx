@@ -1,6 +1,10 @@
 import React from 'react'
 import { TrendingUp, TrendingDown, AlertCircle, Bell, ChevronRight, Activity, Flame, Target, Clock, Zap, DollarSign, BarChart3, Award, TrendingUp as TrendUp, Calendar, Users, GitBranch, Radio, Moon, Sun, Sparkles } from 'lucide-react';
 
+function getColor(value) {
+  return value < 50 ? 'bg-red-800' : 'bg-green-700'; 
+}
+
 const MainContent = ({ isDarkMode, demoCoins, narrativeTrends }) => {
 
   return (
@@ -11,14 +15,14 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends }) => {
           {[
             {
               label: 'Coin Quality Score',
-              value: 72,
+              value: 30,
               icon: Award,
-              color: 'bg-gradient-to-r from-[#d0b345] via-[#d0b345] to-[#d0b345]',
+            
               status: 'High Quality'
             },
             {
               label: 'Timing Score',
-              value: 85,
+              value: 75,
               icon: Clock,
               color: 'bg-gradient-to-r from-[#C5A32F] via-[#E4C35E] to-[#D4AF37]',
               status: 'Strong Entry'
@@ -49,7 +53,7 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends }) => {
                 </div>
               </div>
               <div className={`w-full ${isDarkMode ? 'bg-zinc-700' : 'bg-gray-200'} rounded-full h-2 mb-2 overflow-hidden`}>
-                <div className={`bg-gradient-to-r ${card.color} h-2 rounded-full shadow-lg transition-all duration-1000`} style={{ width: `${card.value}%` }}></div>
+                <div className={`bg-gradient-to-r ${getColor(card.value)} h-2 rounded-full shadow-lg transition-all duration-1000`} style={{ width: `${card.value}%` }}></div>
               </div>
               <div className={`text-xs ${isDarkMode ? 'text-zinc-400' : 'text-gray-600'}`}>{card.status}</div>
             </div>
@@ -118,7 +122,7 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends }) => {
                   <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">RI</th>
                   <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">Moonshot</th>
                   <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">Action</th>
-                  <th className="text-middle w-12  py-3 px-4  text-sm font-semibold text-zinc-400">Add</th>
+                  <th className="text-middle w-12  py-3 px-4  text-sm font-semibold text-zinc-400">Add To Analyisi</th>
                 </tr>
               </thead>
               <tbody>

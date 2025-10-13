@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import {Link} from 'react-router-dom'
 import { TrendingUp, TrendingDown, AlertCircle, Bell, ChevronRight, Activity, Flame, Target, Clock, Zap, DollarSign, BarChart3, Award, TrendingUp as TrendUp, Calendar, Users, GitBranch, Radio, Moon, Sun, Sparkles } from 'lucide-react';
 import Search from './Search';
 const Navbar = () => {
@@ -11,7 +12,14 @@ const Navbar = () => {
     {/* Left Section */}
     <div className="flex items-center gap-8">
       <div className="flex gap-2 items-center">
-      <img src="Logo.png" className=' w-fit rounded-2xl h-12' alt="" />
+     <img 
+  src="Logo.png" 
+  alt="Logo" 
+  className="w-fit h-12 rounded-2xl float-start animate-slowspin"
+/>
+
+
+
       <h1 className="text-3xl text-[#d0b345] bg-clip-text  font-semibold   ">
         MEIN KRYPTO
       </h1>
@@ -38,12 +46,12 @@ const Navbar = () => {
         <span className={isDarkMode ? 'text-zinc-400' : 'text-gray-600'}>Cycle: </span>
         <span className={isDarkMode ? 'text-[#d0b345]' : 'text-zinc-600'}>Early Bear</span>
       </div>
-      <button 
+      {/* <button 
         onClick={() => setIsDarkMode(!isDarkMode)}
         className={`${isDarkMode ? 'bg-zinc-800 hover:bg-zinc-700' : 'bg-gray-200 hover:bg-gray-300'} p-2 rounded-lg transition-all shadow-md hover:scale-110`}
       >
         {isDarkMode ? <Sun size={18} className="text-[#d0b345] font-semibold" /> : <Moon size={18} className="text-zinc-600" />}
-      </button>
+      </button> */}
       <button className={isDarkMode ? ' text-[#d0b345] p-2 rounded-lg transition-all shadow-lg hover:shadow-xl hover:scale-110' : 'text-zinc-500 p-2 rounded-lg transition-all shadow-lg hover:shadow-xl hover:scale-110'}>
         <Bell size={18} />
       </button>
@@ -52,8 +60,9 @@ const Navbar = () => {
   </div>
    <div className={`${isDarkMode ? 'bg-zinc-900 border-zinc-800 ' : 'bg-white border-gray-200'} rounded-2xl mt-2 border-b px-6 shadow-md backdrop-blur-sm`}>
         <div className="flex gap-1">
-          {['Dashboard', 'Hot Coins', 'Moonshot', 'Portfolio', ].map(tab => (
-            <button
+          {['Dashboard', 'Hot Coins'].map(tab => (
+            <Link
+              to={tab === 'Dashboard' ? '/' : `/${tab.toLowerCase().replace(' ', '')}`}
               key={tab}
               onClick={() => setActiveTab(tab.toLowerCase())}
               className={`px-6 py-4 font-semibold transition-all relative group ${
@@ -67,7 +76,7 @@ const Navbar = () => {
                 <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-yellow-400 to-yellow-500 shadow-lg shadow-pink-500/50"></div>
               )}
               <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-yellow-400 to-yellow-100 opacity-0 group-hover:opacity-50 transition-all"></div>
-            </button>
+            </Link>
           ))}
         </div>
       </div>

@@ -10,7 +10,7 @@ const RightSide = ({ isDarkMode, selectedCoin }) => {
             <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-14 h-14 rounded-full bg-[#d0b345] flex items-center justify-center text-white font-bold text-xl shadow-lg float-animation">
+                  <div className="w-14 h-14 rounded-full bg-[#d0b345] flex items-center justify-center text-white font-bold text-xl shadow-lg ">
                     ◆
                   </div>
                   <div>

@@ -9,7 +9,7 @@ export default function MoonshotFactorMini() {
   const coins = [
     {
       id: 1,
-      name: "Worldcoin",
+      name: "WLD",
       logo: "🌍",
       nf: 92,
       marketCapFactor: 65,
@@ -71,10 +71,10 @@ export default function MoonshotFactorMini() {
   return (
     <div className="bg-zinc-850 text-white p-6 rounded-2xl border border-zinc-700 max-w-xl mx-auto">
       {/* Header */}
-      <div className="text-center mb-6">
+      <div className=" mb-6">
         <div className="inline-flex items-center gap-2 mb-2">
-          <Rocket  className="w-8 h-8 float-animation text-amber-400 drop-shadow-[0_0_3px_#FFD700]/60" />
-          <h2 className="text-2xl font-bold text-[text-#d0b345] bg-clip-text bg-gradient-to-r from-[#ffd66f] via-[#ffce51] to-[#FFD700] drop-shadow-[0_0_3px_#FFD700]/40">
+          <Rocket  className=" h-8 float-animation text-amber-400 drop-shadow-[0_0_3px_#FFD700]/60" />
+          <h2 className="text-xl w-fit font-bold text-[#d0b345] bg-clip-text bg-gradient-to-r from-[#ffd66f] via-[#ffce51] to-[#FFD700] drop-shadow-[0_0_3px_#FFD700]/40">
   Moonshot Factor
 </h2>
 
@@ -111,7 +111,7 @@ export default function MoonshotFactorMini() {
                 </p>
                 <div className="flex items-center justify-end gap-1">
                   <Sparkles className="w-3 h-3 text-amber-400" />
-                  <p className="text-amber-400 font-bold text-lg">
+                  <p className="text-[#d0b345] font-bold text-lg">
                     {coin.moonshotScore.toFixed(0)}
                   </p>
                 </div>

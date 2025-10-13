@@ -4,11 +4,11 @@ import RightSide from '../components/RightSide';
 import LeftPanel from '../components/LeftPanel';
 import MainContent from '../components/MainComponent';
 import Search from '../components/Search';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';  
 const CryptoDashboard = () => {
- 
   const [selectedCoin, setSelectedCoin] = useState('KAS');
   const [isDarkMode, setIsDarkMode] = useState(true);
-
   const demoCoins = [
     { name: 'KAS', icon: '◆', cqs: 72, ts: 85, ci: 85, ri: 55, trend: 'up', price: '$0.1523', change: '+12.4%', narrative: 'PoW', volume: '$45.2M', mcap: '$1.2B', moonshot: 78 },
     { name: 'ETH', icon: '◈', cqs: 85, ts: 78, ci: 82, ri: 45, trend: 'up', price: '$2,340', change: '+8.2%', narrative: 'L1', volume: '$2.1B', mcap: '$281B', moonshot: 62 },
@@ -18,10 +18,36 @@ const CryptoDashboard = () => {
     { name: 'SOL', icon: '◐', cqs: 80, ts: 82, ci: 83, ri: 48, trend: 'up', price: '$98.45', change: '+15.3%', narrative: 'L1', volume: '$890M', mcap: '$42B', moonshot: 71 },
     { name: 'MATIC', icon: '◮', cqs: 74, ts: 76, ci: 78, ri: 52, trend: 'up', price: '$0.82', change: '+9.8%', narrative: 'L2', volume: '$340M', mcap: '$7.6B', moonshot: 73 },
   ];
+  const {data , isLoading, error} =useQuery({
+    queryKey: ['fearGreedIndex'],
+    queryFn: async () => {
+      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/data/feargreed`);
+      return res.data;
+    },
+    refetchInterval: 1000 * 60 * 60, //every 1 hour
+  });
+  const { data: halvingData } = useQuery({
+    queryKey: ['halvingData'],
+    queryFn: async () => {
+      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/data/halving`);
+      return res.data;
+    },
+    refetchInterval: 1000 * 60 * 30, //every 1 minute
+  });
+  const { data: altSeasonData } = useQuery({
+    queryKey: ['altSeasonData'],
+    queryFn: async () => {
+      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/data/altseason`);
+      return res.data;
+    },
+    refetchInterval: 1000 * 60 * 10,
+    staleTime: 1000 * 60 * 10,
+    retry: 2, 
+  });
 
-  const fearGreedIndex = 100;
-  const bitcoinHalving = { days: 142, blocks: 20340, date: 'Apr 2024' };
-  const altSeasonIndex = 50;
+  const altSeasonIndex = altSeasonData?.value ?? 40;
+  const fearGreedIndex = data ? parseInt(data.value) : 40; 
+  const bitcoinHalving = halvingData ? halvingData : { days: 910, blocks: 131000, date: 'Apr 2028' };
 
   const marketMetrics = [
     { label: 'Total Market Cap', value: '$1.89T', change: '+4.2%', icon: DollarSign },

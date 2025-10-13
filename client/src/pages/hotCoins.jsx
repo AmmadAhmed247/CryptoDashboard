@@ -43,7 +43,7 @@ const HotCoins = () => {
       <div className="bg-gradient-to-br h-fit from-zinc-800 to-zinc-900 border-zinc-700 flex-1 p-6 border shadow-lg rounded-lg">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold flex items-center gap-2 text-white">
-              <Flame className="text-yellow-500" />
+              <Flame className="text-[#d0b345]" />
               Hot Coins
             </h2>
             <div className="flex gap-2">
@@ -77,7 +77,7 @@ const HotCoins = () => {
                   <tr key={idx} className="border-zinc-700 hover:bg-zinc-700/50 border-b transition-all cursor-pointer group">
                     <td className="py-4 px-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-400 flex items-center justify-center text-white font-bold shadow-lg group-hover:scale-110 transition-all">
+                        <div className="w-10 h-10 rounded-full bg-[#d0b345] flex items-center justify-center text-white font-bold shadow-lg group-hover:scale-110 transition-all">
                           {coin.icon}
                         </div>
                         <div>
@@ -116,20 +116,20 @@ const HotCoins = () => {
                     <td className="text-right py-4 px-4">
                       <div className="flex items-center justify-end gap-2">
                         <div className="w-16 bg-zinc-700 rounded-full h-2 overflow-hidden">
-                          <div className="bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-400 h-2 rounded-full shadow-md" style={{ width: `${coin.moonshot}%` }}></div>
+                          <div className="bg-[#d0b345] h-2 rounded-full shadow-md" style={{ width: `${coin.moonshot}%` }}></div>
                         </div>
-                        <span className="text-xs bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-400 bg-clip-text text-transparent font-bold">{coin.moonshot}</span>
+                        <span className="text-xs bg-[#d0b345] bg-clip-text text-transparent font-bold">{coin.moonshot}</span>
                       </div>
                     </td>
                     <td className="text-right py-4 px-4">
-                      <button className="px-4 font-semibold py-2 bg-gradient-to-r from-yellow-500 via-yellow-600 to-yellow-400 rounded-lg text-xs text-black transition-all shadow-lg hover:shadow-xl hover:scale-110">
+                      <button className="px-4 font-semibold py-2 bg-[#d0b345] rounded-lg text-xs text-white transition-all shadow-lg hover:shadow-xl hover:scale-110">
                         Entry
                       </button>
                     </td>
                     <td className="text-right py-4 px-4">
                       <button 
                         onClick={() => addToPortfolio(coin)}
-                        className="px-4 py-2 bg-gradient-to-r from-yellow-500 via-yellow-600 to-yellow-400 rounded-lg text-xs font-semibold text-black transition-all shadow-lg hover:shadow-xl hover:scale-110">
+                        className="px-4 py-2 bg-[#d0b345] rounded-lg text-xs font-semibold text-white transition-all shadow-lg hover:shadow-xl hover:scale-110">
                         Add
                       </button>
                     </td>
@@ -142,7 +142,7 @@ const HotCoins = () => {
 
         <div className="bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700 w-120 p-6 border shadow-lg rounded-lg">
           <h2 className="text-xl font-bold flex items-center gap-2 mb-6 text-white">
-            <Award className="text-yellow-500" />
+            <Award className="text-[#d0b345]" />
             Portfolio
           </h2>
           
@@ -166,11 +166,11 @@ const HotCoins = () => {
                 <div key={idx} className="bg-zinc-800/80 border-zinc-700 border rounded-lg px-4 py-3 transition-all hover:bg-zinc-700/50 flex items-center gap-3">
                   <button 
                     onClick={() => removeFromPortfolio(coin.name)}
-                    className="text-yellow-500 hover:text-yellow-400 transition-colors w-4">
+                    className="text-zinc-500 hover:text-yellow-400 transition-colors w-4">
                     <Trash2 size={16} fill="currentColor" />
                   </button>
 
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-400 flex items-center justify-center text-white font-bold text-xs shadow-md flex-shrink-0">
+                  <div className="w-7 h-7 rounded-full bg-[#d0b345] flex items-center justify-center text-white font-bold text-xs shadow-md flex-shrink-0">
                     {coin.icon}
                   </div>
                   
@@ -189,7 +189,7 @@ const HotCoins = () => {
                   </div>
                   
                   <div className="w-20 text-right">
-                    <button className="px-3 py-1 bg-gradient-to-r from-yellow-500 via-yellow-600 to-yellow-400 rounded text-xs font-semibold text-black transition-all hover:scale-105">
+                    <button className="px-3 py-1 bg-[#d0b345] rounded text-xs font-semibold text-black transition-all hover:scale-105">
                       Entry
                     </button>
                   </div>
