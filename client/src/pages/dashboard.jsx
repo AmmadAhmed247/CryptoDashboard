@@ -44,17 +44,45 @@ const CryptoDashboard = () => {
     staleTime: 1000 * 60 * 10,
     retry: 2, 
   });
+  const {data: globalMarketData} = useQuery({
+    queryKey: ['globalMarketData'],
+    queryFn: async () => {
+      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/data/globalmarket`);
+      return res.data;
+    },
+    refetchInterval: 1000 * 60 * 30, //every 30 minutes
+  });
 
   const altSeasonIndex = altSeasonData?.value ?? 40;
   const fearGreedIndex = data ? parseInt(data.value) : 40; 
   const bitcoinHalving = halvingData ? halvingData : { days: 910, blocks: 131000, date: 'Apr 2028' };
 
   const marketMetrics = [
-    { label: 'Total Market Cap', value: '$1.89T', change: '+4.2%', icon: DollarSign },
-    { label: 'BTC Dominance', value: '47.2%', change: '-1.3%', icon: BarChart3 },
-    { label: '24h Volume', value: '$89.2B', change: '+12.4%', icon: Activity },
-    { label: 'Active Addresses', value: '1.2M', change: '+8.7%', icon: Users },
-  ];
+  {
+    label: 'Total Market Cap',
+    value: globalMarketData?.total_market_cap?.value ?? '$0',
+    change: globalMarketData?.total_market_cap?.change_24h ?? '0%',
+    icon: DollarSign,
+  },
+  {
+    label: 'BTC Dominance',
+    value: globalMarketData?.btc_dominance?.value ?? '0%',
+    change: globalMarketData?.btc_dominance?.change_24h ?? '0%',
+    icon: BarChart3,
+  },
+  {
+    label: '24h Volume',
+    value: globalMarketData?.total_volume_24h?.value ?? '$0',
+    change: globalMarketData?.total_volume_24h?.change_24h ?? '0%',
+    icon: Activity,
+  },
+  {
+    label: 'Active Cryptos',
+    value: globalMarketData?.active_cryptocurrencies ?? '0',
+    change: 'N/A',
+    icon: Users,
+  },
+];
 
   const narrativeTrends = [
     { name: 'AI', score: 92,  trend: 'up', color: 'bg-[#d0b345]' },

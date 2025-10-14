@@ -101,13 +101,13 @@ const LeftPanel = ({ isDarkMode, fearGreedIndex, bitcoinHalving, altSeasonIndex,
         {/* Alt Season Index */}
         <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg hover:shadow-xl transition-all`}>
           <div className="flex items-center gap-2 mb-3">
-            <Zap className={`${altSeasonIndex >= 75 ? 'text-green-600' : 'text-red-600'}`} size={18} />
+            <Zap className={`${altSeasonIndex >= 75 ? 'text-green-600' : 'text-red-700'}`} size={18} />
             <h3 className={`text-sm font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Alt Season Index</h3>
           </div>
           <div className="flex items-center justify-between">
             <div>
               <div
-                className={`text-3xl font-bold ${altSeasonIndex >= 75 ? 'text-green-600' : 'text-red-500'
+                className={`text-3xl font-bold ${altSeasonIndex >= 75 ? 'text-green-600' : 'text-red-700'
                   }`}
               >
                 {altSeasonIndex}
@@ -121,7 +121,7 @@ const LeftPanel = ({ isDarkMode, fearGreedIndex, bitcoinHalving, altSeasonIndex,
                 <circle cx="40" cy="40" r="35" fill="none" stroke={isDarkMode ? "#27272a" : "#e5e7eb"} strokeWidth="6" />
                 <circle
                   cx="40" cy="40" r="35" fill="none"
-                  stroke={altSeasonIndex >= 75 ? "#22C55D" : "#DC2626"}
+                  stroke={altSeasonIndex >= 75 ? "#22C55D" : "#B91C1C"}
                   strokeWidth="6"
                   strokeDasharray={`${altSeasonIndex * 2.2} 220`}
                   strokeLinecap="round"
@@ -136,24 +136,60 @@ const LeftPanel = ({ isDarkMode, fearGreedIndex, bitcoinHalving, altSeasonIndex,
         </div>
 
         {/* Market Metrics */}
-        <div className="space-y-2">
-          {marketMetrics.map((metric, idx) => (
-            <div key={idx} className={`${isDarkMode ? 'bg-gradient-to-r from-zinc-800 to-zinc-850 border-zinc-700' : 'bg-gradient-to-r from-white to-gray-50 border-gray-200'} rounded-lg p-3 border shadow-md hover:shadow-lg transition-all hover:scale-105`}>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="p-1.5 bg-[#d0b345] rounded-lg">
-                    <metric.icon size={16} className="text-white" />
-                  </div>
-                  <span className={`text-xs ${isDarkMode ? 'text-zinc-400' : 'text-gray-600'}`}>{metric.label}</span>
-                </div>
-                <span className={`text-xs font-semibold ${metric.change.startsWith('+') ? 'text-green-400' : 'text-red-400'}`}>
-                  {metric.change}
-                </span>
-              </div>
-              <div className={`text-lg font-bold mt-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{metric.value}</div>
+       <div className="space-y-2">
+  {marketMetrics.map((metric, idx) => {
+    const changeValue = parseFloat(metric.change);
+    return (
+      <div
+        key={idx}
+        className={`${
+          isDarkMode
+            ? 'bg-gradient-to-r from-zinc-800 to-zinc-850 border-zinc-700'
+            : 'bg-gradient-to-r from-white to-gray-50 border-gray-200'
+        } rounded-lg p-3 border shadow-md hover:shadow-lg transition-all hover:scale-105`}
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="p-1.5 bg-[#d0b345] rounded-lg">
+              <metric.icon size={16} className="text-white" />
             </div>
-          ))}
+            <span
+              className={`text-xs ${
+                isDarkMode ? 'text-zinc-400' : 'text-gray-600'
+              }`}
+            >
+              {metric.label}
+            </span>
+          </div>
+
+          {/* Dynamically color change value */}
+          <span
+            className={`text-xs font-semibold ${
+              changeValue > 0
+                ? 'text-green-400'
+                : changeValue < 0
+                ? 'text-red-400'
+                : isDarkMode
+                ? 'text-zinc-300'
+                : 'text-gray-700'
+            }`}
+          >
+            {metric.change}
+          </span>
         </div>
+
+        <div
+          className={`text-lg font-bold mt-1 ${
+            isDarkMode ? 'text-white' : 'text-gray-900'
+          }`}
+        >
+          {metric.value}
+        </div>
+      </div>
+    );
+  })}
+</div>
+
 
         {/* Top Gainers */}
         <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>

@@ -10,7 +10,7 @@ const FearGreedGauge = ({ value ,isDarkMode}) => {
     };
     
     const getColor = () => {
-  if (value <= 50) return '#DC2626';  // light pastel yellow
+  if (value <= 50) return '#B91C1C';  // light pastel yellow
   // bright yellow
   if (value >= 51) return '#22C55D';  // golden yellow
   return '#d0b345';                   // dark mustard yellow
@@ -28,7 +28,7 @@ const FearGreedGauge = ({ value ,isDarkMode}) => {
           <div>
             <div className="text-3xl font-bold" style={{ color: getColor() }}>{value}</div>
             <div className={`text-xs mt-1 ${isDarkMode ? 'text-zinc-400' : 'text-gray-500'}`}>{getLabel()}</div>
-            <div className={`text-xs ${value > 50 ? 'text-green-500' : 'text-red-500'}`} mt-2 flex items-center gap-1>
+            <div className={`text-xs ${value > 50 ? 'text-green-500' : 'text-red-700'}`} mt-2 flex items-center gap-1>
               <Sparkles size={15} />
               Buy Signal Active
             </div>

@@ -2,7 +2,12 @@ import React from 'react'
 import ScoreGauge from './scoreGauge'
 import { TrendingUp, TrendingDown, AlertCircle, Bell, ChevronRight, Activity, Flame, Target, Clock, Zap, DollarSign, BarChart3, Award, TrendingUp as TrendUp, Calendar, Users, GitBranch, Radio, Moon, Sun, Sparkles } from 'lucide-react';
 import MoonshotFactorMini from './Moonshot';
+import CryptoNews from './CryptoNews'
+
+
 const RightSide = ({ isDarkMode, selectedCoin }) => {
+  
+
   return (
     <div className={`w-96 ${isDarkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-gray-200'} border-l overflow-y-auto custom-scrollbar`}>
           <div className="p-4 space-y-4">
@@ -138,7 +143,7 @@ const RightSide = ({ isDarkMode, selectedCoin }) => {
             </div>
 
             {/* Latest News */}
-            <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>
+            {/* <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>
               <h3 className={`text-sm font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Latest News</h3>
               <div className="space-y-3">
                 {[
@@ -158,7 +163,8 @@ const RightSide = ({ isDarkMode, selectedCoin }) => {
                   </div>
                 ))}
               </div>
-            </div>
+            </div> */}
+            <CryptoNews isDarkMode={isDarkMode} />
 
             {/* Developer Activity */}
             <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>

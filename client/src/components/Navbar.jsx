@@ -1,87 +1,191 @@
-import React, { useState } from 'react'
-import {Link} from 'react-router-dom'
-import { TrendingUp, TrendingDown, AlertCircle, Bell, ChevronRight, Activity, Flame, Target, Clock, Zap, DollarSign, BarChart3, Award, TrendingUp as TrendUp, Calendar, Users, GitBranch, Radio, Moon, Sun, Sparkles } from 'lucide-react';
-import Search from './Search';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import {
+  Bell,
+  Sun,
+  Moon,
+  Menu,
+  X,
+} from "lucide-react";
+import Search from "./Search";
+
 const Navbar = () => {
   const [isDarkMode, setIsDarkMode] = useState(true);
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState("dashboard");
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   return (
-     <div className={`${isDarkMode ? 'bg-zinc-950 border-zinc-800' : 'bg-white border-gray-200'} border-b px-6 py-3 shadow-xl backdrop-blur-sm`}>
-  <div className="flex justify-between items-center gap-4">
-    
-    {/* Left Section */}
-    <div className="flex items-center gap-8">
-      <div className="flex gap-2 items-center">
-     <img 
-  src="Logo.png" 
-  alt="Logo" 
-  className="w-fit h-12 rounded-2xl float-start animate-slowspin"
-/>
-
-
-
-      <h1 className="text-3xl text-[#d0b345] bg-clip-text  font-semibold   ">
-        MEIN KRYPTO
-      </h1>
-      </div>
-      <div className="flex items-center gap-4 text-sm">
-        <div className="flex items-center gap-2">
-          <div className="relative">
-            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-            <div className="absolute inset-0 w-2 h-2 rounded-full bg-green-500 animate-ping"></div>
+    <div
+      className={`${
+        isDarkMode ? "bg-zinc-950 border-zinc-800" : "bg-white border-gray-200"
+      } border-b px-6 py-3 shadow-xl backdrop-blur-sm`}
+    >
+      {/* Top Bar */}
+      <div className="flex justify-between items-center gap-4">
+        {/* Left Section */}
+        <div className="flex items-center gap-8">
+          <div className="flex gap-2 items-center">
+            <img
+              src="Logo.png"
+              alt="Logo"
+              className="w-fit h-12 rounded-2xl animate-slowspin"
+            />
+            <h1 className="text-3xl text-[#d0b345] font-semibold">
+              MEIN KRYPTO
+            </h1>
           </div>
-          <span className={isDarkMode ? 'text-zinc-400' : 'text-gray-600'}>Live</span>
+          <div className="hidden md:flex items-center gap-4 text-sm">
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                <div className="absolute inset-0 w-2 h-2 rounded-full bg-green-500 animate-ping"></div>
+              </div>
+              <span className={isDarkMode ? "text-zinc-400" : "text-gray-600"}>
+                Live
+              </span>
+            </div>
+            <div className={isDarkMode ? "text-zinc-500" : "text-gray-400"}>
+              |
+            </div>
+            <span className={isDarkMode ? "text-zinc-400" : "text-gray-600"}>
+              Oct 5, 2024 13:45 UTC
+            </span>
+          </div>
         </div>
-        <div className={isDarkMode ? 'text-zinc-500' : 'text-gray-400'}>|</div>
-        <span className={isDarkMode ? 'text-zinc-400' : 'text-gray-600'}>Oct 5, 2024 13:45 UTC</span>
-      </div>
-    </div>
 
-    {/* Middle Section - Search Bar */}
-    <Search isDarkMode={isDarkMode} />
+        {/* Middle Section - Search (hidden on mobile) */}
+        <div className="hidden md:block flex-1 max-w-lg">
+          <Search isDarkMode={isDarkMode} />
+        </div>
 
-    {/* Right Section */}
-    <div className="flex items-center gap-3">
-      <div className={`${isDarkMode ? 'bg-zinc-800 border-zinc-700' : 'bg-gray-100 border-gray-300'} px-4 py-2 rounded-lg border text-sm shadow-md`}>
-        <span className={isDarkMode ? 'text-zinc-400' : 'text-gray-600'}>Cycle: </span>
-        <span className={isDarkMode ? 'text-[#d0b345]' : 'text-zinc-600'}>Early Bear</span>
+        {/* Right Section */}
+        <div className="flex items-center gap-3">
+          {/* Cycle Info - hidden on small screens */}
+          <div
+            className={`${
+              isDarkMode
+                ? "bg-zinc-800 border-zinc-700"
+                : "bg-gray-100 border-gray-300"
+            } px-4 py-2 rounded-lg border text-sm shadow-md hidden md:block`}
+          >
+            <span className={isDarkMode ? "text-zinc-400" : "text-gray-600"}>
+              Cycle:{" "}
+            </span>
+            <span
+              className={isDarkMode ? "text-[#d0b345]" : "text-zinc-600"}
+            >
+              Early Bear
+            </span>
+          </div>
+
+          {/* Dark Mode Toggle */}
+          <button
+            onClick={() => setIsDarkMode(!isDarkMode)}
+            className={`${
+              isDarkMode
+                ? "bg-zinc-800 hover:bg-zinc-700"
+                : "bg-gray-200 hover:bg-gray-300"
+            } p-2 rounded-lg transition-all shadow-md hover:scale-110`}
+          >
+            {isDarkMode ? (
+              <Sun size={18} className="text-[#d0b345]" />
+            ) : (
+              <Moon size={18} className="text-zinc-600" />
+            )}
+          </button>
+
+          {/* Bell Icon */}
+          <button
+            className={`${
+              isDarkMode
+                ? "text-[#d0b345]"
+                : "text-zinc-600"
+            } p-2 rounded-lg transition-all shadow-lg hover:shadow-xl hover:scale-110`}
+          >
+            <Bell size={18} />
+          </button>
+
+          {/* Login Button (hidden on small screens) */}
+          <Link
+            to="/login"
+            className={`hidden md:block px-4 py-2 rounded-lg font-semibold text-sm shadow-md transition-all ${
+              isDarkMode
+                ? "bg-[#d0b345]/20 text-[#d0b345] hover:bg-[#d0b345]/30"
+                : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+            }`}
+          >
+            Login
+          </Link>
+
+          {/* Mobile Menu Toggle */}
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="md:hidden p-2 rounded-lg text-[#d0b345] hover:bg-zinc-800 transition"
+          >
+            {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
       </div>
-      {/* <button 
-        onClick={() => setIsDarkMode(!isDarkMode)}
-        className={`${isDarkMode ? 'bg-zinc-800 hover:bg-zinc-700' : 'bg-gray-200 hover:bg-gray-300'} p-2 rounded-lg transition-all shadow-md hover:scale-110`}
+
+      {/* Bottom Tabs */}
+      <div
+        className={`${
+          isDarkMode ? "bg-zinc-900 border-zinc-800" : "bg-white border-gray-200"
+        } rounded-2xl mt-2 border-b px-6 shadow-md backdrop-blur-sm hidden md:block`}
       >
-        {isDarkMode ? <Sun size={18} className="text-[#d0b345] font-semibold" /> : <Moon size={18} className="text-zinc-600" />}
-      </button> */}
-      <button className={isDarkMode ? ' text-[#d0b345] p-2 rounded-lg transition-all shadow-lg hover:shadow-xl hover:scale-110' : 'text-zinc-500 p-2 rounded-lg transition-all shadow-lg hover:shadow-xl hover:scale-110'}>
-        <Bell size={18} />
-      </button>
-    </div>
-
-  </div>
-   <div className={`${isDarkMode ? 'bg-zinc-900 border-zinc-800 ' : 'bg-white border-gray-200'} rounded-2xl mt-2 border-b px-6 shadow-md backdrop-blur-sm`}>
         <div className="flex gap-1">
-          {['Dashboard', 'Hot Coins'].map(tab => (
+          {["Dashboard", "Hot Coins"].map((tab) => (
             <Link
-              to={tab === 'Dashboard' ? '/' : `/${tab.toLowerCase().replace(' ', '')}`}
+              to={
+                tab === "Dashboard"
+                  ? "/"
+                  : `/${tab.toLowerCase().replace(" ", "")}`
+              }
               key={tab}
               onClick={() => setActiveTab(tab.toLowerCase())}
               className={`px-6 py-4 font-semibold transition-all relative group ${
                 activeTab === tab.toLowerCase()
-                  ? 'text-[#d0b345] bg-gradient-to-r from-yellow-400 to-yellow-500 bg-clip-text'
-                  : isDarkMode ? 'text-zinc-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'
+                  ? "text-[#d0b345] bg-gradient-to-r from-yellow-400 to-yellow-500 bg-clip-text"
+                  : isDarkMode
+                  ? "text-zinc-400 hover:text-white"
+                  : "text-gray-600 hover:text-gray-900"
               }`}
             >
               {tab}
               {activeTab === tab.toLowerCase() && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-yellow-400 to-yellow-500 shadow-lg shadow-pink-500/50"></div>
+                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-yellow-400 to-yellow-500 shadow-lg shadow-yellow-500/50"></div>
               )}
               <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-yellow-400 to-yellow-100 opacity-0 group-hover:opacity-50 transition-all"></div>
             </Link>
           ))}
         </div>
       </div>
-</div>
-  )
-}
 
-export default Navbar
+      {/* Mobile Dropdown Menu */}
+      {isMenuOpen && (
+        <div
+          className={`md:hidden mt-3 rounded-xl border p-4 shadow-lg ${
+            isDarkMode
+              ? "bg-zinc-900 border-zinc-800"
+              : "bg-white border-gray-200"
+          }`}
+        >
+          <Link
+            to="/login"
+            className="block px-3 py-2 text-sm font-semibold text-[#d0b345] hover:underline"
+          >
+            Login
+          </Link>
+          <Link
+            to="/signup"
+            className="block px-3 py-2 text-sm font-semibold text-[#d0b345] hover:underline"
+          >
+            Signup
+          </Link>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Navbar;

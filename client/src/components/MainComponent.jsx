@@ -11,54 +11,92 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends }) => {
     <div className="flex-1 overflow-y-auto custom-scrollbar">
       <div className="p-6 space-y-6">
         {/* Score Cards */}
-        <div className="grid grid-cols-4 gap-4">
-          {[
-            {
-              label: 'Coin Quality Score',
-              value: 30,
-              icon: Award,
-            
-              status: 'High Quality'
-            },
-            {
-              label: 'Timing Score',
-              value: 75,
-              icon: Clock,
-              color: 'bg-gradient-to-r from-[#C5A32F] via-[#E4C35E] to-[#D4AF37]',
-              status: 'Strong Entry'
-            },
-            {
-              label: 'Chance Index',
-              value: 85,
-              icon: Target,
-              color: 'bg-gradient-to-r from-[#C5A32F] via-[#E4C35E] to-[#D4AF37]',
-              status: 'High Chance'
-            },
-            {
-              label: 'Risk Index',
-              value: 55,
-              icon: AlertCircle,
-              color: 'bg-gradient-to-r from-[#C5A32F] via-[#E4C35E] to-[#D4AF37]',
-              status: 'Medium Risk'
-            },
-          ].map((card, idx) => (
-            <div key={idx} className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-6 border shadow-lg hover:shadow-2xl transition-all hover:scale-105 group`}>
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <div className={`text-sm mb-1 ${isDarkMode ? 'text-zinc-400' : 'text-gray-600'}`}>{card.label}</div>
-                  <div className={`text-4xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{card.value}</div>
-                </div>
-                <div className={`p-2 bg-zinc-800 border-2 border-[#d0b345]  rounded-xl shadow-lg group-hover:scale-110 transition-all`}>
-                  <card.icon size={22} className="text-[#d0b345]" />
-                </div>
-              </div>
-              <div className={`w-full ${isDarkMode ? 'bg-zinc-700' : 'bg-gray-200'} rounded-full h-2 mb-2 overflow-hidden`}>
-                <div className={`bg-gradient-to-r ${getColor(card.value)} h-2 rounded-full shadow-lg transition-all duration-1000`} style={{ width: `${card.value}%` }}></div>
-              </div>
-              <div className={`text-xs ${isDarkMode ? 'text-zinc-400' : 'text-gray-600'}`}>{card.status}</div>
-            </div>
-          ))}
+       <div className="grid grid-cols-4 gap-4">
+  {[
+    {
+      label: 'Coin Quality Score',
+      value: 30,
+      icon: Award,
+      status: 'High Quality'
+    },
+    {
+      label: 'Timing Score',
+      value: 75,
+      icon: Clock,
+      status: 'Strong Entry'
+    },
+    {
+      label: 'Chance Index',
+      value: 85,
+      icon: Target,
+      status: 'High Chance'
+    },
+    {
+      label: 'Risk Index',
+      value: 55,
+      icon: AlertCircle,
+      status: 'Medium Risk'
+    },
+  ].map((card, idx) => (
+    <div
+      key={idx}
+      className={`${
+        isDarkMode
+          ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700'
+          : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'
+      } rounded-xl p-6 border shadow-lg hover:shadow-2xl transition-all hover:scale-105 group`}
+    >
+      <div className="flex justify-between items-start mb-4">
+        <div>
+          <div
+            className={`text-sm mb-1 ${
+              isDarkMode ? 'text-zinc-400' : 'text-gray-600'
+            }`}
+          >
+            {card.label}
+          </div>
+          <div
+            className={`text-4xl font-bold ${
+              isDarkMode ? 'text-white' : 'text-gray-900'
+            }`}
+          >
+            {card.value}
+          </div>
         </div>
+
+        {/* 👇 Icon hidden on small screens */}
+        <div
+          className={`p-2 bg-zinc-800 border-2 border-[#d0b345] rounded-xl shadow-lg group-hover:scale-110 transition-all hidden md:block`}
+        >
+          <card.icon size={22} className="text-[#d0b345]" />
+        </div>
+      </div>
+
+      <div
+        className={`w-full ${
+          isDarkMode ? 'bg-zinc-700' : 'bg-gray-200'
+        } rounded-full h-2 mb-2 overflow-hidden`}
+      >
+        <div
+          className={`bg-gradient-to-r ${getColor(
+            card.value
+          )} h-2 rounded-full shadow-lg transition-all duration-1000`}
+          style={{ width: `${card.value}%` }}
+        ></div>
+      </div>
+
+      <div
+        className={`text-xs ${
+          isDarkMode ? 'text-zinc-400' : 'text-gray-600'
+        }`}
+      >
+        {card.status}
+      </div>
+    </div>
+  ))}
+</div>
+
+
 
         {/* Narrative Trends */}
         <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-6 border shadow-lg`}>
