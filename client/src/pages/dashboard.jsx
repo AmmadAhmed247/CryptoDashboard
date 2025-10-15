@@ -9,15 +9,9 @@ import axios from 'axios';
 const CryptoDashboard = () => {
   const [selectedCoin, setSelectedCoin] = useState('KAS');
   const [isDarkMode, setIsDarkMode] = useState(true);
-  const demoCoins = [
-    { name: 'KAS', icon: '◆', cqs: 72, ts: 85, ci: 85, ri: 55, trend: 'up', price: '$0.1523', change: '+12.4%', narrative: 'PoW', volume: '$45.2M', mcap: '$1.2B', moonshot: 78 },
-    { name: 'ETH', icon: '◈', cqs: 85, ts: 78, ci: 82, ri: 45, trend: 'up', price: '$2,340', change: '+8.2%', narrative: 'L1', volume: '$2.1B', mcap: '$281B', moonshot: 62 },
-    { name: 'BTC', icon: '₿', cqs: 92, ts: 75, ci: 80, ri: 42, trend: 'up', price: '$45,230', change: '+5.1%', narrative: 'Store', volume: '$8.4B', mcap: '$890B', moonshot: 45 },
-    { name: 'QUBIC', icon: '◇', cqs: 55, ts: 70, ci: 75, ri: 70, trend: 'up', price: '$0.0034', change: '+25.6%', narrative: 'AI', volume: '$12.8M', mcap: '$340M', moonshot: 85 },
-    { name: 'LINK', icon: '⬡', cqs: 78, ts: 68, ci: 72, ri: 58, trend: 'down', price: '$14.82', change: '-3.2%', narrative: 'Oracle', volume: '$120M', mcap: '$8.2B', moonshot: 68 },
-    { name: 'SOL', icon: '◐', cqs: 80, ts: 82, ci: 83, ri: 48, trend: 'up', price: '$98.45', change: '+15.3%', narrative: 'L1', volume: '$890M', mcap: '$42B', moonshot: 71 },
-    { name: 'MATIC', icon: '◮', cqs: 74, ts: 76, ci: 78, ri: 52, trend: 'up', price: '$0.82', change: '+9.8%', narrative: 'L2', volume: '$340M', mcap: '$7.6B', moonshot: 73 },
-  ];
+  // Replace the static demoCoins with dynamic data from backend
+
+
   const {data , isLoading, error} =useQuery({
     queryKey: ['fearGreedIndex'],
     queryFn: async () => {
@@ -52,6 +46,33 @@ const CryptoDashboard = () => {
     },
     refetchInterval: 1000 * 60 * 30, //every 30 minutes
   });
+  const { data: topCoinsData, isLoading: coinsLoading, error: coinsError } = useQuery({
+    queryKey: ['topCoins'],
+    queryFn: async () => {
+      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/top-coins`);
+      return res.data.data; // assuming your controller returns { success, data }
+    },
+    refetchInterval: 2 * 60 * 1000, // every 2 mins for live price updates
+    staleTime: 60 * 1000, // 1 min
+    retry: 2,
+  });
+  
+  
+  const demoCoins = topCoinsData?.map(coin => ({
+  name: coin.name,
+  icon: <img src={coin.logo} alt={coin.symbol} className="w-6 h-6 rounded-full" />, // show logo
+  cqs: coin.CQS,
+  ts: coin.TS,
+  ci: coin.CI,
+  ri: coin.RI,
+  trend: coin.priceChange24h >= 0 ? 'up' : 'down',
+  price: `$${coin.price ? (coin.price).toLocaleString() : '0.00'}`, // format price
+  change: `${coin.priceChange24h >= 0 ? '+' : ''}${coin.priceChange24h.toFixed(2)}%`,
+  narrative: coin.narrative || coin.symbol, // optional, fallback to symbol
+  volume: `$${parseFloat(coin.volume).toLocaleString()}`,
+  mcap: `$${parseFloat(coin.marketCap).toLocaleString()}`,
+  moonshot: coin.Moonshot
+})) || [];
 
   const altSeasonIndex = altSeasonData?.value ?? 40;
   const fearGreedIndex = data ? parseInt(data.value) : 40; 

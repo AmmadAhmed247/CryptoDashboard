@@ -6,6 +6,7 @@ function getColor(value) {
 }
 
 const MainContent = ({ isDarkMode, demoCoins, narrativeTrends }) => {
+  
 
   return (
     <div className="flex-1 overflow-y-auto custom-scrollbar">
@@ -15,7 +16,7 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends }) => {
   {[
     {
       label: 'Coin Quality Score',
-      value: 30,
+      value: 50,
       icon: Award,
       status: 'High Quality'
     },
@@ -168,7 +169,7 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends }) => {
                   <tr key={idx} className={`${isDarkMode ? 'border-zinc-700  hover:bg-zinc-700/50' : 'border-gray-200 hover:bg-gray-100'} border-b text-left transition-all cursor-pointer group`}>
                     <td className="py-4 px-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-[#d0b345]
+                        <div className="w-fit h-fit rounded-full bg-[#d0b345]
  flex items-center justify-center text-white font-bold shadow-lg group-hover:scale-110 transition-all">
                           {coin.icon}
                         </div>
@@ -188,26 +189,26 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends }) => {
                     <td className="text-right py-4 px-4">
                       <span className={`px-2 py-1 rounded-lg text-xs font-semibold shadow-md ${coin.cqs >= 70 ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'
                         }`}>
-                        {coin.cqs}
+                        {coin.cqs.toFixed(0)}
                       </span>
                     </td>
                     <td className="text-right py-4 px-4">
                       <span className={`px-2 py-1 rounded-lg text-xs font-semibold shadow-md ${coin.ts >= 70 ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'
                         }`}>
-                        {coin.ts}
+                        {coin.ts.toFixed(0)}
                       </span>
                     </td>
                     <td className="text-right py-4 px-4">
                       <span className={`px-2 py-1 rounded-lg text-xs font-semibold shadow-md ${coin.ci >= 70 ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'
                         }`}>
-                        {coin.ci}
+                        {coin.ci.toFixed(0)}
                       </span>
                     </td>
                     <td className="text-right py-4 px-4">
                       <span className={`px-2 py-1 rounded-lg text-xs font-semibold shadow-md ${coin.ri < 50 ? 'bg-green-500/20 text-green-400' :
                           coin.ri < 75 ? 'bg-yellow-500/20 text-yellow-400' : 'bg-red-500/20 text-red-400'
                         }`}>
-                        {coin.ri}
+                        {coin.ri.toFixed(0)}
                       </span>
                     </td>
                     <td className="text-right py-4 px-4">
@@ -217,7 +218,7 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends }) => {
  h-2 rounded-full shadow-md" style={{ width: `${coin.moonshot}%` }}></div>
                         </div>
                         <span className="text-xs bg-[#d0b345]
- bg-clip-text text-transparent font-bold">{coin.moonshot}</span>
+ bg-clip-text text-transparent font-bold">{coin.moonshot.toFixed(0)}</span>
                       </div>
                     </td>
                     <td className="text-right py-4 px-4">

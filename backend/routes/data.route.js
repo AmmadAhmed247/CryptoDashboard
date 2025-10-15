@@ -8,4 +8,5 @@ router.get('/halving', getHalvingData);
 router.get("/altseason", getAltseasonIndex);
 router.get("/globalmarket", getGlobalMarketData);
 router.get("/cryptonews", getCryptoNews);
+
 export default router;
