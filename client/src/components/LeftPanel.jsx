@@ -201,15 +201,15 @@ const LeftPanel = ({ isDarkMode, fearGreedIndex, bitcoinHalving, altSeasonIndex,
             {topGainers.map((coin, idx) => (
               <div key={idx} className={`flex items-center justify-between p-2 rounded-lg ${isDarkMode ? 'hover:bg-zinc-700' : 'hover:bg-gray-100'} transition-all cursor-pointer`}>
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-[#d0b345] flex items-center justify-center text-sm shadow-lg">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm shadow-lg">
                     {coin.icon}
                   </div>
                   <div>
                     <span className={`text-sm font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{coin.name}</span>
-                    <div className={`text-xs ${isDarkMode ? 'text-zinc-500' : 'text-gray-500'}`}>{coin.narrative}</div>
+                    <div className={`text-xs ${isDarkMode ? 'text-zinc-500' : 'text-gray-500'}`}>{coin.price}</div>
                   </div>
                 </div>
-                <span className="text-green-400 text-sm font-semibold">{coin.change}</span>
+                <span className={`${coin.change > 0 ? 'text-green-400' : 'text-red-400'} text-sm font-semibold`}>{coin.change}</span>
               </div>
             ))}
           </div>

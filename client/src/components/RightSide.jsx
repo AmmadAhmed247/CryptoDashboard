@@ -3,70 +3,82 @@ import ScoreGauge from './scoreGauge'
 import { TrendingUp, TrendingDown, AlertCircle, Bell, ChevronRight, Activity, Flame, Target, Clock, Zap, DollarSign, BarChart3, Award, TrendingUp as TrendUp, Calendar, Users, GitBranch, Radio, Moon, Sun, Sparkles } from 'lucide-react';
 import MoonshotFactorMini from './Moonshot';
 import CryptoNews from './CryptoNews'
+const formatNumber = (num) => {
+  if (num === null || num === undefined || isNaN(num)) return "N/A";
+  const absNum = Math.abs(num);
 
+  if (absNum >= 1.0e9) {
+    return (num / 1.0e9).toFixed(2).replace(/\.00$/, "") + "B";
+  } else if (absNum >= 1.0e6) {
+    return (num / 1.0e6).toFixed(2).replace(/\.00$/, "") + "M";
+  } else if (absNum >= 1.0e3) {
+    return (num / 1.0e3).toFixed(2).replace(/\.00$/, "") + "K";
+  } else {
+    return num.toString();
+  }
+};
 
 const RightSide = ({ isDarkMode, selectedCoin }) => {
-  
+
 
   return (
     <div className={`w-96 ${isDarkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-gray-200'} border-l overflow-y-auto custom-scrollbar`}>
-          <div className="p-4 space-y-4">
-            {/* Selected Coin Detail */}
-            <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-14 h-14 rounded-full bg-[#d0b345] flex items-center justify-center text-white font-bold text-xl shadow-lg ">
-                    ◆
-                  </div>
-                  <div>
-                    <div className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{selectedCoin}</div>
-                    <div className={`text-sm ${isDarkMode ? 'text-zinc-400' : 'text-gray-600'}`}>Kaspa</div>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>$0.1523</div>
-                  <div className="text-green-400 text-sm font-semibold">+12.4%</div>
-                </div>
+      <div className="p-4 space-y-4">
+        {/* Selected Coin Detail */}
+        <div className={` items-center ${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-fit h-fit rounded-full  flex items-center justify-center text-white font-bold text-xl shadow-lg ">
+                <span>{selectedCoin?.icon}</span>
               </div>
+              <div>
+                <div className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{selectedCoin?.name}</div>
+                <div className={`text-sm ${isDarkMode ? 'text-zinc-400' : 'text-gray-600'}`}>{selectedCoin?.symbol}</div>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{selectedCoin?.price}</div>
+              <div className={`${selectedCoin?.change >= 0 ? 'text-green-400' : 'text-red-400'} text-sm font-semibold`}>{selectedCoin?.change}</div>
+            </div>
+          </div>
 
-              {/* <div className="grid grid-cols-2 gap-3 mb-4">
+          {/* <div className="grid grid-cols-2 gap-3 mb-4">
                 <ScoreGauge isDarkMode={isDarkMode} value={72} label="CQS" size="sm" />
                 <ScoreGauge isDarkMode={isDarkMode} value={85} label="TS" size="sm" />
                 <ScoreGauge isDarkMode={isDarkMode} value={85} label="CI" size="sm" />
                 <ScoreGauge isDarkMode={isDarkMode} value={55} label="RI" size="sm" />
               </div> */}
 
-              <div className="space-y-2 mb-4">
-                {[
-                  { label: 'Market Cap', value: '$1.2B' },
-                  { label: '24h Volume', value: '$45.2M' },
-                  { label: 'Circulating Supply', value: '7.8B KAS' },
-                  { label: 'ATH', value: '$0.189' }
-                ].map((item, idx) => (
-                  <div key={idx} className={`flex justify-between text-sm p-2 rounded-lg ${isDarkMode ? 'hover:bg-zinc-700' : 'hover:bg-gray-100'} transition-all`}>
-                    <span className={isDarkMode ? 'text-zinc-400' : 'text-gray-600'}>{item.label}</span>
-                    <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{item.value}</span>
-                  </div>
-                ))}
-              </div>
+          <div className="space-y-2 mb-4">
+            {[
+              { label: "Market Cap", value: formatNumber(selectedCoin?.mcap) },
+              { label: "24h Volume", value: formatNumber(selectedCoin?.volume) },
 
-              <div className={`${isDarkMode ? 'bg-gradient-to-r from-green-900/30 to-emerald-900/30 border-green-700' : 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-300'} rounded-lg p-3 border mb-4 shadow-md`}>
-                <div className={`text-xs mb-2 ${isDarkMode ? 'text-zinc-400' : 'text-gray-600'}`}>Entry Recommendation</div>
-                <div className="text-green-400 font-semibold mb-2 flex items-center gap-2">
-                  <Sparkles size={14} />
-                  Staggered Buy-Fear Entry
-                </div>
-                <div className={`text-sm ${isDarkMode ? 'text-zinc-300' : 'text-gray-700'}`}>Position: 30-50%</div>
-                <div className={`text-xs mt-2 ${isDarkMode ? 'text-zinc-400' : 'text-gray-600'}`}>Strong fundamentals + favorable timing</div>
+            ].map((item, idx) => (
+              <div key={idx} className={`flex justify-between items-center text-sm p-2 rounded-lg ${isDarkMode ? 'hover:bg-zinc-700' : 'hover:bg-gray-100'} transition-all`}>
+                <span className={isDarkMode ? 'text-zinc-400' : 'text-gray-600'}>{item.label}</span>
+                <span className={`font-semibold items-center ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{item.value}</span>
               </div>
+            ))}
+          </div>
 
-              <button className="w-full bg-[#d0b345] hover:from-orange-600 hover:to-yellow-900 py-3 rounded-lg font-semibold transition-all shadow-lg hover:shadow-xl hover:scale-105">
-                Add to Portfolio
-              </button>
+          <div className={`${isDarkMode ? 'bg-gradient-to-r from-green-900/30 to-emerald-900/30 border-green-700' : 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-300'} rounded-lg p-3 border mb-4 shadow-md`}>
+            <div className={`text-xs mb-2 ${isDarkMode ? 'text-zinc-400' : 'text-gray-600'}`}>Entry Recommendation</div>
+            <div className="text-green-400 font-semibold mb-2 flex items-center gap-2">
+              <Sparkles size={14} />
+              Staggered Buy-Fear Entry
             </div>
+            <div className={`text-sm ${isDarkMode ? 'text-zinc-300' : 'text-gray-700'}`}>Position: 30-50%</div>
+            <div className={`text-xs mt-2 ${isDarkMode ? 'text-zinc-400' : 'text-gray-600'}`}>Strong fundamentals + favorable timing</div>
+          </div>
 
-            {/* Market Cycle Chart */}
-            {/* <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>
+          <button className="w-full bg-[#d0b345] hover:from-orange-600 hover:to-yellow-900 py-3 rounded-lg font-semibold transition-all shadow-lg hover:shadow-xl hover:scale-105">
+            Add to Portfolio
+          </button>
+        </div>
+
+        {/* Market Cycle Chart */}
+        {/* <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>
               <h3 className={`text-sm font-semibold mb-4 flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                 <Activity className="text-yellow-500" size={18} />
                 Market Cycle Position
@@ -113,37 +125,37 @@ const RightSide = ({ isDarkMode, selectedCoin }) => {
                 ))}
               </div>
             </div> */}
-            <MoonshotFactorMini />
-       
-            {/* Alerts */}
-            <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>
-              <div className="flex items-center justify-between mb-4">
-                <h3 className={`text-sm font-semibold flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                  <Bell className="text-[#d0b345]" size={18} />
-                  Active Alerts
-                </h3>
-                <span className="bg-gradient-to-r from-red-400 to-red-400 text-white text-xs px-2 py-1 rounded-full font-bold shadow-lg">3</span>
-              </div>
-              <div className="space-y-2">
-                {[
-                  { coin: 'KAS', time: '2m ago', msg: 'Strong entry signal detected', detail: 'CI: 85 | TS: 85 | Buy Zone Active', color: 'yellow' },
-                  { coin: 'ETH', time: '15m ago', msg: 'Major upgrade announcement', detail: 'Community Score +45% in 24h', color: 'yellow' },
-                  { coin: 'QUBIC', time: '1h ago', msg: 'Viral trend detected - Moonshot alert', detail: 'Moonshot Factor: 85 | High Risk', color: 'yellow' }
-                ].map((alert, idx) => (
-                  <div key={idx} className={`${isDarkMode ? 'bg-zinc-900' : 'bg-gray-50'} rounded-lg p-3 border-l-4 border-${alert.color}-500 hover:scale-105 transition-all cursor-pointer shadow-md`}>
-                    <div className="flex items-start justify-between mb-1">
-                      <span className="text-sm font-semibold bg-[#d0b345] bg-clip-text text-transparent">{alert.coin}</span>
-                      <span className={`text-xs ${isDarkMode ? 'text-zinc-500' : 'text-gray-500'}`}>{alert.time}</span>
-                    </div>
-                    <div className={`text-xs mb-1 ${isDarkMode ? 'text-zinc-300' : 'text-gray-700'}`}>{alert.msg}</div>
-                    <div className={`text-xs ${isDarkMode ? 'text-zinc-500' : 'text-gray-500'}`}>{alert.detail}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
+        <MoonshotFactorMini />
 
-            {/* Latest News */}
-            {/* <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>
+        {/* Alerts */}
+        <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className={`text-sm font-semibold flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+              <Bell className="text-[#d0b345]" size={18} />
+              Active Alerts
+            </h3>
+            <span className="bg-gradient-to-r from-red-400 to-red-400 text-white text-xs px-2 py-1 rounded-full font-bold shadow-lg">3</span>
+          </div>
+          <div className="space-y-2">
+            {[
+              { coin: 'KAS', time: '2m ago', msg: 'Strong entry signal detected', detail: 'CI: 85 | TS: 85 | Buy Zone Active', color: 'yellow' },
+              { coin: 'ETH', time: '15m ago', msg: 'Major upgrade announcement', detail: 'Community Score +45% in 24h', color: 'yellow' },
+              { coin: 'QUBIC', time: '1h ago', msg: 'Viral trend detected - Moonshot alert', detail: 'Moonshot Factor: 85 | High Risk', color: 'yellow' }
+            ].map((alert, idx) => (
+              <div key={idx} className={`${isDarkMode ? 'bg-zinc-900' : 'bg-gray-50'} rounded-lg p-3 border-l-4 border-${alert.color}-500 hover:scale-105 transition-all cursor-pointer shadow-md`}>
+                <div className="flex items-start justify-between mb-1">
+                  <span className="text-sm font-semibold bg-[#d0b345] bg-clip-text text-transparent">{alert.coin}</span>
+                  <span className={`text-xs ${isDarkMode ? 'text-zinc-500' : 'text-gray-500'}`}>{alert.time}</span>
+                </div>
+                <div className={`text-xs mb-1 ${isDarkMode ? 'text-zinc-300' : 'text-gray-700'}`}>{alert.msg}</div>
+                <div className={`text-xs ${isDarkMode ? 'text-zinc-500' : 'text-gray-500'}`}>{alert.detail}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Latest News */}
+        {/* <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>
               <h3 className={`text-sm font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Latest News</h3>
               <div className="space-y-3">
                 {[
@@ -164,104 +176,104 @@ const RightSide = ({ isDarkMode, selectedCoin }) => {
                 ))}
               </div>
             </div> */}
-            <CryptoNews isDarkMode={isDarkMode} />
+        <CryptoNews isDarkMode={isDarkMode} />
 
-            {/* Developer Activity */}
-            <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>
-              <h3 className={`text-sm font-semibold mb-4 flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                <GitBranch className="text-[#d0b345]" size={18} />
-                Dev Activity (30d)
-              </h3>
-              <div className="space-y-3">
-                {[
-                  { label: 'Commits', value: 342, percent: 85, color: 'from-green-500 to-emerald-600' },
-                  { label: 'Contributors', value: 28, percent: 70, color: 'from-blue-500 to-cyan-600' },
-                  { label: 'Stars', value: '12.4K', percent: 92, color: 'bg-[#d0b345]' }
-                ].map((item, idx) => (
-                  <div key={idx}>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className={`text-sm ${isDarkMode ? 'text-zinc-400' : 'text-gray-600'}`}>{item.label}</span>
-                      <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{item.value}</span>
-                    </div>
-                    <div className={`w-full ${isDarkMode ? 'bg-zinc-700' : 'bg-gray-200'} rounded-full h-2 overflow-hidden`}>
-                      <div className={`bg-gradient-to-r ${item.color} h-2 rounded-full shadow-lg transition-all duration-1000`} style={{ width: `${item.percent}%` }}></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Social Metrics */}
-            <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>
-              <h3 className={`text-sm font-semibold mb-4 flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                <Users className="text-[#d0b345]" size={18} />
-                Social Metrics (7d)
-              </h3>
-              <div className="grid grid-cols-2 gap-3">
-                {[
-                  { platform: 'Twitter', count: '45.2K', change: '+12.4%', positive: true },
-                  { platform: 'Reddit', count: '23.8K', change: '+8.7%', positive: true },
-                  { platform: 'Telegram', count: '67.3K', change: '-2.1%', positive: false },
-                  { platform: 'Discord', count: '34.1K', change: '+5.3%', positive: true }
-                ].map((social, idx) => (
-                  <div key={idx} className={`${isDarkMode ? 'bg-zinc-900' : 'bg-gray-50'} rounded-lg p-3 hover:scale-105 transition-all cursor-pointer shadow-md`}>
-                    <div className={`text-xs mb-1 ${isDarkMode ? 'text-zinc-400' : 'text-gray-600'}`}>{social.platform}</div>
-                    <div className={`text-lg font-bold mb-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{social.count}</div>
-                    <div className={`text-xs font-semibold ${social.positive ? 'text-green-400' : 'text-red-400'}`}>{social.change}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Trading Volume Chart */}
-            <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>
-              <h3 className={`text-sm font-semibold mb-4 flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                <BarChart3 className="text-[#d0b345]" size={18} />
-                Volume Trend (7d)
-              </h3>
-              <div className="flex items-end justify-between h-32 gap-2">
-                {[65, 78, 55, 82, 91, 73, 88].map((height, idx) => (
-                  <div key={idx} className="flex-1 flex flex-col items-center gap-1">
-                    <div 
-                      className={`w-full bg-gradient-to-t from-orange-500 via-pink-500 to-purple-500 rounded-t-lg transition-all hover:opacity-80 cursor-pointer shadow-lg`}
-                      style={{ height: `${height}%` }}
-                    ></div>
-                    <span className={`text-xs ${isDarkMode ? 'text-zinc-500' : 'text-gray-500'}`}>{['M', 'T', 'W', 'T', 'F', 'S', 'S'][idx]}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Price Alerts Setup */}
-            <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>
-              <h3 className={`text-sm font-semibold mb-4 flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                <Target className="text-[#d0b345]" size={18} />
-                Quick Alert Setup
-              </h3>
-              <div className="space-y-3">
-                <div>
-                  <label className={`text-xs mb-1 block ${isDarkMode ? 'text-zinc-400' : 'text-gray-600'}`}>Target Price</label>
-                  <input 
-                    type="text" 
-                    placeholder="$0.20" 
-                    className={`w-full px-3 py-2 rounded-lg text-sm ${isDarkMode ? 'bg-zinc-900 border-zinc-700 text-white' : 'bg-white border-gray-300 text-gray-900'} border focus:outline-none focus:ring-2 focus:ring-orange-500`}
-                  />
+        {/* Developer Activity */}
+        <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>
+          <h3 className={`text-sm font-semibold mb-4 flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+            <GitBranch className="text-[#d0b345]" size={18} />
+            Dev Activity (30d)
+          </h3>
+          <div className="space-y-3">
+            {[
+              { label: 'Commits', value: 342, percent: 85, color: 'from-green-500 to-emerald-600' },
+              { label: 'Contributors', value: 28, percent: 70, color: 'from-blue-500 to-cyan-600' },
+              { label: 'Stars', value: '12.4K', percent: 92, color: 'bg-[#d0b345]' }
+            ].map((item, idx) => (
+              <div key={idx}>
+                <div className="flex items-center justify-between mb-1">
+                  <span className={`text-sm ${isDarkMode ? 'text-zinc-400' : 'text-gray-600'}`}>{item.label}</span>
+                  <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{item.value}</span>
                 </div>
-                <div className="flex gap-2">
-                  <button className={`flex-1 px-3 py-2 ${isDarkMode ? 'bg-zinc-900 hover:bg-zinc-800' : 'bg-gray-100 hover:bg-gray-200'} rounded-lg text-xs font-semibold transition-all`}>
-                    Above
-                  </button>
-                  <button className={`flex-1 px-3 py-2 ${isDarkMode ? 'bg-zinc-900 hover:bg-zinc-800' : 'bg-gray-100 hover:bg-gray-200'} rounded-lg text-xs font-semibold transition-all`}>
-                    Below
-                  </button>
+                <div className={`w-full ${isDarkMode ? 'bg-zinc-700' : 'bg-gray-200'} rounded-full h-2 overflow-hidden`}>
+                  <div className={`bg-gradient-to-r ${item.color} h-2 rounded-full shadow-lg transition-all duration-1000`} style={{ width: `${item.percent}%` }}></div>
                 </div>
-                <button className="w-full bg-[#d0b345] py-2 rounded-lg text-sm font-semibold transition-all shadow-lg hover:shadow-xl hover:scale-105">
-                  Set Alert
-                </button>
               </div>
-            </div>
+            ))}
           </div>
         </div>
+
+        {/* Social Metrics */}
+        <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>
+          <h3 className={`text-sm font-semibold mb-4 flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+            <Users className="text-[#d0b345]" size={18} />
+            Social Metrics (7d)
+          </h3>
+          <div className="grid grid-cols-2 gap-3">
+            {[
+              { platform: 'Twitter', count: '45.2K', change: '+12.4%', positive: true },
+              { platform: 'Reddit', count: '23.8K', change: '+8.7%', positive: true },
+              { platform: 'Telegram', count: '67.3K', change: '-2.1%', positive: false },
+              { platform: 'Discord', count: '34.1K', change: '+5.3%', positive: true }
+            ].map((social, idx) => (
+              <div key={idx} className={`${isDarkMode ? 'bg-zinc-900' : 'bg-gray-50'} rounded-lg p-3 hover:scale-105 transition-all cursor-pointer shadow-md`}>
+                <div className={`text-xs mb-1 ${isDarkMode ? 'text-zinc-400' : 'text-gray-600'}`}>{social.platform}</div>
+                <div className={`text-lg font-bold mb-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{social.count}</div>
+                <div className={`text-xs font-semibold ${social.positive ? 'text-green-400' : 'text-red-400'}`}>{social.change}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Trading Volume Chart */}
+        <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>
+          <h3 className={`text-sm font-semibold mb-4 flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+            <BarChart3 className="text-[#d0b345]" size={18} />
+            Volume Trend (7d)
+          </h3>
+          <div className="flex items-end justify-between h-32 gap-2">
+            {[65, 78, 55, 82, 91, 73, 88].map((height, idx) => (
+              <div key={idx} className="flex-1 flex flex-col items-center gap-1">
+                <div
+                  className={`w-full bg-gradient-to-t from-orange-500 via-pink-500 to-purple-500 rounded-t-lg transition-all hover:opacity-80 cursor-pointer shadow-lg`}
+                  style={{ height: `${height}%` }}
+                ></div>
+                <span className={`text-xs ${isDarkMode ? 'text-zinc-500' : 'text-gray-500'}`}>{['M', 'T', 'W', 'T', 'F', 'S', 'S'][idx]}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Price Alerts Setup */}
+        <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>
+          <h3 className={`text-sm font-semibold mb-4 flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+            <Target className="text-[#d0b345]" size={18} />
+            Quick Alert Setup
+          </h3>
+          <div className="space-y-3">
+            <div>
+              <label className={`text-xs mb-1 block ${isDarkMode ? 'text-zinc-400' : 'text-gray-600'}`}>Target Price</label>
+              <input
+                type="text"
+                placeholder="$0.20"
+                className={`w-full px-3 py-2 rounded-lg text-sm ${isDarkMode ? 'bg-zinc-900 border-zinc-700 text-white' : 'bg-white border-gray-300 text-gray-900'} border focus:outline-none focus:ring-2 focus:ring-orange-500`}
+              />
+            </div>
+            <div className="flex gap-2">
+              <button className={`flex-1 px-3 py-2 ${isDarkMode ? 'bg-zinc-900 hover:bg-zinc-800' : 'bg-gray-100 hover:bg-gray-200'} rounded-lg text-xs font-semibold transition-all`}>
+                Above
+              </button>
+              <button className={`flex-1 px-3 py-2 ${isDarkMode ? 'bg-zinc-900 hover:bg-zinc-800' : 'bg-gray-100 hover:bg-gray-200'} rounded-lg text-xs font-semibold transition-all`}>
+                Below
+              </button>
+            </div>
+            <button className="w-full bg-[#d0b345] py-2 rounded-lg text-sm font-semibold transition-all shadow-lg hover:shadow-xl hover:scale-105">
+              Set Alert
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
 

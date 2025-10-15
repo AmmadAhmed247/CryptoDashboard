@@ -1,11 +1,11 @@
 import React from 'react'
 import { TrendingUp, TrendingDown, AlertCircle, Bell, ChevronRight, Activity, Flame, Target, Clock, Zap, DollarSign, BarChart3, Award, TrendingUp as TrendUp, Calendar, Users, GitBranch, Radio, Moon, Sun, Sparkles } from 'lucide-react';
-
+import { Link } from 'react-router-dom';
 function getColor(value) {
   return value < 50 ? 'bg-red-800' : 'bg-green-700'; 
 }
 
-const MainContent = ({ isDarkMode, demoCoins, narrativeTrends }) => {
+const MainContent = ({ isDarkMode, demoCoins, narrativeTrends,ScoreCard }) => {
   
 
   return (
@@ -13,32 +13,7 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends }) => {
       <div className="p-6 space-y-6">
         {/* Score Cards */}
        <div className="grid grid-cols-4 gap-4">
-  {[
-    {
-      label: 'Coin Quality Score',
-      value: 50,
-      icon: Award,
-      status: 'High Quality'
-    },
-    {
-      label: 'Timing Score',
-      value: 75,
-      icon: Clock,
-      status: 'Strong Entry'
-    },
-    {
-      label: 'Chance Index',
-      value: 85,
-      icon: Target,
-      status: 'High Chance'
-    },
-    {
-      label: 'Risk Index',
-      value: 55,
-      icon: AlertCircle,
-      status: 'Medium Risk'
-    },
-  ].map((card, idx) => (
+  {ScoreCard.map((card, idx) => (
     <div
       key={idx}
       className={`${
@@ -165,77 +140,137 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends }) => {
                 </tr>
               </thead>
               <tbody>
-                {demoCoins.map((coin, idx) => (
-                  <tr key={idx} className={`${isDarkMode ? 'border-zinc-700  hover:bg-zinc-700/50' : 'border-gray-200 hover:bg-gray-100'} border-b text-left transition-all cursor-pointer group`}>
-                    <td className="py-4 px-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-fit h-fit rounded-full bg-[#d0b345]
- flex items-center justify-center text-white font-bold shadow-lg group-hover:scale-110 transition-all">
-                          {coin.icon}
-                        </div>
-                        <div>
-                          <div className={`font-semibold   ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{coin.name}</div>
-                          <div className={`text-xs ${isDarkMode ? 'text-zinc-500' : 'text-gray-500'}`}>{coin.narrative}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className={`text-right py-4 px-4 font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{coin.price}</td>
-                    <td className="text-right py-4 px-4">
-                      <span className={`${coin.change.startsWith('+') ? 'text-green-400' : 'text-red-400'} font-semibold`}>
-                        {coin.change}
-                      </span>
-                    </td>
-                    <td className={`text-right py-4 px-4 ${isDarkMode ? 'text-zinc-400' : 'text-gray-600'}`}>{coin.volume}</td>
-                    <td className="text-right py-4 px-4">
-                      <span className={`px-2 py-1 rounded-lg text-xs font-semibold shadow-md ${coin.cqs >= 70 ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'
-                        }`}>
-                        {coin.cqs.toFixed(0)}
-                      </span>
-                    </td>
-                    <td className="text-right py-4 px-4">
-                      <span className={`px-2 py-1 rounded-lg text-xs font-semibold shadow-md ${coin.ts >= 70 ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'
-                        }`}>
-                        {coin.ts.toFixed(0)}
-                      </span>
-                    </td>
-                    <td className="text-right py-4 px-4">
-                      <span className={`px-2 py-1 rounded-lg text-xs font-semibold shadow-md ${coin.ci >= 70 ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'
-                        }`}>
-                        {coin.ci.toFixed(0)}
-                      </span>
-                    </td>
-                    <td className="text-right py-4 px-4">
-                      <span className={`px-2 py-1 rounded-lg text-xs font-semibold shadow-md ${coin.ri < 50 ? 'bg-green-500/20 text-green-400' :
-                          coin.ri < 75 ? 'bg-yellow-500/20 text-yellow-400' : 'bg-red-500/20 text-red-400'
-                        }`}>
-                        {coin.ri.toFixed(0)}
-                      </span>
-                    </td>
-                    <td className="text-right py-4 px-4">
-                      <div className="flex items-center justify-end gap-2">
-                        <div className={`w-16 ${isDarkMode ? 'bg-zinc-700' : 'bg-gray-200'} rounded-full h-2 overflow-hidden`}>
-                          <div className="bg-[#d0b345]
- h-2 rounded-full shadow-md" style={{ width: `${coin.moonshot}%` }}></div>
-                        </div>
-                        <span className="text-xs bg-[#d0b345]
- bg-clip-text text-transparent font-bold">{coin.moonshot.toFixed(0)}</span>
-                      </div>
-                    </td>
-                    <td className="text-right py-4 px-4">
-                      <button className="px-4 font-semibold py-2 bg-[#d0b345]
- rounded-lg text-xs  transition-all shadow-lg hover:shadow-xl hover:scale-110">
-                        Entry
-                      </button>
-                    </td>
-                    <td className="text-right  py-4 px-4">
-                      <button className="px-4   py-2 bg-[#d0b345]
- rounded-lg text-xs font-semibold transition-all shadow-lg hover:shadow-xl hover:scale-110">
-                        Add to Analysis
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
+  {demoCoins.map((coin, idx) => (
+    <tr
+      key={idx}
+      className={`${
+        isDarkMode
+          ? "border-zinc-700 hover:bg-zinc-700/50"
+          : "border-gray-200 hover:bg-gray-100"
+      } border-b text-left transition-all cursor-pointer group`}
+    >
+      {/* Coin Info */}
+      <td className="py-4 px-4">
+        <Link
+          to={`https://coinmarketcap.com/currencies/${coin.id || coin.name
+            .toLowerCase()
+            .replace(/\s+/g, "-")}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-3"
+        >
+          <div
+            className="w-8 h-8 rounded-full  flex items-center justify-center text-white font-bold shadow-lg group-hover:scale-110 transition-all"
+          >
+            {coin.icon}
+          </div>
+          <div>
+            <div
+              className={`font-semibold ${
+                isDarkMode ? "text-white" : "text-gray-900"
+              }`}
+            >
+              {coin.name}
+            </div>
+            <div
+              className={`text-xs ${
+                isDarkMode ? "text-zinc-500" : "text-gray-500"
+              }`}
+            >
+              {coin.narrative}
+            </div>
+          </div>
+        </Link>
+      </td>
+
+      {/* Price */}
+      <td
+        className={`text-right py-4 px-4 font-semibold ${
+          isDarkMode ? "text-white" : "text-gray-900"
+        }`}
+      >
+        {coin.price}
+      </td>
+
+      {/* Change */}
+      <td className="text-right py-4 px-4">
+        <span
+          className={`${
+            coin.change.startsWith("+") ? "text-green-400" : "text-red-400"
+          } font-semibold`}
+        >
+          {coin.change}
+        </span>
+      </td>
+
+      {/* Volume */}
+      <td
+        className={`text-right py-4 px-4 ${
+          isDarkMode ? "text-zinc-400" : "text-gray-600"
+        }`}
+      >
+        {coin.volume}
+      </td>
+
+      {/* Scores */}
+      {["cqs", "ts", "ci", "ri"].map((metric, i) => {
+  const value = Number(coin[metric] ?? 0); // ✅ safely handle undefined
+  return (
+    <td key={i} className="text-right py-4 px-4">
+      <span
+        className={`px-2 py-1 rounded-lg text-xs font-semibold shadow-md ${
+          metric === "ri"
+            ? value < 50
+              ? "bg-green-500/20 text-green-400"
+              : value < 75
+              ? "bg-yellow-500/20 text-yellow-400"
+              : "bg-red-500/20 text-red-400"
+            : value >= 70
+            ? "bg-green-500/20 text-green-400"
+            : "bg-yellow-500/20 text-yellow-400"
+        }`}
+      >
+        {value.toFixed(0)}
+      </span>
+    </td>
+  );
+})}
+
+
+      {/* Moonshot Bar */}
+      <td className="text-right py-4 px-4">
+        <div className="flex items-center justify-end gap-2">
+          <div
+            className={`w-16 ${
+              isDarkMode ? "bg-zinc-700" : "bg-gray-200"
+            } rounded-full h-2 overflow-hidden`}
+          >
+            <div
+              className="bg-[#d0b345] h-2 rounded-full shadow-md"
+              style={{ width: `${coin.moonshot}%` }}
+            ></div>
+          </div>
+          <span className="text-xs bg-[#d0b345] bg-clip-text text-transparent font-bold">
+            {coin.moonshot.toFixed(0)}
+          </span>
+        </div>
+      </td>
+
+      {/* Action Buttons */}
+      <td className="text-right py-4 px-4">
+        <button className="px-4 font-semibold py-2 bg-[#d0b345] rounded-lg text-xs transition-all shadow-lg hover:shadow-xl hover:scale-110">
+          Entry
+        </button>
+      </td>
+      <td className="text-right py-4 px-4">
+        <button className="px-4 py-2 bg-[#d0b345] rounded-lg text-xs font-semibold transition-all shadow-lg hover:shadow-xl hover:scale-110">
+          Add to Analysis
+        </button>
+      </td>
+    </tr>
+  ))}
+</tbody>
+
             </table>
           </div>
         </div>

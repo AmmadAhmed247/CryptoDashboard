@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+
 import { TrendingUp, TrendingDown, AlertCircle, Bell, ChevronRight, Activity, Flame, Target, Clock, Zap, DollarSign, BarChart3, Award, TrendingUp as TrendUp, Calendar, Users, GitBranch, Radio, Moon, Sun, Sparkles } from 'lucide-react';
 import RightSide from '../components/RightSide';
 import LeftPanel from '../components/LeftPanel';
@@ -6,8 +7,9 @@ import MainContent from '../components/MainComponent';
 import Search from '../components/Search';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';  
+
 const CryptoDashboard = () => {
-  const [selectedCoin, setSelectedCoin] = useState('KAS');
+  const [selectedCoin, setSelectedCoin] = useState(null);
   const [isDarkMode, setIsDarkMode] = useState(true);
   // Replace the static demoCoins with dynamic data from backend
 
@@ -58,26 +60,30 @@ const CryptoDashboard = () => {
   });
   
   
-  const demoCoins = topCoinsData?.map(coin => ({
+const demoCoins = topCoinsData?.map(coin => ({
   name: coin.name,
-  icon: <img src={coin.logo} alt={coin.symbol} className="w-6 h-6 rounded-full" />, // show logo
+  icon: <img src={coin.logo} alt={coin.symbol} className="w-8 h-8 rounded-full" />, 
   cqs: coin.CQS,
   ts: coin.TS,
   ci: coin.CI,
   ri: coin.RI,
   trend: coin.priceChange24h >= 0 ? 'up' : 'down',
   price: `$${coin.price ? (coin.price).toLocaleString() : '0.00'}`, // format price
-  change: `${coin.priceChange24h >= 0 ? '+' : ''}${coin.priceChange24h.toFixed(2)}%`,
+  change: `${Number(coin.priceChange24h || 0).toFixed(2)}%`,
   narrative: coin.narrative || coin.symbol, // optional, fallback to symbol
   volume: `$${parseFloat(coin.volume).toLocaleString()}`,
   mcap: `$${parseFloat(coin.marketCap).toLocaleString()}`,
   moonshot: coin.Moonshot
 })) || [];
+const altSeasonIndex = altSeasonData?.value ?? 40;
+const fearGreedIndex = data ? parseInt(data.value) : 40; 
+const bitcoinHalving = halvingData ? halvingData : { days: 910, blocks: 131000, date: 'Apr 2028' };
 
-  const altSeasonIndex = altSeasonData?.value ?? 40;
-  const fearGreedIndex = data ? parseInt(data.value) : 40; 
-  const bitcoinHalving = halvingData ? halvingData : { days: 910, blocks: 131000, date: 'Apr 2028' };
-
+React.useEffect(() => {
+    if (!selectedCoin && demoCoins.length > 0) {
+      setSelectedCoin(demoCoins[0]); 
+    }
+  }, [demoCoins]);
   const marketMetrics = [
   {
     label: 'Total Market Cap',
@@ -104,6 +110,56 @@ const CryptoDashboard = () => {
     icon: Users,
   },
 ];
+const ScoreCard = selectedCoin
+    ? [
+        {
+          label: "Coin Quality Score",
+          value: selectedCoin.cqs.toFixed(0) ?? 0,
+          icon: Award,
+          status:
+            selectedCoin.cqs > 75
+              ? "Top Tier"
+              : selectedCoin.cqs > 50
+              ? "High Quality"
+              : selectedCoin.cqs > 30
+              ? "Average"
+              : "Low Quality",
+        },
+        {
+          label: "Timing Score",
+          value: selectedCoin.ts.toFixed(0) ?? 0,
+          icon: Clock,
+          status:
+            selectedCoin.ts > 70
+              ? "Strong Entry"
+              : selectedCoin.ts > 40
+              ? "Neutral"
+              : "Weak Timing",
+        },
+        {
+          label: "Chance Index",
+          value: selectedCoin.ci.toFixed(0) ?? 0,
+          icon: Target,
+          status:
+            selectedCoin.ci > 75
+              ? "High Chance"
+              : selectedCoin.ci > 50
+              ? "Moderate"
+              : "Low Chance",
+        },
+        {
+          label: "Risk Index",
+          value: selectedCoin.ri.toFixed(0) ?? 0,
+          icon: AlertCircle,
+          status:
+            selectedCoin.ri < 40
+              ? "Low Risk"
+              : selectedCoin.ri < 70
+              ? "Medium Risk"
+              : "High Risk",
+        },
+      ]
+    : [];
 
   const narrativeTrends = [
     { name: 'AI', score: 92,  trend: 'up', color: 'bg-[#d0b345]' },
@@ -112,8 +168,9 @@ const CryptoDashboard = () => {
     { name: 'GameFi', score: 64,  trend: 'down', color: 'bg-[#d0b345]' },
     { name: 'Meme', score: 88,  trend: 'up', color: 'bg-[#d0b345]' },
   ];
-
-  const topGainers = demoCoins.filter(c => parseFloat(c.change) > 0).slice(0, 7);
+const topGainers = demoCoins
+  .sort((a, b) => parseFloat(b.change) - parseFloat(a.change))
+  .slice(0, 9);
 
 
 
@@ -177,7 +234,7 @@ const CryptoDashboard = () => {
   </div>
 
         {/* Main Content Area */}
-        <MainContent isDarkMode={isDarkMode} demoCoins={demoCoins} narrativeTrends={narrativeTrends} />
+        <MainContent isDarkMode={isDarkMode} demoCoins={demoCoins} narrativeTrends={narrativeTrends} ScoreCard={ScoreCard} />
       
         {/* Right Sidebar */}
         <div className="hidden xl:flex w-80 h-full overflow-auto">
