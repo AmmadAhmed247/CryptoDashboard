@@ -1,64 +1,72 @@
 import React, { useState } from "react";
 import { Rocket, Sparkles } from "lucide-react";
 
-export default function MoonshotFactorMini() {
+export default function MoonshotFactorMini({ coins }) {
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [selectedCoin, setSelectedCoin] = useState(null);
   const [animateStats, setAnimateStats] = useState(false);
 
-  const coins = [
-    {
-      id: 1,
-      name: "WLD",
-      logo: "🌍",
-      nf: 92,
-      marketCapFactor: 65,
-      hype: 88,
-      novelty: 90,
-      cqs: 78,
-      marketCap: "$1.2B",
-      change24h: 15.4,
-    },
-    {
-      id: 2,
-      name: "Pepe",
-      logo: "🐸",
-      nf: 85,
-      marketCapFactor: 72,
-      hype: 95,
-      novelty: 58,
-      cqs: 72,
-      marketCap: "$890M",
-      change24h: 22.8,
-    },
-    {
-      id: 3,
-      name: "Sui",
-      logo: "💧",
-      nf: 76,
-      marketCapFactor: 55,
-      hype: 78,
-      novelty: 68,
-      cqs: 70,
-      marketCap: "$1.6B",
-      change24h: -5.3,
-    },
-  ];
+  // Format number to K, M, B
+  const formatNumber = (num) => {
+    const cleanNum = typeof num === 'string' 
+      ? parseFloat(num.replace(/[$,]/g, '')) 
+      : num;
 
-  const calculateMoonshot = (coin) => {
-    if (coin.cqs < 50) return 0;
-    const raw =
-      0.4 * coin.nf +
-      0.3 * coin.marketCapFactor +
-      0.2 * coin.hype +
-      0.1 * coin.novelty;
-    return Math.min(raw, 100);
+    if (isNaN(cleanNum)) return '$0';
+
+    const absNum = Math.abs(cleanNum);
+    
+    if (absNum >= 1e9) return '$' + (cleanNum / 1e9).toFixed(2) + 'B';
+    if (absNum >= 1e6) return '$' + (cleanNum / 1e6).toFixed(2) + 'M';
+    if (absNum >= 1e3) return '$' + (cleanNum / 1e3).toFixed(2) + 'K';
+    return '$' + cleanNum.toFixed(2);
   };
 
-  const coinsWithScores = coins.map((c) => ({
-    ...c,
-    moonshotScore: calculateMoonshot(c),
-  }));
+  // Transform coins data to match component structure
+  const transformedCoins = Array.isArray(coins) 
+    ? coins.map((coin) => ({
+        id: coin._id || coin.coinId,
+        name: coin.name,
+        symbol: coin.symbol,
+        logo: coin.logo,
+        price: `${coin.price?.toFixed(4) || '0.00'}`,
+        marketCap: formatNumber(coin.marketCap),
+        volume: formatNumber(coin.volume),
+        change24h: coin.priceChange24h?.toFixed(2) || 0,
+        moonshotScore: coin.Moonshot || 0,
+        // Moonshot breakdown factors
+        volatilityScore: coin.MoonshotFactors?.volatilityScore || 0,
+        hypeScore: coin.MoonshotFactors?.hypeScore || 0,
+        devActivity: coin.MoonshotFactors?.devActivity || 0,
+        socialSentiment: coin.MoonshotFactors?.socialSentiment || 0,
+        otherFactors: coin.MoonshotFactors?.otherFactors || 0,
+        // Other scores
+        cqs: coin.CQS || 0,
+        ci: coin.CI || 0,
+        ri: coin.RI || 0,
+        ts: coin.TS || 0,
+      }))
+    : [];
+
+  // Sort by moonshot score (highest first)
+  const sortedCoins = transformedCoins.sort((a, b) => b.moonshotScore - a.moonshotScore).slice(0, 3);
+
+  // Early return if no coins
+  if (sortedCoins.length === 0) {
+    return (
+      <div className="bg-zinc-850 text-white p-6 rounded-2xl border border-zinc-700 max-w-xl mx-auto">
+        <div className="mb-6">
+          <div className="inline-flex items-center gap-2 mb-2">
+            <Rocket className="h-8 text-amber-400" />
+            <h2 className="text-xl font-bold text-[#d0b345]">
+              Moonshot Factor
+            </h2>
+          </div>
+          <p className="text-zinc-400 text-sm">Loading moonshot data...</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleEnter = (coin) => {
     setSelectedCoin(coin);
@@ -71,30 +79,33 @@ export default function MoonshotFactorMini() {
   return (
     <div className="bg-zinc-850 text-white p-6 rounded-2xl border border-zinc-700 max-w-xl mx-auto">
       {/* Header */}
-      <div className=" mb-6">
+      <div className="mb-6">
         <div className="inline-flex items-center gap-2 mb-2">
-          <Rocket  className=" h-8 float-animation text-amber-400 drop-shadow-[0_0_3px_#FFD700]/60" />
+          <Rocket className="h-8 float-animation text-amber-400 drop-shadow-[0_0_3px_#FFD700]/60" />
           <h2 className="text-xl w-fit font-bold text-[#d0b345] bg-clip-text bg-gradient-to-r from-[#ffd66f] via-[#ffce51] to-[#FFD700] drop-shadow-[0_0_3px_#FFD700]/40">
-  Moonshot Factor
-</h2>
-
+            Moonshot Factor
+          </h2>
         </div>
         <p className="text-zinc-400 text-sm">
-          Daily top coins with the highest moonshot potential 
+          Daily top coins with the highest moonshot potential
         </p>
       </div>
 
       {/* Coin Selection (only show if no coin selected yet) */}
       {!selectedCoin && (
         <div className="space-y-3">
-          {coinsWithScores.map((coin) => (
+          {sortedCoins.slice(0, 5).map((coin) => (
             <div
               key={coin.id}
               onClick={() => handleEnter(coin)}
               className="bg-zinc-900 border animation-float border-zinc-800 hover:border-amber-400/40 rounded-xl p-4 flex justify-between items-center cursor-pointer transition-all"
             >
               <div className="flex items-center gap-3">
-                <span className="text-2xl">{coin.logo}</span>
+                <img 
+                  src={coin.logo} 
+                  alt={coin.symbol} 
+                  className="w-8 h-8 rounded-full"
+                />
                 <div>
                   <h3 className="font-semibold">{coin.name}</h3>
                   <p className="text-xs text-zinc-500">{coin.marketCap}</p>
@@ -103,10 +114,10 @@ export default function MoonshotFactorMini() {
               <div className="text-right">
                 <p
                   className={`text-sm font-bold ${
-                    coin.change24h > 0 ? "text-green-400" : "text-red-400"
+                    parseFloat(coin.change24h) > 0 ? "text-green-400" : "text-red-400"
                   }`}
                 >
-                  {coin.change24h > 0 ? "+" : ""}
+                  {parseFloat(coin.change24h) > 0 ? "+" : ""}
                   {coin.change24h}%
                 </p>
                 <div className="flex items-center justify-end gap-1">
@@ -126,7 +137,11 @@ export default function MoonshotFactorMini() {
         <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5 mt-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <img src="image.png" className="w-10 " alt="" />
+              <img 
+                src={selectedCoin.logo} 
+                alt={selectedCoin.symbol}
+                className="w-10 h-10 rounded-full" 
+              />
               <div>
                 <h3 className="font-semibold text-lg">{selectedCoin.name}</h3>
                 <p className="text-xs text-zinc-500">
@@ -137,10 +152,10 @@ export default function MoonshotFactorMini() {
             <div className="text-right">
               <p
                 className={`text-sm font-bold ${
-                  selectedCoin.change24h > 0 ? "text-green-400" : "text-red-400"
+                  parseFloat(selectedCoin.change24h) > 0 ? "text-green-400" : "text-red-400"
                 }`}
               >
-                {selectedCoin.change24h > 0 ? "+" : ""}
+                {parseFloat(selectedCoin.change24h) > 0 ? "+" : ""}
                 {selectedCoin.change24h}%
               </p>
               <div className="flex items-center justify-end gap-1">
@@ -160,17 +175,17 @@ export default function MoonshotFactorMini() {
               </h3>
               <div className="space-y-3">
                 {[
-                  { label: "Narrative Fit", key: "nf" },
-                  { label: "Market Cap Factor", key: "marketCapFactor" },
-                  { label: "Hype Level", key: "hype" },
-                  { label: "Novelty", key: "novelty" },
-                  { label: "CQS", key: "cqs" },
+                  { label: "Volatility Score", key: "volatilityScore" },
+                  { label: "Hype Score", key: "hypeScore" },
+                  { label: "Dev Activity", key: "devActivity" },
+                  { label: "Social Sentiment", key: "socialSentiment" },
+                  { label: "Other Factors", key: "otherFactors" },
                 ].map(({ label, key }) => (
                   <div key={key}>
                     <div className="flex justify-between text-sm mb-1">
                       <span className="text-zinc-400">{label}</span>
                       <span className="text-[#96948d] font-semibold">
-                        {animateStats ? selectedCoin[key] : 0}
+                        {animateStats ? selectedCoin[key].toFixed(0) : 0}
                       </span>
                     </div>
                     <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">

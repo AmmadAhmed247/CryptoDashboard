@@ -63,7 +63,7 @@ const Moonshot_total_normalized = normalize(Moonshot_total, 0, 400);
 
 
     // 5️⃣ Calculate Risk Index
-    const riResult = await calculateRiskIndex({ body: { coin: coinId } });
+    const riResult = await calculateRiskIndex(coinData);
     const RI_total = normalize(riResult.RI, 0, 100);
 
     // 6️⃣ Calculate Chance Index
@@ -81,6 +81,10 @@ const Moonshot_total_normalized = normalize(Moonshot_total, 0, 400);
 
     // 7️⃣ Calculate average of top-level scores (normalized)
     const averageScore = (CQS_total + TS_total + RI_total + CI_total + Moonshot_total_normalized) / 5;
+if (!coinData?.market_data?.sparkline_7d?.price?.length) {
+  console.warn(`⚠️ Missing sparkline_7d data for ${coinData.id}`);
+  // Handle missing data case (e.g., set default values)
+}
 
     // 8️⃣ Upsert into MongoDB
     const coinScore = await CoinScore.findOneAndUpdate(

@@ -3,22 +3,32 @@ import ScoreGauge from './scoreGauge'
 import { TrendingUp, TrendingDown, AlertCircle, Bell, ChevronRight, Activity, Flame, Target, Clock, Zap, DollarSign, BarChart3, Award, TrendingUp as TrendUp, Calendar, Users, GitBranch, Radio, Moon, Sun, Sparkles } from 'lucide-react';
 import MoonshotFactorMini from './Moonshot';
 import CryptoNews from './CryptoNews'
+import EntryRecommendation from './Entry';
 const formatNumber = (num) => {
-  if (num === null || num === undefined || isNaN(num)) return "N/A";
-  const absNum = Math.abs(num);
+  // Remove $ sign and commas if present
+  const cleanNum = typeof num === 'string'
+    ? parseFloat(num.replace(/[$,]/g, ''))
+    : num;
 
-  if (absNum >= 1.0e9) {
-    return (num / 1.0e9).toFixed(2).replace(/\.00$/, "") + "B";
-  } else if (absNum >= 1.0e6) {
-    return (num / 1.0e6).toFixed(2).replace(/\.00$/, "") + "M";
-  } else if (absNum >= 1.0e3) {
-    return (num / 1.0e3).toFixed(2).replace(/\.00$/, "") + "K";
+  if (isNaN(cleanNum)) return '$0';
+
+  const absNum = Math.abs(cleanNum);
+
+  if (absNum >= 1e12) {
+    return '$' + (cleanNum / 1e12).toFixed(2) + 'T';
+  } else if (absNum >= 1e9) {
+    return '$' + (cleanNum / 1e9).toFixed(2) + 'B';
+  } else if (absNum >= 1e6) {
+    return '$' + (cleanNum / 1e6).toFixed(2) + 'M';
+  } else if (absNum >= 1e3) {
+    return '$' + (cleanNum / 1e3).toFixed(2) + 'K';
   } else {
-    return num.toString();
+    return '$' + cleanNum.toFixed(2);
   }
 };
 
-const RightSide = ({ isDarkMode, selectedCoin }) => {
+
+const RightSide = ({ isDarkMode, selectedCoin, topCoinsData }) => {
 
 
   return (
@@ -31,13 +41,13 @@ const RightSide = ({ isDarkMode, selectedCoin }) => {
               <div className="w-fit h-fit rounded-full  flex items-center justify-center text-white font-bold text-xl shadow-lg ">
                 <span>{selectedCoin?.icon}</span>
               </div>
-              <div>
-                <div className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{selectedCoin?.name}</div>
-                <div className={`text-sm ${isDarkMode ? 'text-zinc-400' : 'text-gray-600'}`}>{selectedCoin?.symbol}</div>
+              <div className="flex flex-row gap-1 items-center">
+                {/* <span className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{selectedCoin?.name}</span> */}
+                <div className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{selectedCoin?.symbol}</div>
               </div>
             </div>
-            <div className="text-right">
-              <div className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{selectedCoin?.price}</div>
+            <div className="text-right ">
+              <div className={`text-md font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{selectedCoin?.price}</div>
               <div className={`${selectedCoin?.change >= 0 ? 'text-green-400' : 'text-red-400'} text-sm font-semibold`}>{selectedCoin?.change}</div>
             </div>
           </div>
@@ -53,6 +63,8 @@ const RightSide = ({ isDarkMode, selectedCoin }) => {
             {[
               { label: "Market Cap", value: formatNumber(selectedCoin?.mcap) },
               { label: "24h Volume", value: formatNumber(selectedCoin?.volume) },
+              { label: "Moonshot Factor ", value: selectedCoin?.moonshot.toFixed(2) || 0 },
+              { label: "Coin Quality Score", value: selectedCoin?.cqs ? `${selectedCoin.cqs.toLocaleString()}` : '$0' },
 
             ].map((item, idx) => (
               <div key={idx} className={`flex justify-between items-center text-sm p-2 rounded-lg ${isDarkMode ? 'hover:bg-zinc-700' : 'hover:bg-gray-100'} transition-all`}>
@@ -62,16 +74,10 @@ const RightSide = ({ isDarkMode, selectedCoin }) => {
             ))}
           </div>
 
-          <div className={`${isDarkMode ? 'bg-gradient-to-r from-green-900/30 to-emerald-900/30 border-green-700' : 'bg-gradient-to-r from-green-50 to-emerald-50 border-green-300'} rounded-lg p-3 border mb-4 shadow-md`}>
-            <div className={`text-xs mb-2 ${isDarkMode ? 'text-zinc-400' : 'text-gray-600'}`}>Entry Recommendation</div>
-            <div className="text-green-400 font-semibold mb-2 flex items-center gap-2">
-              <Sparkles size={14} />
-              Staggered Buy-Fear Entry
-            </div>
-            <div className={`text-sm ${isDarkMode ? 'text-zinc-300' : 'text-gray-700'}`}>Position: 30-50%</div>
-            <div className={`text-xs mt-2 ${isDarkMode ? 'text-zinc-400' : 'text-gray-600'}`}>Strong fundamentals + favorable timing</div>
-          </div>
-
+          <EntryRecommendation
+            average={selectedCoin?.average ?? 0}
+            isDarkMode={isDarkMode}
+          />
           <button className="w-full bg-[#d0b345] hover:from-orange-600 hover:to-yellow-900 py-3 rounded-lg font-semibold transition-all shadow-lg hover:shadow-xl hover:scale-105">
             Add to Portfolio
           </button>
@@ -125,7 +131,7 @@ const RightSide = ({ isDarkMode, selectedCoin }) => {
                 ))}
               </div>
             </div> */}
-        <MoonshotFactorMini />
+        <MoonshotFactorMini coins={topCoinsData} />
 
         {/* Alerts */}
         <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>

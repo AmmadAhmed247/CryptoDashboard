@@ -6,15 +6,25 @@ import LeftPanel from '../components/LeftPanel';
 import MainContent from '../components/MainComponent';
 import Search from '../components/Search';
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';  
+import axios from 'axios';
 
 const CryptoDashboard = () => {
   const [selectedCoin, setSelectedCoin] = useState(null);
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const [selectedCoins, setSelectedCoins] = useState([]); // ✅ moved here
+
+  const handleAddToAnalysis = (coin) => {
+    setSelectedCoins((prev) => {
+      if (prev.find(c => c.name === coin.name)) return prev; // prevent duplicates
+      return [...prev, coin];
+    });
+  };
+
+  const handleClearAnalysis = () => setSelectedCoins([]);
   // Replace the static demoCoins with dynamic data from backend
 
 
-  const {data , isLoading, error} =useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ['fearGreedIndex'],
     queryFn: async () => {
       const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/data/feargreed`);
@@ -38,9 +48,9 @@ const CryptoDashboard = () => {
     },
     refetchInterval: 1000 * 60 * 10,
     staleTime: 1000 * 60 * 10,
-    retry: 2, 
+    retry: 2,
   });
-  const {data: globalMarketData} = useQuery({
+  const { data: globalMarketData } = useQuery({
     queryKey: ['globalMarketData'],
     queryFn: async () => {
       const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/data/globalmarket`);
@@ -54,127 +64,132 @@ const CryptoDashboard = () => {
       const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/top-coins`);
       return res.data.data; // assuming your controller returns { success, data }
     },
-    refetchInterval: 2 * 60 * 1000, // every 2 mins for live price updates
-    staleTime: 60 * 1000, // 1 min
-    retry: 2,
+    refetchInterval: 10 * 1000, // ⏱ every 10 seconds
+    staleTime: 10 * 1000, // 1 sec
+    retry: 1, // Retry once on failure
   });
-  
-  
-const demoCoins = topCoinsData?.map(coin => ({
-  name: coin.name,
-  icon: <img src={coin.logo} alt={coin.symbol} className="w-8 h-8 rounded-full" />, 
-  cqs: coin.CQS,
-  ts: coin.TS,
-  ci: coin.CI,
-  ri: coin.RI,
-  trend: coin.priceChange24h >= 0 ? 'up' : 'down',
-  price: `$${coin.price ? (coin.price).toLocaleString() : '0.00'}`, // format price
-  change: `${Number(coin.priceChange24h || 0).toFixed(2)}%`,
-  narrative: coin.narrative || coin.symbol, // optional, fallback to symbol
-  volume: `$${parseFloat(coin.volume).toLocaleString()}`,
-  mcap: `$${parseFloat(coin.marketCap).toLocaleString()}`,
-  moonshot: coin.Moonshot
-})) || [];
-const altSeasonIndex = altSeasonData?.value ?? 40;
-const fearGreedIndex = data ? parseInt(data.value) : 40; 
-const bitcoinHalving = halvingData ? halvingData : { days: 910, blocks: 131000, date: 'Apr 2028' };
 
-React.useEffect(() => {
+
+  const demoCoins = topCoinsData?.map(coin => ({
+    name: coin.name,
+    symbol: coin.symbol,
+    icon: <img src={coin.logo} alt={coin.symbol} className="w-8 h-8 rounded-full" />,
+    cqs: coin.CQS,
+    ts: coin.TS,
+    ci: coin.CI,
+    ri: coin.RI,
+    trend: coin.priceChange24h >= 0 ? 'up' : 'down',
+    price: `$${coin.price ? (coin.price).toLocaleString() : '0.00'}`, // format price
+    change: `${Number(coin.priceChange24h || 0).toFixed(2)}%`,
+    narrative: coin.narrative || coin.symbol, // optional, fallback to symbol
+    volume: `$${parseFloat(coin.volume).toLocaleString()}`,
+    mcap: `$${parseFloat(coin.marketCap).toLocaleString()}`,
+    moonshot: coin.Moonshot,
+    average: coin.average
+  })) || [];
+  const altSeasonIndex = altSeasonData?.value ?? 40;
+  const fearGreedIndex = data ? parseInt(data.value) : 40;
+  const bitcoinHalving = halvingData ? halvingData : { days: 910, blocks: 131000, date: 'Apr 2028' };
+
+  React.useEffect(() => {
     if (!selectedCoin && demoCoins.length > 0) {
-      setSelectedCoin(demoCoins[0]); 
+      setSelectedCoin(demoCoins[0]);
     }
   }, [demoCoins]);
+  console.log(demoCoins);
+
+
   const marketMetrics = [
-  {
-    label: 'Total Market Cap',
-    value: globalMarketData?.total_market_cap?.value ?? '$0',
-    change: globalMarketData?.total_market_cap?.change_24h ?? '0%',
-    icon: DollarSign,
-  },
-  {
-    label: 'BTC Dominance',
-    value: globalMarketData?.btc_dominance?.value ?? '0%',
-    change: globalMarketData?.btc_dominance?.change_24h ?? '0%',
-    icon: BarChart3,
-  },
-  {
-    label: '24h Volume',
-    value: globalMarketData?.total_volume_24h?.value ?? '$0',
-    change: globalMarketData?.total_volume_24h?.change_24h ?? '0%',
-    icon: Activity,
-  },
-  {
-    label: 'Active Cryptos',
-    value: globalMarketData?.active_cryptocurrencies ?? '0',
-    change: 'N/A',
-    icon: Users,
-  },
-];
-const ScoreCard = selectedCoin
+    {
+      label: 'Total Market Cap',
+      value: globalMarketData?.total_market_cap?.value ?? '$0',
+      change: globalMarketData?.total_market_cap?.change_24h ?? '0%',
+      icon: DollarSign,
+    },
+    {
+      label: 'BTC Dominance',
+      value: globalMarketData?.btc_dominance?.value ?? '0%',
+      change: globalMarketData?.btc_dominance?.change_24h ?? '0%',
+      icon: BarChart3,
+    },
+    {
+      label: '24h Volume',
+      value: globalMarketData?.total_volume_24h?.value ?? '$0',
+      change: globalMarketData?.total_volume_24h?.change_24h ?? '0%',
+      icon: Activity,
+    },
+    {
+      label: 'Active Cryptos',
+      value: globalMarketData?.active_cryptocurrencies ?? '0',
+      change: 'N/A',
+      icon: Users,
+    },
+  ];
+  const ScoreCard = selectedCoin
     ? [
-        {
-          label: "Coin Quality Score",
-          value: selectedCoin.cqs.toFixed(0) ?? 0,
-          icon: Award,
-          status:
-            selectedCoin.cqs > 75
-              ? "Top Tier"
-              : selectedCoin.cqs > 50
+      {
+        label: "Coin Quality Score",
+        value: selectedCoin.cqs.toFixed(0) ?? 0,
+        icon: Award,
+        status:
+          selectedCoin.cqs > 75
+            ? "Top Tier"
+            : selectedCoin.cqs > 50
               ? "High Quality"
               : selectedCoin.cqs > 30
-              ? "Average"
-              : "Low Quality",
-        },
-        {
-          label: "Timing Score",
-          value: selectedCoin.ts.toFixed(0) ?? 0,
-          icon: Clock,
-          status:
-            selectedCoin.ts > 70
-              ? "Strong Entry"
-              : selectedCoin.ts > 40
+                ? "Average"
+                : "Low Quality",
+      },
+      {
+        label: "Timing Score",
+        value: selectedCoin.ts.toFixed(0) ?? 0,
+        icon: Clock,
+        status:
+          selectedCoin.ts > 70
+            ? "Strong Entry"
+            : selectedCoin.ts > 40
               ? "Neutral"
               : "Weak Timing",
-        },
-        {
-          label: "Chance Index",
-          value: selectedCoin.ci.toFixed(0) ?? 0,
-          icon: Target,
-          status:
-            selectedCoin.ci > 75
-              ? "High Chance"
-              : selectedCoin.ci > 50
+      },
+      {
+        label: "Chance Index",
+        value: selectedCoin.ci.toFixed(0) ?? 0,
+        icon: Target,
+        status:
+          selectedCoin.ci > 75
+            ? "High Chance"
+            : selectedCoin.ci > 50
               ? "Moderate"
               : "Low Chance",
-        },
-        {
-          label: "Risk Index",
-          value: selectedCoin.ri.toFixed(0) ?? 0,
-          icon: AlertCircle,
-          status:
-            selectedCoin.ri < 40
-              ? "Low Risk"
-              : selectedCoin.ri < 70
+      },
+      {
+        label: "Risk Index",
+        value: selectedCoin.ri.toFixed(0) ?? 0,
+        icon: AlertCircle,
+        status:
+          selectedCoin.ri < 40
+            ? "Low Risk"
+            : selectedCoin.ri < 70
               ? "Medium Risk"
               : "High Risk",
-        },
-      ]
+      },
+    ]
     : [];
 
   const narrativeTrends = [
-    { name: 'AI', score: 92,  trend: 'up', color: 'bg-[#d0b345]' },
-    { name: 'DeFi 2.0', score: 78,  trend: 'up', color: 'bg-[#d0b345]' },
-    { name: 'L2 Scaling', score: 85,  trend: 'up', color: 'bg-[#d0b345]' },
-    { name: 'GameFi', score: 64,  trend: 'down', color: 'bg-[#d0b345]' },
-    { name: 'Meme', score: 88,  trend: 'up', color: 'bg-[#d0b345]' },
+    { name: 'AI', score: 92, trend: 'up', color: 'bg-[#d0b345]' },
+    { name: 'DeFi 2.0', score: 78, trend: 'up', color: 'bg-[#d0b345]' },
+    { name: 'L2 Scaling', score: 85, trend: 'up', color: 'bg-[#d0b345]' },
+    { name: 'GameFi', score: 64, trend: 'down', color: 'bg-[#d0b345]' },
+    { name: 'Meme', score: 88, trend: 'up', color: 'bg-[#d0b345]' },
   ];
-const topGainers = demoCoins
-  .sort((a, b) => parseFloat(b.change) - parseFloat(a.change))
-  .slice(0, 9);
+  const topGainers = demoCoins
+    .sort((a, b) => parseFloat(b.change) - parseFloat(a.change))
+    .slice(0, 9);
 
 
 
-  
+
 
   return (
     <div className={`min-h-screen ${isDarkMode ? 'bg-zinc-900 text-white' : 'bg-gray-50 text-gray-900'} transition-all duration-300`}>
@@ -217,29 +232,31 @@ const topGainers = demoCoins
 
 
       {/* Navigation */}
-     
+
 
       {/* Main Content */}
       <div className="flex h-full relative">
         {/* Left Sidebar */}
         <div className="hidden lg:flex w-64 h-full overflow-auto">
-    <LeftPanel
-      isDarkMode={isDarkMode}
-      fearGreedIndex={fearGreedIndex}
-      bitcoinHalving={bitcoinHalving}
-      altSeasonIndex={altSeasonIndex}
-      marketMetrics={marketMetrics}
-      topGainers={topGainers}
-    />
-  </div>
+          <LeftPanel
+            isDarkMode={isDarkMode}
+            fearGreedIndex={fearGreedIndex}
+            bitcoinHalving={bitcoinHalving}
+            altSeasonIndex={altSeasonIndex}
+            marketMetrics={marketMetrics}
+            topGainers={topGainers}
+          />
+        </div>
 
         {/* Main Content Area */}
-        <MainContent isDarkMode={isDarkMode} demoCoins={demoCoins} narrativeTrends={narrativeTrends} ScoreCard={ScoreCard} />
-      
+        <MainContent selectedCoins={selectedCoins}
+          onAddToAnalysis={handleAddToAnalysis}
+          onClearAnalysis={handleClearAnalysis} onSelectCoin={setSelectedCoin} isDarkMode={isDarkMode} demoCoins={demoCoins} narrativeTrends={narrativeTrends} ScoreCard={ScoreCard} />
+
         {/* Right Sidebar */}
         <div className="hidden xl:flex w-80 h-full overflow-auto">
-    <RightSide isDarkMode={isDarkMode} selectedCoin={selectedCoin} />
-  </div>
+          <RightSide isDarkMode={isDarkMode} selectedCoin={selectedCoin} topCoinsData={topCoinsData} />
+        </div>
         {/* <MoonshotFactor /> */}
       </div>
     </div>
