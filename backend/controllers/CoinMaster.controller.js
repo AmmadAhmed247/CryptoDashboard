@@ -1,6 +1,6 @@
 import CoinScore from '../models/CoinScore.model.js';
 import axios from 'axios';
-import { calculateCQSValue } from './CQS.controller.js';
+import { calculateCQSValue } from "../services/cqsCalculator.js"
 import { calculateTimingScore } from './TimingScore.controller.js';
 import { fetchMoonshotData } from './Moonfactor.controller.js';
 import { calculateRiskIndex } from './Riskindex.controller.js';

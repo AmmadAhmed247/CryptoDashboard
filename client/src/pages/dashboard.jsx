@@ -14,11 +14,14 @@ const CryptoDashboard = () => {
   const [selectedCoins, setSelectedCoins] = useState([]); // ✅ moved here
 
   const handleAddToAnalysis = (coin) => {
-    setSelectedCoins((prev) => {
-      if (prev.find(c => c.name === coin.name)) return prev; // prevent duplicates
-      return [...prev, coin];
-    });
-  };
+  setSelectedCoins((prev) => {
+    if (prev.find(c => c.name === coin.name)) return prev;
+    return [...prev, coin];
+  });
+
+
+  setSelectedCoin(coin);
+};
 
   const handleClearAnalysis = () => setSelectedCoins([]);
   // Replace the static demoCoins with dynamic data from backend
@@ -64,7 +67,7 @@ const CryptoDashboard = () => {
       const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/top-coins`);
       return res.data.data; // assuming your controller returns { success, data }
     },
-    refetchInterval: 10 * 1000, // ⏱ every 10 seconds
+    refetchInterval: 10 * 1000, // every 10 seconds
     staleTime: 10 * 1000, // 1 sec
     retry: 1, // Retry once on failure
   });

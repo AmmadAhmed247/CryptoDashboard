@@ -28,7 +28,12 @@ const formatNumber = (num) => {
 };
 
 
+
 const RightSide = ({ isDarkMode, selectedCoin, topCoinsData }) => {
+  
+
+  
+  
 
 
   return (
@@ -131,7 +136,7 @@ const RightSide = ({ isDarkMode, selectedCoin, topCoinsData }) => {
                 ))}
               </div>
             </div> */}
-        <MoonshotFactorMini coins={topCoinsData} />
+        <MoonshotFactorMini coins={topCoinsData} analyzeCoin={selectedCoin} />
 
         {/* Alerts */}
         <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>

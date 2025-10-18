@@ -1,15 +1,52 @@
 import React from 'react'
-import { TrendingUp, TrendingDown, AlertCircle, Bell, ChevronRight, Activity, Flame, Target, Clock, Zap, DollarSign, BarChart3, Award, TrendingUp as TrendUp, Calendar, Users, GitBranch, Radio, Moon, Sun, Sparkles } from 'lucide-react';
+import { TrendingUp, TrendingDown, AlertCircle, Bell, ChevronRight, Activity, Flame, Target, Clock, Zap, DollarSign, BarChart3, Award, Calendar, Users, GitBranch, Radio, Moon, Sun, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import CoinRow from './PriceAction';
+
 function getColor(value) {
   return value < 50 ? 'bg-red-800' : 'bg-green-700';
 }
 
-const MainContent = ({ isDarkMode, demoCoins, narrativeTrends, ScoreCard, onSelectCoin,selectedCoins, onAddToAnalysis, onClearAnalysis }) => {
+const MainContent = ({ isDarkMode, demoCoins, narrativeTrends, ScoreCard, onSelectCoin, selectedCoins, onAddToAnalysis, onClearAnalysis }) => {
 
   const [coins, setCoins] = React.useState(demoCoins);
+  const prevCoinsRef = React.useRef(demoCoins);
 
+  // Detect when demoCoins prop changes and mark which coins changed
+  React.useEffect(() => {
+    const prevCoins = prevCoinsRef.current;
+    
+    const updatedCoins = demoCoins.map((coin, idx) => {
+      const prevCoin = prevCoins[idx];
+      
+      if (prevCoin && prevCoin.price !== coin.price) {
+        const oldPrice = parseFloat(prevCoin.price.replace(/[$,]/g, ''));
+        const newPrice = parseFloat(coin.price.replace(/[$,]/g, ''));
+        const isUp = newPrice > oldPrice;
+        
+        return {
+          ...coin,
+          priceChanged: true,
+          priceDirection: isUp ? "up" : "down"
+        };
+      }
+      
+      return coin;
+    });
+    
+    setCoins(updatedCoins);
+    prevCoinsRef.current = demoCoins;
+    
+    // Reset glow after 500ms
+    const timeout = setTimeout(() => {
+      setCoins(demoCoins.map(coin => ({
+        ...coin,
+        priceChanged: false
+      })));
+    }, 500);
+    
+    return () => clearTimeout(timeout);
+  }, [demoCoins]);
 
   const aggregatedScores = React.useMemo(() => {
     if (selectedCoins.length === 0) return null;
@@ -33,59 +70,9 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends, ScoreCard, onSele
     };
   }, [selectedCoins]);
 
-  // Simulate price updates
-  React.useEffect(() => {
-    if (!coins.length) return; // don't start if no data yet
-
-    const interval = setInterval(() => {
-      setCoins(prevCoins => {
-        if (!prevCoins.length) {
-          console.log("⚠️ No coins in state yet");
-          return prevCoins;
-        }
-
-        const updatedCoins = prevCoins.map(coin => {
-          // 70% of the time, skip updating
-          if (Math.random() > 0.7) {
-            const oldPrice = parseFloat(coin.price.replace(/[$,]/g, ''));
-            const changePercent = (Math.random() - 0.5) * 5; // -2.5% to +2.5%
-            const newPrice = oldPrice * (1 + changePercent / 100);
-            const isUp = newPrice > oldPrice;
-
-            return {
-              ...coin,
-              price: `$${newPrice.toFixed(2)}`,
-              priceChanged: true,
-              priceDirection: isUp ? "up" : "down",
-              change: `${isUp ? "+" : ""}${changePercent.toFixed(2)}%`
-            };
-          }
-          return coin;
-        });
-
-        console.log("✅ Updated Coins:", updatedCoins);
-        return updatedCoins;
-      });
-
-      // reset glow after 500ms
-      setTimeout(() => {
-        setCoins(prevCoins =>
-          prevCoins.map(coin => ({
-            ...coin,
-            priceChanged: false
-          }))
-        );
-      }, 500);
-    }, 2000);
-
-    return () => clearInterval(interval);
-  }, [coins.length]);
-
   return (
     <div className="flex-1 overflow-y-auto custom-scrollbar">
-
       <div className="p-6 space-y-2">
-        {/* Score Cards */}
         {selectedCoins.length > 0 && (
           <div className="flex justify-end w-full">
             <button
@@ -97,10 +84,7 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends, ScoreCard, onSele
           </div>
         )}
 
-
-
         <div className="grid grid-cols-4 gap-4">
-
           {(aggregatedScores
             ? [
               { label: "CQS", value: aggregatedScores.cqs, icon: Activity, status: "Composite Quality Score" },
@@ -108,7 +92,7 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends, ScoreCard, onSele
               { label: "CI", value: aggregatedScores.ci, icon: Award, status: "Confidence Index" },
               { label: "RI", value: aggregatedScores.ri, icon: Flame, status: "Risk Index" },
             ]
-            : ScoreCard // fallback to the default ScoreCard prop if nothing selected
+            : ScoreCard
           ).map((card, idx) => (
             <div key={idx}
               className={`${isDarkMode
@@ -135,17 +119,12 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends, ScoreCard, onSele
           ))}
         </div>
 
-
-
-
-        {/* Narrative Trends */}
         <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-6 border shadow-lg`}>
           <div className="flex items-center justify-between mb-6">
             <h2 className={`text-xl font-bold flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
               <Radio className="text-yellow-400" />
               Narrative Trends
             </h2>
-            {/* <button className="text-transparent bg-gradient-to-r from-orange-400 to-yellow-500 bg-clip-text hover:from-yellow-500 hover:to-yellow-600 text-sm font-semibold transition-all">View All →</button> */}
           </div>
           <div className="grid grid-cols-5 gap-4">
             {narrativeTrends.map((narrative, idx) => (
@@ -170,7 +149,6 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends, ScoreCard, onSele
           </div>
         </div>
 
-        {/* Hot Coins Table */}
         <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-6 border shadow-lg`}>
           <div className="flex items-center justify-between mb-6">
             <h2 className={`text-xl font-bold flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
@@ -200,88 +178,74 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends, ScoreCard, onSele
                   <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">RI</th>
                   <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">Moonshot</th>
                   <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">Action</th>
-                  <th className="text-middle w-12  py-3 px-4  text-sm font-semibold text-zinc-400">Add To Analyisis</th>
+                  <th className="text-middle w-12 py-3 px-4 text-sm font-semibold text-zinc-400">Add To Analysis</th>
                 </tr>
               </thead>
               <tbody>
-                {demoCoins.map((coin, idx) => (
+                {coins.map((coin, idx) => (
                   <tr
                     key={idx}
                     className={`${isDarkMode
                       ? "border-zinc-700 hover:bg-zinc-700/50"
                       : "border-gray-200 hover:bg-gray-100"
                       } border-b text-left transition-all cursor-pointer group`}
-                      onClick={() => onSelectCoin(coin)}
-
+                    onClick={() => onSelectCoin(coin)}
                   >
-                    {/* Coin Info */}
                     <td className="py-4 px-4">
                       <Link
-                        to={`https://coinmarketcap.com/currencies/${coin.id || coin.name
-                          .toLowerCase()
-                          .replace(/\s+/g, "-")}`}
+                        to={`https://coinmarketcap.com/currencies/${coin.id || coin.name.toLowerCase().replace(/\s+/g, "-")}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="flex items-center gap-3"
                       >
-                        <div
-                          className="w-8 h-8 rounded-full  flex items-center justify-center text-white font-bold shadow-lg group-hover:scale-110 transition-all"
-                        >
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold shadow-lg group-hover:scale-110 transition-all">
                           {coin.icon}
                         </div>
                         <div>
-                          <div
-                            className={`font-semibold ${isDarkMode ? "text-white" : "text-gray-900"
-                              }`}
-                          >
+                          <div className={`font-semibold ${isDarkMode ? "text-white" : "text-gray-900"}`}>
                             {coin.name}
                           </div>
-                          <div
-                            className={`text-xs ${isDarkMode ? "text-zinc-500" : "text-gray-500"
-                              }`}
-                          >
+                          <div className={`text-xs ${isDarkMode ? "text-zinc-500" : "text-gray-500"}`}>
                             {coin.narrative}
                           </div>
                         </div>
                       </Link>
                     </td>
 
-                    {/* Price */}
                     <td className="text-right py-4 px-4">
                       <span
-                        className={`font-semibold transition-all duration-300 inline-block ${isDarkMode ? "text-white" : "text-gray-900"
-                          } ${coin.priceChanged && coin.priceDirection === 'up'
-                            ? "!text-green-400  drop-shadow-[0_0_12px_rgba(74,222,128,0.8)]"
+                        className={`font-semibold transition-all duration-300 inline-block ${
+                          coin.priceChanged && coin.priceDirection === 'up'
+                            ? "!text-green-500 drop-shadow-[0_0_12px_rgba(74,222,128,0.8)]"
                             : coin.priceChanged && coin.priceDirection === 'down'
-                              ? "!text-red-400 drop-shadow-[0_0_12px_rgba(248,113,113,0.8)]"
-                              : "scale-100"
-                          }`}
+                              ? "!text-red-500 drop-shadow-[0_0_12px_rgba(248,113,113,0.8)]"
+                              : isDarkMode ? "text-white" : "text-gray-900"
+                        }`}
                       >
                         {coin.price}
                       </span>
                     </td>
 
-                    {/* Change */}
                     <td className="text-right py-4 px-4">
                       <span
-                        className={`${coin.change.startsWith("+") ? "text-green-400" : "text-red-400"
-                          } font-semibold`}
+                        className={`${parseFloat(coin.change) >= 0 ? "text-green-400" : "text-red-400"} font-semibold transition-all duration-300 ${
+                          coin.priceChanged && coin.priceDirection === 'up'
+                            ? "drop-shadow-[0_0_8px_rgba(74,222,128,0.6)]"
+                            : coin.priceChanged && coin.priceDirection === 'down'
+                              ? "drop-shadow-[0_0_8px_rgba(248,113,113,0.6)]"
+                              : ""
+                        }`}
                       >
                         {coin.change}
                       </span>
                     </td>
 
-                    {/* Volume */}
-                    <td
-                      className={`text-right py-4 px-4 ${isDarkMode ? "text-zinc-400" : "text-gray-600"
-                        }`}
-                    >
+                    <td className={`text-right py-4 px-4 ${isDarkMode ? "text-zinc-400" : "text-gray-600"}`}>
                       {coin.volume}
                     </td>
 
-                    {/* Scores */}
                     {["cqs", "ts", "ci", "ri"].map((metric, i) => {
-                      const value = Number(coin[metric] ?? 0); // ✅ safely handle undefined
+                      const value = Number(coin[metric] ?? 0);
                       return (
                         <td key={i} className="text-right py-4 px-4">
                           <span
@@ -302,14 +266,9 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends, ScoreCard, onSele
                       );
                     })}
 
-
-                    {/* Moonshot Bar */}
                     <td className="text-right py-4 px-4">
                       <div className="flex items-center justify-end gap-2">
-                        <div
-                          className={`w-16 ${isDarkMode ? "bg-zinc-700" : "bg-gray-200"
-                            } rounded-full h-2 overflow-hidden`}
-                        >
+                        <div className={`w-16 ${isDarkMode ? "bg-zinc-700" : "bg-gray-200"} rounded-full h-2 overflow-hidden`}>
                           <div
                             className="bg-[#d0b345] h-2 rounded-full shadow-md"
                             style={{ width: `${coin.moonshot}%` }}
@@ -321,7 +280,6 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends, ScoreCard, onSele
                       </div>
                     </td>
 
-                    {/* Action Buttons */}
                     <td className="text-right py-4 px-4">
                       <button className="px-4 font-semibold py-2 bg-[#d0b345] rounded-lg text-xs transition-all shadow-lg hover:shadow-xl hover:scale-110">
                         Entry
@@ -329,24 +287,23 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends, ScoreCard, onSele
                     </td>
                     <td className="text-right py-4 px-4">
                       <button
-                        onClick={() => onAddToAnalysis(coin)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onAddToAnalysis(coin);
+                        }}
                         className="px-4 py-2 bg-[#d0b345] rounded-lg text-xs font-semibold transition-all shadow-lg hover:shadow-xl hover:scale-110"
                       >
                         Add to Analysis
                       </button>
-
-
                     </td>
                   </tr>
                 ))}
               </tbody>
-
             </table>
           </div>
         </div>
       </div>
     </div>
-
   );
 }
 

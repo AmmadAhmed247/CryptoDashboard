@@ -9,10 +9,10 @@ const normalize = (value, min, max) => {
 };
 
 /**
- * Calculate Narrative Factor (NF) - 40% weight
+ * Narrative Factor (NF)
  */
 const calculateNarrativeFactor = (coinData, cqs) => {
-  if (cqs < 50) return { score: 0, narratives: [] };
+  if (cqs < 35) return { score: 0, narratives: [] };
 
   const categories = coinData.categories || [];
   const description = (coinData.description?.en || "").toLowerCase();
@@ -36,7 +36,7 @@ const calculateNarrativeFactor = (coinData, cqs) => {
   let narrativeScore = 0;
   let matchedNarratives = [];
 
-  categories.forEach((category) => {
+  categories.forEach(category => {
     const catLower = category.toLowerCase();
     for (const [narrative, score] of Object.entries(narrativeScores)) {
       if (catLower.includes(narrative)) {
@@ -64,74 +64,32 @@ const calculateNarrativeFactor = (coinData, cqs) => {
     }
   }
 
-  // Bonus for multiple matches
   if (matchedNarratives.length > 1) narrativeScore = Math.min(100, narrativeScore + 5);
-
-  // Fallback for single coin with no match
   if (narrativeScore === 0) narrativeScore = 40;
 
   return { score: narrativeScore, narratives: [...new Set(matchedNarratives)] };
 };
 
 /**
- * Calculate Market Cap Factor - 30% weight
+ * Market Cap Factor
  */
 const calculateMarketCapFactor = (marketCap, allMarketCaps) => {
-  if (!marketCap || marketCap === 0) return 50; // fallback
+  if (!marketCap || marketCap === 0) return 50;
 
-  const validMcaps = allMarketCaps.filter((mc) => mc > 0);
-  if (validMcaps.length <= 1) return 50; // fallback for single coin
+  const validMcaps = allMarketCaps.filter(mc => mc > 0);
+  if (validMcaps.length <= 1) return 50;
 
   const minMcap = Math.min(...validMcaps);
   const maxMcap = Math.max(...validMcaps);
 
   const normalizedScore = 100 - normalize(marketCap, minMcap, maxMcap);
-  const logScore =
-    Math.log10(maxMcap / marketCap) / Math.log10(maxMcap / minMcap) * 100;
+  const logScore = Math.log10(maxMcap / marketCap) / Math.log10(maxMcap / minMcap) * 100;
 
   return Math.min(100, normalizedScore * 0.4 + logScore * 0.6);
 };
 
 /**
- * Calculate Hype Score
- */
-const calculateHypeScore = async (coinId, communityData) => {
-  try {
-    const metrics = {
-      twitter: communityData.twitter_followers || 0,
-      reddit: communityData.reddit_subscribers || 0,
-      telegram: communityData.telegram_channel_user_count || 0,
-    };
-
-    const socialScore = calculateSocialVelocity(metrics);
-
-    // Optional Reddit trending
-    let redditTrending = 0;
-    try {
-      const redditResponse = await axios.get(
-        "https://www.reddit.com/r/CryptoCurrency/search.json",
-        {
-          params: { q: coinId, sort: "new", t: "day", limit: 50 },
-          headers: { "User-Agent": "CryptoScoreBot/1.0" },
-        }
-      );
-
-      const posts = redditResponse.data.data.children || [];
-      const recentEngagement = posts.reduce(
-        (sum, post) => sum + (post.data.score || 0) + (post.data.num_comments || 0),
-        0
-      );
-      redditTrending = Math.min(100, (recentEngagement / 1000) * 100);
-    } catch {}
-
-    return Math.min(100, socialScore * 0.7 + redditTrending * 0.3);
-  } catch {
-    return 50; // fallback
-  }
-};
-
-/**
- * Social Velocity
+ * Social / Hype Score
  */
 const calculateSocialVelocity = (metrics) => {
   const thresholds = {
@@ -151,11 +109,47 @@ const calculateSocialVelocity = (metrics) => {
     }
   }
 
-  return count > 0 ? score / count : 50; // fallback
+  return count > 0 ? score / count : 50;
+};
+
+const calculateHypeScore = (communityData) => {
+  const metrics = {
+    twitter: communityData.twitter_followers || 0,
+    reddit: communityData.reddit_subscribers || 0,
+    telegram: communityData.telegram_channel_user_count || 0,
+  };
+
+  return calculateSocialVelocity(metrics);
 };
 
 /**
- * Novelty Score
+ * Volatility Factor
+ */
+const calculateVolatility = async (coinId) => {
+  try {
+    const { data } = await axios.get(
+      `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart`,
+      { params: { vs_currency: "usd", days: 30, interval: "daily" } }
+    );
+
+    if (!data.prices || data.prices.length < 2) return 50; // fallback
+
+    const prices = data.prices.map(p => p[1]);
+    const returns = prices.slice(1).map((p, i) => ((p - prices[i]) / prices[i]) * 100);
+    const avg = returns.reduce((a,b)=>a+b,0)/returns.length;
+    const variance = returns.reduce((sum,r)=>sum+Math.pow(r-avg,2),0)/returns.length;
+    const stdDev = Math.sqrt(variance);
+
+    return Math.max(0, Math.min(100, 100 - stdDev));
+  } catch (err) {
+    console.error("Volatility error:", err.message);
+    return 50;
+  }
+};
+
+
+/**
+ * Novelty Factor
  */
 const calculateNoveltyScore = (coinData) => {
   let noveltyScore = 50;
@@ -166,19 +160,9 @@ const calculateNoveltyScore = (coinData) => {
   else if (ageInDays < 180) noveltyScore += 20;
   else if (ageInDays < 365) noveltyScore += 10;
 
-  const keywords = [
-    "first",
-    "novel",
-    "unique",
-    "innovative",
-    "breakthrough",
-    "revolutionary",
-    "pioneering",
-    "cutting-edge",
-    "next-generation",
-  ];
+  const keywords = ["first","novel","unique","innovative","breakthrough","revolutionary","pioneering","cutting-edge","next-generation"];
   let matches = 0;
-  keywords.forEach((k) => description.includes(k) && matches++);
+  keywords.forEach(k => description.includes(k) && matches++);
   noveltyScore += Math.min(20, matches * 5);
 
   if (coinData.market_cap && coinData.market_cap < 10000000) noveltyScore += 10;
@@ -187,110 +171,70 @@ const calculateNoveltyScore = (coinData) => {
 };
 
 /**
- * Main Moonshot Calculation
+ * Main Moonshot Factor Calculation
  */
 const calculateMoonshotFactor = async (coinData, cqs, allMarketCaps = []) => {
   const narrativeResult = calculateNarrativeFactor(coinData, cqs);
   const nf = narrativeResult.score;
 
   const marketCap = coinData.market_data?.market_cap?.usd || 0;
-  const mcFactor =
-    allMarketCaps.length > 1
-      ? calculateMarketCapFactor(marketCap, allMarketCaps)
-      : 50; // fallback for single coin
+  const mcFactor = allMarketCaps.length > 1 ? calculateMarketCapFactor(marketCap, allMarketCaps) : 50;
 
-  const hypeScore = await calculateHypeScore(
-    coinData.id,
-    coinData.community_data || {}
-  );
+  const hypeScore = calculateHypeScore(coinData.community_data || {});
   const noveltyScore = calculateNoveltyScore(coinData);
+  const volatilityScore = await calculateVolatility(coinData.id);
 
-  const moonshotFactor = 0.4 * nf + 0.3 * mcFactor + 0.2 * hypeScore + 0.1 * noveltyScore;
+  const moonshotFactor = 0.35 * nf + 0.25 * mcFactor + 0.15 * hypeScore + 0.15 * volatilityScore + 0.1 * noveltyScore;
   const cappedScore = Math.min(25, (moonshotFactor / 100) * 25);
 
   return {
     moonshotFactor: Math.round(moonshotFactor * 100) / 100,
     cappedForCI: Math.round(cappedScore * 100) / 100,
     breakdown: {
-      narrativeFactor: {
-        score: Math.round(nf * 100) / 100,
-        weight: "40%",
-        narratives: narrativeResult.narratives,
-      },
-      marketCapFactor: { score: Math.round(mcFactor * 100) / 100, weight: "30%" },
-      hypeScore: { score: Math.round(hypeScore * 100) / 100, weight: "20%" },
-      noveltyScore: { score: Math.round(noveltyScore * 100) / 100, weight: "10%" },
+      narrativeFactor: { score: Math.round(nf * 100)/100, weight:"35%", narratives: narrativeResult.narratives },
+      marketCapFactor: { score: Math.round(mcFactor*100)/100, weight:"25%" },
+      hypeScore: { score: Math.round(hypeScore*100)/100, weight:"15%" },
+      volatilityScore: { score: Math.round(volatilityScore*100)/100, weight:"15%" },
+      noveltyScore: { score: Math.round(noveltyScore*100)/100, weight:"10%" },
     },
-    eligibility: {
-      cqs,
-      eligible: cqs >= 50,
-      reason: cqs >= 50 ? "Meets CQS threshold" : "CQS below 50",
-    },
+    eligibility: { cqs, eligible: cqs >= 50, reason: cqs >= 50 ? "Meets CQS threshold" : "CQS below 50" },
   };
 };
 
 /**
- * Express Controller - Single Coin
+ * Express Controller
  */
 const getMoonshotFactor = async (req, res) => {
   try {
     const { coinId } = req.params;
     const { cqs } = req.query;
-    if (!cqs) return res.status(400).json({ success: false, error: "CQS required" });
+    if (!cqs) return res.status(400).json({ success:false, error:"CQS required" });
 
     const cqsValue = parseFloat(cqs);
 
-    // Fetch coin data
-    const { data: coinData } = await axios.get(
-      `https://api.coingecko.com/api/v3/coins/${coinId}`,
-      { params: { localization: false, tickers: false, market_data: true, community_data: true } }
-    );
+    const { data: coinData } = await axios.get(`https://api.coingecko.com/api/v3/coins/${coinId}`, {
+      params: { localization:false, tickers:false, market_data:true, community_data:true }
+    });
 
-    coinData.age_in_days = Math.floor(
-      (Date.now() - new Date(coinData.genesis_date || Date.now()).getTime()) /
-        (1000 * 60 * 60 * 24)
-    );
+    coinData.age_in_days = Math.floor((Date.now() - new Date(coinData.genesis_date || Date.now()).getTime()) / (1000*60*60*24));
 
     const result = await calculateMoonshotFactor(coinData, cqsValue);
 
-    res.json({ success: true, data: { coinId, coinName: coinData.name, symbol: coinData.symbol?.toUpperCase(), ...result, timestamp: new Date().toISOString() } });
+    res.json({ success:true, data:{ coinId, coinName: coinData.name, symbol: coinData.symbol?.toUpperCase(), ...result, timestamp:new Date().toISOString() } });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success:false, error:error.message });
   }
 };
 
 export { getMoonshotFactor };
 
 export const fetchMoonshotData = async (coinId, cqsValue) => {
-  // 1️⃣ Fetch coin data from CoinGecko
-  const response = await axios.get(
-    `https://api.coingecko.com/api/v3/coins/${coinId}`,
-    {
-      params: {
-        localization: false,
-        tickers: false,
-        market_data: true,
-        community_data: true,
-        developer_data: false
-      }
-    }
-  );
+  const { data: coinData } = await axios.get(`https://api.coingecko.com/api/v3/coins/${coinId}`, {
+    params: { localization:false, tickers:false, market_data:true, community_data:true }
+  });
 
-  const coinData = response.data;
+  coinData.age_in_days = Math.floor((Date.now() - new Date(coinData.genesis_date || Date.now()).getTime()) / (1000*60*60*24));
 
-  // 2️⃣ Calculate coin age in days
-  const genesisDate = new Date(coinData.genesis_date || Date.now());
-  coinData.age_in_days = Math.floor((Date.now() - genesisDate.getTime()) / (1000 * 60 * 60 * 24));
-
-  // 3️⃣ Calculate Moonshot Factor
-  const result = await calculateMoonshotFactor(coinData, cqsValue);
-
-  // 4️⃣ Return the structured result
-  return {
-    coinId,
-    coinName: coinData.name,
-    symbol: coinData.symbol?.toUpperCase(),
-    ...result
-  };
+  return await calculateMoonshotFactor(coinData, cqsValue);
 };

@@ -50,6 +50,7 @@ export default function MoonshotFactorMini({ coins }) {
 
   // Sort by moonshot score (highest first)
   const sortedCoins = transformedCoins.sort((a, b) => b.moonshotScore - a.moonshotScore).slice(0, 3);
+  
 
   // Early return if no coins
   if (sortedCoins.length === 0) {
@@ -178,7 +179,6 @@ export default function MoonshotFactorMini({ coins }) {
                   { label: "Volatility Score", key: "volatilityScore" },
                   { label: "Hype Score", key: "hypeScore" },
                   { label: "Dev Activity", key: "devActivity" },
-                  { label: "Social Sentiment", key: "socialSentiment" },
                   { label: "Other Factors", key: "otherFactors" },
                 ].map(({ label, key }) => (
                   <div key={key}>
