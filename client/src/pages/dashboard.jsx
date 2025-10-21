@@ -6,6 +6,7 @@ import LeftPanel from '../components/LeftPanel';
 import MainContent from '../components/MainComponent';
 import Search from '../components/Search';
 import { useQuery } from '@tanstack/react-query';
+
 import axios from 'axios';
 
 const CryptoDashboard = () => {

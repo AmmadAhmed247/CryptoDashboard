@@ -30,10 +30,10 @@ const formatNumber = (num) => {
 
 
 const RightSide = ({ isDarkMode, selectedCoin, topCoinsData }) => {
-  
 
-  
-  
+
+
+
 
 
   return (
@@ -53,7 +53,13 @@ const RightSide = ({ isDarkMode, selectedCoin, topCoinsData }) => {
             </div>
             <div className="text-right ">
               <div className={`text-md font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{selectedCoin?.price}</div>
-              <div className={`${selectedCoin?.change >= 0 ? 'text-green-400' : 'text-red-400'} text-sm font-semibold`}>{selectedCoin?.change}</div>
+              <div
+                className={` ${parseFloat(selectedCoin?.change) >= 0 ? 'text-green-400' : 'text-red-400'}
+                  text-sm font-semibold`}
+              >
+                {selectedCoin?.change}
+              </div>
+
             </div>
           </div>
 
@@ -83,9 +89,7 @@ const RightSide = ({ isDarkMode, selectedCoin, topCoinsData }) => {
             average={selectedCoin?.average ?? 0}
             isDarkMode={isDarkMode}
           />
-          <button className="w-full bg-[#d0b345] hover:from-orange-600 hover:to-yellow-900 py-3 rounded-lg font-semibold transition-all shadow-lg hover:shadow-xl hover:scale-105">
-            Add to Portfolio
-          </button>
+          
         </div>
 
         {/* Market Cycle Chart */}
@@ -139,7 +143,7 @@ const RightSide = ({ isDarkMode, selectedCoin, topCoinsData }) => {
         <MoonshotFactorMini coins={topCoinsData} analyzeCoin={selectedCoin} />
 
         {/* Alerts */}
-        <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>
+        {/* <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>
           <div className="flex items-center justify-between mb-4">
             <h3 className={`text-sm font-semibold flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
               <Bell className="text-[#d0b345]" size={18} />
@@ -163,7 +167,7 @@ const RightSide = ({ isDarkMode, selectedCoin, topCoinsData }) => {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
 
         {/* Latest News */}
         {/* <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>
@@ -190,7 +194,7 @@ const RightSide = ({ isDarkMode, selectedCoin, topCoinsData }) => {
         <CryptoNews isDarkMode={isDarkMode} />
 
         {/* Developer Activity */}
-        <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>
+        {/* <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>
           <h3 className={`text-sm font-semibold mb-4 flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
             <GitBranch className="text-[#d0b345]" size={18} />
             Dev Activity (30d)
@@ -212,10 +216,10 @@ const RightSide = ({ isDarkMode, selectedCoin, topCoinsData }) => {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
 
         {/* Social Metrics */}
-        <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>
+        {/* <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>
           <h3 className={`text-sm font-semibold mb-4 flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
             <Users className="text-[#d0b345]" size={18} />
             Social Metrics (7d)
@@ -234,7 +238,7 @@ const RightSide = ({ isDarkMode, selectedCoin, topCoinsData }) => {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
 
         {/* Trading Volume Chart */}
         <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>

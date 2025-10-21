@@ -2,7 +2,18 @@ import React from 'react'
 import { TrendingUp, TrendingDown, AlertCircle, Bell, ChevronRight, Activity, Flame, Target, Clock, Zap, DollarSign, BarChart3, Award, Calendar, Users, GitBranch, Radio, Moon, Sun, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import CoinRow from './PriceAction';
-
+import CryptoMarketCycle from './bitcoinCycle';
+import MAFCard from './MAF';
+import { Plus } from "lucide-react";
+const macroData = [
+  { date: "2024-01", ism: 0.42, m2: 0.61, dxyInv: 0.38, maf: 0.47 },
+  { date: "2024-02", ism: 0.48, m2: 0.63, dxyInv: 0.42, maf: 0.51 },
+  { date: "2024-02", ism: 0.48, m2: 0.63, dxyInv: 0.42, maf: 0.51 },
+  { date: "2024-02", ism: 0.48, m2: 0.63, dxyInv: 0.42, maf: 0.51 },
+  { date: "2024-02", ism: 0.48, m2: 0.63, dxyInv: 0.42, maf: 0.51 },
+  { date: "2024-02", ism: 0.48, m2: 0.63, dxyInv: 0.42, maf: 0.51 },
+  { date: "2024-02", ism: 0.48, m2: 0.63, dxyInv: 0.42, maf: 0.51 },
+];
 function getColor(value) {
   return value < 50 ? 'bg-red-800' : 'bg-green-700';
 }
@@ -11,32 +22,33 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends, ScoreCard, onSele
 
   const [coins, setCoins] = React.useState(demoCoins);
   const prevCoinsRef = React.useRef(demoCoins);
+  
 
   // Detect when demoCoins prop changes and mark which coins changed
   React.useEffect(() => {
     const prevCoins = prevCoinsRef.current;
-    
+
     const updatedCoins = demoCoins.map((coin, idx) => {
       const prevCoin = prevCoins[idx];
-      
+
       if (prevCoin && prevCoin.price !== coin.price) {
         const oldPrice = parseFloat(prevCoin.price.replace(/[$,]/g, ''));
         const newPrice = parseFloat(coin.price.replace(/[$,]/g, ''));
         const isUp = newPrice > oldPrice;
-        
+
         return {
           ...coin,
           priceChanged: true,
           priceDirection: isUp ? "up" : "down"
         };
       }
-      
+
       return coin;
     });
-    
+
     setCoins(updatedCoins);
     prevCoinsRef.current = demoCoins;
-    
+
     // Reset glow after 500ms
     const timeout = setTimeout(() => {
       setCoins(demoCoins.map(coin => ({
@@ -44,9 +56,11 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends, ScoreCard, onSele
         priceChanged: false
       })));
     }, 500);
-    
+
     return () => clearTimeout(timeout);
   }, [demoCoins]);
+ 
+
 
   const aggregatedScores = React.useMemo(() => {
     if (selectedCoins.length === 0) return null;
@@ -119,7 +133,7 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends, ScoreCard, onSele
           ))}
         </div>
 
-        <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-6 border shadow-lg`}>
+        {/* <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-6 border shadow-lg`}>
           <div className="flex items-center justify-between mb-6">
             <h2 className={`text-xl font-bold flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
               <Radio className="text-yellow-400" />
@@ -147,7 +161,19 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends, ScoreCard, onSele
               </div>
             ))}
           </div>
+        </div> */}
+
+
+        <div className="flex flex-row w-full gap-2 rounded-3xl">
+
+          <CryptoMarketCycle />
+      
+          <MAFCard />
+          
+          {/* <MacroAlignmentFactor data={macroData} /> */}
         </div>
+
+
 
         <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-6 border shadow-lg`}>
           <div className="flex items-center justify-between mb-6">
@@ -214,13 +240,12 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends, ScoreCard, onSele
 
                     <td className="text-right py-4 px-4">
                       <span
-                        className={`font-semibold transition-all duration-300 inline-block ${
-                          coin.priceChanged && coin.priceDirection === 'up'
+                        className={`font-semibold transition-all duration-300 inline-block ${coin.priceChanged && coin.priceDirection === 'up'
                             ? "!text-green-500 drop-shadow-[0_0_12px_rgba(74,222,128,0.8)]"
                             : coin.priceChanged && coin.priceDirection === 'down'
                               ? "!text-red-500 drop-shadow-[0_0_12px_rgba(248,113,113,0.8)]"
                               : isDarkMode ? "text-white" : "text-gray-900"
-                        }`}
+                          }`}
                       >
                         {coin.price}
                       </span>
@@ -228,13 +253,12 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends, ScoreCard, onSele
 
                     <td className="text-right py-4 px-4">
                       <span
-                        className={`${parseFloat(coin.change) >= 0 ? "text-green-400" : "text-red-400"} font-semibold transition-all duration-300 ${
-                          coin.priceChanged && coin.priceDirection === 'up'
+                        className={`${parseFloat(coin.change) >= 0 ? "text-green-400" : "text-red-400"} font-semibold transition-all duration-300 ${coin.priceChanged && coin.priceDirection === 'up'
                             ? "drop-shadow-[0_0_8px_rgba(74,222,128,0.6)]"
                             : coin.priceChanged && coin.priceDirection === 'down'
                               ? "drop-shadow-[0_0_8px_rgba(248,113,113,0.6)]"
                               : ""
-                        }`}
+                          }`}
                       >
                         {coin.change}
                       </span>
@@ -285,17 +309,19 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends, ScoreCard, onSele
                         Entry
                       </button>
                     </td>
-                    <td className="text-right py-4 px-4">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onAddToAnalysis(coin);
-                        }}
-                        className="px-4 py-2 bg-[#d0b345] rounded-lg text-xs font-semibold transition-all shadow-lg hover:shadow-xl hover:scale-110"
-                      >
-                        Add to Analysis
-                      </button>
-                    </td>
+                   <td className="py-4 px-4 flex justify-center">
+  <button
+    onClick={(e) => {
+      e.stopPropagation();
+      onAddToAnalysis(coin);
+    }}
+    className="p-2 bg-[#d0b345] rounded-lg transition-all shadow-lg hover:shadow-xl hover:scale-110 flex items-center justify-center"
+  >
+    <Plus className="w-4 h-4 text-white" />
+  </button>
+</td>
+
+
                   </tr>
                 ))}
               </tbody>

@@ -12,7 +12,7 @@ const normalize = (value, min, max) => {
  * Narrative Factor (NF)
  */
 const calculateNarrativeFactor = (coinData, cqs) => {
-  if (cqs < 35) return { score: 0, narratives: [] };
+  if (cqs < 50) return { score: 0, narratives: [] };
 
   const categories = coinData.categories || [];
   const description = (coinData.description?.en || "").toLowerCase();
