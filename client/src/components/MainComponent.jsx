@@ -3,7 +3,7 @@ import { TrendingUp, TrendingDown, AlertCircle, Bell, ChevronRight, Activity, Fl
 import { Link } from 'react-router-dom';
 import CoinRow from './PriceAction';
 import CryptoMarketCycle from './bitcoinCycle';
-import MAFCard from './MAF';
+import LIEFCard from './MAF';
 import { Plus } from "lucide-react";
 const macroData = [
   { date: "2024-01", ism: 0.42, m2: 0.61, dxyInv: 0.38, maf: 0.47 },
@@ -168,9 +168,9 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends, ScoreCard, onSele
 
           <CryptoMarketCycle />
       
-          <MAFCard />
+          {/* <LIEFCard /> */}
           
-          {/* <MacroAlignmentFactor data={macroData} /> */}
+    
         </div>
 
 

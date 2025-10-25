@@ -8,7 +8,7 @@ import HotCoins from './pages/hotCoins.jsx'
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import '@fontsource/montserrat/400.css';
 import '@fontsource/montserrat/700.css';
-
+import Login from "./pages/login.jsx"
 import {
   QueryClient,
   QueryClientProvider,

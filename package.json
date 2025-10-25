@@ -7,8 +7,10 @@
   "dependencies": {
     "@fontsource/montserrat": "^5.2.8",
     "@tanstack/react-query": "^5.90.3",
+    "i18next": "^25.6.0",
     "lucide-react": "^0.545.0",
     "mongoose": "^8.19.1",
+    "react-i18next": "^16.2.0",
     "recharts": "^3.3.0"
   }
 }

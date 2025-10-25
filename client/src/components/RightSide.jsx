@@ -241,7 +241,7 @@ const RightSide = ({ isDarkMode, selectedCoin, topCoinsData }) => {
         </div> */}
 
         {/* Trading Volume Chart */}
-        <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>
+        {/* <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>
           <h3 className={`text-sm font-semibold mb-4 flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
             <BarChart3 className="text-[#d0b345]" size={18} />
             Volume Trend (7d)
@@ -257,7 +257,7 @@ const RightSide = ({ isDarkMode, selectedCoin, topCoinsData }) => {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
 
         {/* Price Alerts Setup */}
         <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>

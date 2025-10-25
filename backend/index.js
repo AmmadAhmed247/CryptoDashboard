@@ -7,6 +7,7 @@ import cqsRoute from './routes/cqs.route.js';
 import coinRoute from './routes/coin.route.js';
 import {connectDB}  from './db.js';
 import hotCoinsRoute from './routes/hotCoins.route.js';
+import GcmiRoute from "./routes/gcmi.route.js"
 const app = express();
 app.use(express.json());
 
@@ -22,6 +23,7 @@ app.use('/api/data', dataRoutes);
 app.use('/api', cqsRoute);
 app.use('/api/data', coinRoute);
 app.use('/api/', hotCoinsRoute);
+app.use('/api/', GcmiRoute);
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });

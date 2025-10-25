@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios"
 import {
   LineChart,
   Line,
@@ -13,6 +15,15 @@ import {
 
 const CryptoMarketCycle = () => {
   const [timeframe, setTimeframe] = useState("All");
+
+const { data:gcmiData, isLoading } = useQuery({
+  queryKey: ["gcmi"],
+  queryFn: async () => {
+    const res = await axios.get("http://localhost:3000/api/gcmi");
+    return res.data;
+  },
+});
+
 
   // Same dataset you had
   const allData = [
@@ -99,7 +110,7 @@ const CryptoMarketCycle = () => {
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={data}
-            margin={{ top: 30, right: 60, bottom: 10, left: 60 }}
+            margin={{ top: 30, right: 0, bottom: 10, left: 0 }}
           >
             <defs>
               <linearGradient id="gcmiFill" x1="0" y1="0" x2="0" y2="1">
@@ -143,18 +154,38 @@ const CryptoMarketCycle = () => {
                 borderRadius: "8px",
                 color: "#fff",
               }}
-              formatter={(value, name) => {
-                if (name === "btcPrice")
-                  return [
-                    value >= 1000
-                      ? `$${(value / 1000).toFixed(1)}K`
-                      : `$${value.toFixed(2)}`,
-                    "BTC Price",
-                  ];
-                if (name === "gcmi") return [value.toFixed(1), "GCMI"];
-                return value;
+              content={({ active, payload, label }) => {
+                if (active && payload && payload.length) {
+                  const gcmiValue = payload.find((p) => p.dataKey === "gcmi")?.value;
+                  const btcValue = payload.find((p) => p.dataKey === "btcPrice")?.value;
+                  const phase = getPhase(gcmiValue);
+
+                  return (
+                    <div className="bg-zinc-900 border border-zinc-700 rounded-lg p-3 shadow-lg">
+                      <p className="text-xs text-gray-400 mb-2">{label}</p>
+                      <div className="space-y-1">
+                        <p className="text-sm">
+                          <span className="text-[#d0b345] font-semibold">GCMI:</span>{" "}
+                          {gcmiValue?.toFixed(1)}
+                        </p>
+                        <p className="text-sm">
+                          <span className="text-gray-400 font-semibold">BTC Price:</span>{" "}
+                          {btcValue >= 1000
+                            ? `$${(btcValue / 1000).toFixed(1)}K`
+                            : `$${btcValue?.toFixed(2)}`}
+                        </p>
+                      </div>
+                      <div className="mt-2 pt-2 border-t border-zinc-700">
+                        <p className="text-xs font-semibold" style={{ color: phase.color }}>
+                          {phase.name}
+                        </p>
+                        <p className="text-xs text-gray-500">{phase.desc}</p>
+                      </div>
+                    </div>
+                  );
+                }
+                return null;
               }}
-              labelFormatter={(label) => `Date: ${label}`}
             />
             <Legend />
 

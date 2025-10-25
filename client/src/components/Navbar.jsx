@@ -8,11 +8,14 @@ import {
   X,
 } from "lucide-react";
 import Search from "./Search";
+import LiveStatus from "./Time";
+import Login from "../pages/login";
 
 const Navbar = () => {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const[showLogin,setShowLogin]=useState(false);
 
   return (
     <div
@@ -34,23 +37,7 @@ const Navbar = () => {
               MEIN KRYPTO
             </h1>
           </div>
-          <div className="hidden md:flex items-center gap-4 text-sm">
-            <div className="flex items-center gap-2">
-              <div className="relative">
-                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                <div className="absolute inset-0 w-2 h-2 rounded-full bg-green-500 animate-ping"></div>
-              </div>
-              <span className={isDarkMode ? "text-zinc-400" : "text-gray-600"}>
-                Live
-              </span>
-            </div>
-            <div className={isDarkMode ? "text-zinc-500" : "text-gray-400"}>
-              |
-            </div>
-            <span className={isDarkMode ? "text-zinc-400" : "text-gray-600"}>
-              Oct 5, 2024 13:45 UTC
-            </span>
-          </div>
+          <LiveStatus />
         </div>
 
         {/* Middle Section - Search (hidden on mobile) */}
@@ -95,7 +82,7 @@ const Navbar = () => {
           </button>
 
           {/* Bell Icon */}
-          <button
+          {/* <button
             className={`${
               isDarkMode
                 ? "text-[#d0b345]"
@@ -103,19 +90,24 @@ const Navbar = () => {
             } p-2 rounded-lg transition-all shadow-lg hover:shadow-xl hover:scale-110`}
           >
             <Bell size={18} />
-          </button>
+          </button> */}
 
           {/* Login Button (hidden on small screens) */}
-          <Link
-            to="/login"
-            className={`hidden md:block px-4 py-2 rounded-lg font-semibold text-sm shadow-md transition-all ${
-              isDarkMode
-                ? "bg-[#d0b345]/20 text-[#d0b345] hover:bg-[#d0b345]/30"
-                : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-            }`}
-          >
-            Login
-          </Link>
+          <div>
+      <button
+        onClick={() => setShowLogin(true)}
+        className={`hidden md:block px-4 py-2 rounded-lg font-semibold text-sm shadow-md transition-all ${
+          isDarkMode
+            ? "bg-[#d0b345]/20 text-[#d0b345] hover:bg-[#d0b345]/30"
+            : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+        }`}
+      >
+        Login
+      </button>
+
+      {showLogin && <Login onClose={() => setShowLogin(false)} />}
+
+    </div>
 
           {/* Mobile Menu Toggle */}
           <button
@@ -170,18 +162,25 @@ const Navbar = () => {
               : "bg-white border-gray-200"
           }`}
         >
-          <Link
-            to="/login"
-            className="block px-3 py-2 text-sm font-semibold text-[#d0b345] hover:underline"
-          >
-            Login
-          </Link>
-          <Link
-            to="/signup"
-            className="block px-3 py-2 text-sm font-semibold text-[#d0b345] hover:underline"
-          >
-            Signup
-          </Link>
+          <div>
+      <button
+        onClick={() => setShowLogin(true)}
+        className={` px-4 py-2 rounded-lg font-semibold text-sm shadow-md transition-all ${
+          isDarkMode
+            ? " text-[#d0b345] hover:underline"
+            : "bg-gray-200 text-gray-800 hover:underline"
+        }`}
+      >
+        Login
+      </button>
+
+      {showLogin && <Login onClose={() => setShowLogin(false)} />}
+
+    </div>
+         <Link className="block px-3 py-2 text-sm font-semibold text-[#d0b345] hover:underline" to={"/"} >
+         Dashboard</Link>
+         <Link className="block px-3 py-2 text-sm font-semibold text-[#d0b345] hover:underline" to={"/hotcoins"} >
+         HotCoins</Link>
         </div>
       )}
     </div>
