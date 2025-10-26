@@ -19,7 +19,7 @@ const CryptoMarketCycle = () => {
 const { data:gcmiData, isLoading } = useQuery({
   queryKey: ["gcmi"],
   queryFn: async () => {
-    const res = await axios.get("http://localhost:3000/api/gcmi");
+    const res = await axios.get(`${process.meta.env.VITE_BACKEND_URL}/api/gcmi`);
     return res.data;
   },
 });
@@ -76,7 +76,7 @@ const { data:gcmiData, isLoading } = useQuery({
   };
 
   return (
-    <div className="bg-gradient-to-br from-zinc-800 to-zinc-900 w-full p-6 rounded-2xl shadow-lg border-2 border-zinc-700 text-white">
+    <div className="bg-gradient-to-br h-fit from-zinc-800 to-zinc-900 w-full p-6 rounded-2xl shadow-lg border-2 border-zinc-700 text-white">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-[#d0b345]">
@@ -99,18 +99,14 @@ const { data:gcmiData, isLoading } = useQuery({
         </div>
       </div>
 
-      {/* Description */}
-      <p className="text-sm text-gray-400 mb-1">
-        Aggregates long-term Bitcoin cycle metrics (Pi Cycle, MVRV, NUPL, RHODL, Reserve
-        Risk, etc.)
-      </p>
+      
 
       {/* Chart */}
-      <div className="h-96">
+      <div className="h-60 ">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={data}
-            margin={{ top: 30, right: 0, bottom: 10, left: 0 }}
+            margin={{ top: 10, right: 0, bottom: 0, left: 0 }}
           >
             <defs>
               <linearGradient id="gcmiFill" x1="0" y1="0" x2="0" y2="1">

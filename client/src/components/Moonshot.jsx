@@ -6,53 +6,81 @@ export default function MoonshotFactorMini({ coins }) {
   const [selectedCoin, setSelectedCoin] = useState(null);
   const [animateStats, setAnimateStats] = useState(false);
 
-  // Format number to K, M, B
+  // ✅ Safe format number helper
   const formatNumber = (num) => {
-    const cleanNum = typeof num === 'string' 
-      ? parseFloat(num.replace(/[$,]/g, '')) 
-      : num;
+    if (num === null || num === undefined) return "$0.00";
+    const cleanNum =
+      typeof num === "string"
+        ? parseFloat(num.replace(/[$,]/g, ""))
+        : Number(num);
 
-    if (isNaN(cleanNum)) return '$0';
+    if (isNaN(cleanNum)) return "$0.00";
 
     const absNum = Math.abs(cleanNum);
-    
-    if (absNum >= 1e9) return '$' + (cleanNum / 1e9).toFixed(2) + 'B';
-    if (absNum >= 1e6) return '$' + (cleanNum / 1e6).toFixed(2) + 'M';
-    if (absNum >= 1e3) return '$' + (cleanNum / 1e3).toFixed(2) + 'K';
-    return '$' + cleanNum.toFixed(2);
+
+    if (absNum >= 1e9) return "$" + (cleanNum / 1e9).toFixed(2) + "B";
+    if (absNum >= 1e6) return "$" + (cleanNum / 1e6).toFixed(2) + "M";
+    if (absNum >= 1e3) return "$" + (cleanNum / 1e3).toFixed(2) + "K";
+    return "$" + cleanNum.toFixed(2);
   };
 
-  // Transform coins data to match component structure
-  const transformedCoins = Array.isArray(coins) 
+  // ✅ Transform & protect against null values
+  const transformedCoins = Array.isArray(coins)
     ? coins.map((coin) => ({
-        id: coin._id || coin.coinId,
-        name: coin.name,
-        symbol: coin.symbol,
-        logo: coin.logo,
-        price: `${coin.price?.toFixed(4) || '0.00'}`,
+        id: coin._id || coin.coinId || coin.id || coin.symbol,
+        name: coin.name || "Unknown",
+        symbol: coin.symbol || "",
+        logo: coin.logo || coin.image || "/default.png",
+        price:
+          typeof coin.price === "number"
+            ? coin.price.toFixed(4)
+            : "0.00",
         marketCap: formatNumber(coin.marketCap),
         volume: formatNumber(coin.volume),
-        change24h: coin.priceChange24h?.toFixed(2) || 0,
-        moonshotScore: coin.Moonshot || 0,
-        // Moonshot breakdown factors
-        volatilityScore: coin.MoonshotFactors?.volatilityScore || 0,
-        hypeScore: coin.MoonshotFactors?.hypeScore || 0,
-        devActivity: coin.MoonshotFactors?.devActivity || 0,
-        socialSentiment: coin.MoonshotFactors?.socialSentiment || 0,
-        otherFactors: coin.MoonshotFactors?.otherFactors || 0,
-        // Other scores
-        cqs: coin.CQS || 0,
-        ci: coin.CI || 0,
-        ri: coin.RI || 0,
-        ts: coin.TS || 0,
+        change24h:
+          typeof coin.priceChange24h === "number"
+            ? coin.priceChange24h.toFixed(2)
+            : 0,
+
+        // ✅ Handle moonshot values safely
+        moonshotScore:
+          coin.moonshotFactor ??
+          coin.Moonshot ??
+          coin.moonshot ??
+          0,
+
+        volatilityScore:
+          coin.breakdown?.volatilityScore?.score ??
+          coin.MoonshotFactors?.volatilityScore ??
+          0,
+        hypeScore:
+          coin.breakdown?.hypeScore?.score ??
+          coin.MoonshotFactors?.hypeScore ??
+          0,
+        devActivity:
+          coin.breakdown?.devActivity?.score ??
+          coin.MoonshotFactors?.devActivity ??
+          0,
+        socialSentiment:
+          coin.breakdown?.hypeScore?.score ??
+          coin.MoonshotFactors?.socialSentiment ??
+          0,
+        otherFactors:
+          coin.breakdown?.narrativeFactor?.score ??
+          coin.MoonshotFactors?.otherFactors ??
+          0,
+
+        cqs: coin.eligibility?.cqs ?? coin.CQS ?? 0,
+        ci: coin.CI ?? 0,
+        ri: coin.RI ?? 0,
+        ts: coin.TS ?? 0,
       }))
     : [];
 
-  // Sort by moonshot score (highest first)
-  const sortedCoins = transformedCoins.sort((a, b) => b.moonshotScore - a.moonshotScore).slice(0, 3);
-  
+  const sortedCoins = transformedCoins
+    .sort((a, b) => b.moonshotScore - a.moonshotScore)
+    .slice(0, 3);
 
-  // Early return if no coins
   if (sortedCoins.length === 0) {
     return (
       <div className="bg-zinc-850 text-white p-6 rounded-2xl border border-zinc-700 max-w-xl mx-auto">
@@ -92,7 +120,6 @@ export default function MoonshotFactorMini({ coins }) {
         </p>
       </div>
 
-      {/* Coin Selection (only show if no coin selected yet) */}
       {!selectedCoin && (
         <div className="space-y-3">
           {sortedCoins.slice(0, 5).map((coin) => (
@@ -102,9 +129,9 @@ export default function MoonshotFactorMini({ coins }) {
               className="bg-zinc-900 border animation-float border-zinc-800 hover:border-amber-400/40 rounded-xl p-4 flex justify-between items-center cursor-pointer transition-all"
             >
               <div className="flex items-center gap-3">
-                <img 
-                  src={coin.logo} 
-                  alt={coin.symbol} 
+                <img
+                  src={coin.logo}
+                  alt={coin.symbol}
                   className="w-8 h-8 rounded-full"
                 />
                 <div>
@@ -115,7 +142,9 @@ export default function MoonshotFactorMini({ coins }) {
               <div className="text-right">
                 <p
                   className={`text-sm font-bold ${
-                    parseFloat(coin.change24h) > 0 ? "text-green-400" : "text-red-400"
+                    parseFloat(coin.change24h) > 0
+                      ? "text-green-400"
+                      : "text-red-400"
                   }`}
                 >
                   {parseFloat(coin.change24h) > 0 ? "+" : ""}
@@ -133,18 +162,19 @@ export default function MoonshotFactorMini({ coins }) {
         </div>
       )}
 
-      {/* Selected Coin (only show one) */}
       {selectedCoin && (
         <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5 mt-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <img 
-                src={selectedCoin.logo} 
+              <img
+                src={selectedCoin.logo}
                 alt={selectedCoin.symbol}
-                className="w-10 h-10 rounded-full" 
+                className="w-10 h-10 rounded-full"
               />
               <div>
-                <h3 className="font-semibold text-lg">{selectedCoin.name}</h3>
+                <h3 className="font-semibold text-lg">
+                  {selectedCoin.name}
+                </h3>
                 <p className="text-xs text-zinc-500">
                   {selectedCoin.marketCap}
                 </p>
@@ -153,7 +183,9 @@ export default function MoonshotFactorMini({ coins }) {
             <div className="text-right">
               <p
                 className={`text-sm font-bold ${
-                  parseFloat(selectedCoin.change24h) > 0 ? "text-green-400" : "text-red-400"
+                  parseFloat(selectedCoin.change24h) > 0
+                    ? "text-green-400"
+                    : "text-red-400"
                 }`}
               >
                 {parseFloat(selectedCoin.change24h) > 0 ? "+" : ""}
@@ -168,7 +200,6 @@ export default function MoonshotFactorMini({ coins }) {
             </div>
           </div>
 
-          {/* Analytics Section */}
           {showAnalytics && (
             <div className="mt-4">
               <h3 className="text-lg font-semibold mb-4 text-[#888585] text-center">
@@ -185,14 +216,18 @@ export default function MoonshotFactorMini({ coins }) {
                     <div className="flex justify-between text-sm mb-1">
                       <span className="text-zinc-400">{label}</span>
                       <span className="text-[#96948d] font-semibold">
-                        {animateStats ? selectedCoin[key].toFixed(0) : 0}
+                        {animateStats
+                          ? (selectedCoin[key] ?? 0).toFixed(0)
+                          : 0}
                       </span>
                     </div>
                     <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-[#E4C35E] border-[#E4C35E] border-1 transition-all duration-700 ease-out"
                         style={{
-                          width: animateStats ? `${selectedCoin[key]}%` : "0%",
+                          width: animateStats
+                            ? `${selectedCoin[key] ?? 0}%`
+                            : "0%",
                         }}
                       />
                     </div>
@@ -205,7 +240,9 @@ export default function MoonshotFactorMini({ coins }) {
                   Overall Moonshot Score
                 </p>
                 <div className="text-5xl font-bold text-[#E4C35E] mt-2">
-                  {animateStats ? selectedCoin.moonshotScore.toFixed(0) : 0}
+                  {animateStats
+                    ? (selectedCoin.moonshotScore ?? 0).toFixed(0)
+                    : 0}
                 </div>
               </div>
 

@@ -8,6 +8,10 @@ import coinRoute from './routes/coin.route.js';
 import {connectDB}  from './db.js';
 import hotCoinsRoute from './routes/hotCoins.route.js';
 import GcmiRoute from "./routes/gcmi.route.js"
+import liquidationRoute from "./routes/liquidation.route.js"
+import { startAllSocket } from "./controllers/allLiquidation.controller.js";
+import backtestRoutes from './routes/test.js';
+
 const app = express();
 app.use(express.json());
 
@@ -18,7 +22,9 @@ connectDB();
 app.get('/api/status', (req, res) => {
   res.json({ status: 'API is running' });
 });
-
+startAllSocket()
+app.use("/api",liquidationRoute)
+app.use('/api', backtestRoutes);
 app.use('/api/data', dataRoutes);
 app.use('/api', cqsRoute);
 app.use('/api/data', coinRoute);

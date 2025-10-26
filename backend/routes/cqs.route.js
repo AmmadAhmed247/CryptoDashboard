@@ -2,7 +2,7 @@ import express from 'express';
 import axios from 'axios';
 import { calculateCQS } from '../controllers/CQS.controller.js';
 import { calculateTimingScore } from '../controllers/TimingScore.controller.js';
-import { getMoonshotFactor,fetchMoonshotData } from '../controllers/Moonfactor.controller.js';
+import { getMoonshotFactor } from '../controllers/Moonfactor.controller.js';
 import { calculateRiskIndex } from '../controllers/Riskindex.controller.js';
 import { calculateChanceIndex } from '../controllers/ChanceIndex.controller.js';
 

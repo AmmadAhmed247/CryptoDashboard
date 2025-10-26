@@ -5,6 +5,7 @@ import CoinRow from './PriceAction';
 import CryptoMarketCycle from './bitcoinCycle';
 import LIEFCard from './MAF';
 import { Plus } from "lucide-react";
+import Liveliquidation from "./LiveLiquidation.jsx"
 const macroData = [
   { date: "2024-01", ism: 0.42, m2: 0.61, dxyInv: 0.38, maf: 0.47 },
   { date: "2024-02", ism: 0.48, m2: 0.63, dxyInv: 0.42, maf: 0.51 },
@@ -168,7 +169,7 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends, ScoreCard, onSele
 
           <CryptoMarketCycle />
       
-          {/* <LIEFCard /> */}
+          <Liveliquidation />
           
     
         </div>
