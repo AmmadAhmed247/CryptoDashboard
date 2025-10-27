@@ -100,7 +100,7 @@ const CryptoDashboard = () => {
       setSelectedCoin(demoCoins[0]);
     }
   }, [demoCoins]);
-  console.log(demoCoins);
+
 
 
   const marketMetrics = [

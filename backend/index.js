@@ -11,13 +11,16 @@ import GcmiRoute from "./routes/gcmi.route.js"
 import liquidationRoute from "./routes/liquidation.route.js"
 import { startAllSocket } from "./controllers/allLiquidation.controller.js";
 import backtestRoutes from './routes/test.js';
+import "./CronJobs/autoUpdateCoins.js"
+import { startGCMICron } from "./CronJobs/gcmiCron.js";
+import { updateGCMIData } from "./controllers/GcmiFactor.controller.js";
 
 const app = express();
 app.use(express.json());
 
 const PORT = process.env.PORT;
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
-
+startGCMICron();
 connectDB();
 app.get('/api/status', (req, res) => {
   res.json({ status: 'API is running' });
@@ -33,6 +36,7 @@ app.use('/api/', GcmiRoute);
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
 
 
 

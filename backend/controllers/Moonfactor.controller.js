@@ -7,6 +7,14 @@ const normalize = (value, min, max) => {
   if (max === min) return 50;
   return Math.max(0, Math.min(100, ((value - min) / (max - min)) * 100));
 };
+const normalizeLog = (value, low, high) => {
+  if (value <= 0) return 0;
+  const logVal = Math.log10(value);
+  const logLow = Math.log10(low);
+  const logHigh = Math.log10(high);
+  const normalized = ((logVal - logLow) / (logHigh - logLow)) * 100;
+  return Math.max(0, Math.min(100, normalized));
+};
 
 /* -----------------------------------------------------------
    1️⃣  Narrative Factor (NF)
@@ -103,10 +111,10 @@ const interpretMarketCapFactor = (score) => {
 ----------------------------------------------------------- */
 const calculateSocialVelocity = (metrics) => {
   const thresholds = {
-    twitter: { low: 1000, high: 100000 },
-    reddit: { low: 500, high: 50000 },
-    telegram: { low: 500, high: 20000 },
-  };
+  twitter: { low: 1000, high: 10000000 },
+  reddit: { low: 500, high: 3000000 },
+  telegram: { low: 500, high: 1000000 },
+};
 
   let score = 0;
   let count = 0;
@@ -114,14 +122,13 @@ const calculateSocialVelocity = (metrics) => {
   for (const [platform, value] of Object.entries(metrics)) {
     if (value > 0 && thresholds[platform]) {
       const { low, high } = thresholds[platform];
-      score += normalize(value, low, high);
+      score += normalizeLog(value, low, high);
       count++;
     }
   }
 
   return count > 0 ? score / count : 50;
 };
-
 const calculateHypeScore = (communityData) => {
   const metrics = {
     twitter: communityData.twitter_followers || 0,
@@ -132,7 +139,7 @@ const calculateHypeScore = (communityData) => {
 };
 
 /* -----------------------------------------------------------
-   4️⃣  Volatility Factor (ideal band: 20–60%)
+   4️⃣  Volatility Factor (ideal band: 20–30%)
 ----------------------------------------------------------- */
 const calculateVolatility = async (coinId) => {
   try {
@@ -153,12 +160,12 @@ const calculateVolatility = async (coinId) => {
       returns.length;
     const stdDev = Math.sqrt(variance);
 
-    // Updated scoring: Relaxed criteria
-    if (stdDev < 10) return 30; // Too stable
-    if (stdDev <= 20) return normalize(stdDev, 10, 20) * 0.7; // Low volatility
-    if (stdDev <= 30) return 100; // Ideal range
-    if (stdDev <= 60) return 80; // High but acceptable
-    return 50; // Too volatile
+    // Updated scoring: Ideal band 20-30%
+    if (stdDev < 20) return normalize(stdDev, 0, 20) * 0.5; // Below ideal range
+    if (stdDev <= 30) return 100; // Ideal range (20-30%)
+    if (stdDev <= 40) return 80; // Slightly high but acceptable
+    if (stdDev <= 50) return 60; // High volatility
+    return 40; // Too volatile
   } catch (err) {
     console.error("Volatility error:", err.message);
     return 50;
@@ -300,26 +307,23 @@ const calculateMoonshotFactor = async (
   const socialSentiment = calculateSocialSentiment(coinData);
   const otherFactors = calculateOtherFactors(coinData);
 
-  // Updated weights to include new factors
+  // Updated weights according to document: NF=25%, MC=35%, Hype=25%, Vol=15%
   const weights =
     mode === "aggressive"
-      ? { NF: 0.25, MC: 0.25, Hype: 0.15, Vol: 0.10, Dev: 0.10, Social: 0.10, Other: 0.05 }
+      ? { NF: 0.25, MC: 0.35, Hype: 0.25, Vol: 0.15, Dev: 0, Social: 0, Other: 0 }
       : mode === "explorative"
-      ? { NF: 0.20, MC: 0.25, Hype: 0.15, Vol: 0.10, Dev: 0.15, Social: 0.10, Other: 0.05 }
-      : { NF: 0.20, MC: 0.30, Hype: 0.15, Vol: 0.10, Dev: 0.10, Social: 0.10, Other: 0.05 };
+      ? { NF: 0.25, MC: 0.35, Hype: 0.25, Vol: 0.15, Dev: 0, Social: 0, Other: 0 }
+      : { NF: 0.25, MC: 0.35, Hype: 0.25, Vol: 0.15, Dev: 0, Social: 0, Other: 0 };
 
   const moonshotFactor =
     weights.NF * nf +
     weights.MC * mcFactor +
     weights.Hype * hypeScore +
-    weights.Vol * volatilityScore +
-    weights.Dev * devActivity +
-    weights.Social * socialSentiment +
-    weights.Other * otherFactors;
+    weights.Vol * volatilityScore;
 
-  // Updated eligibility: Relaxed volatility range
+  // Updated eligibility: CQS >= 20 and Volatility 20-30%
   const eligible =
-    cqs >= 20 && volatilityScore >= 20 && volatilityScore <= 60;
+    cqs >= 20 && volatilityScore >= 20 && volatilityScore <= 30;
 
   return {
     moonshotFactor: Math.round(moonshotFactor * 100) / 100,
@@ -364,8 +368,8 @@ const calculateMoonshotFactor = async (
         : cqs < 20
         ? "CQS below 20"
         : volatilityScore < 20
-        ? "Volatility too low"
-        : "Volatility too high (>60%)",
+        ? "Volatility too low (<20%)"
+        : "Volatility too high (>30%)",
     },
   };
 };

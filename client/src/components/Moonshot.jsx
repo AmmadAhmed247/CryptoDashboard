@@ -25,57 +25,46 @@ export default function MoonshotFactorMini({ coins }) {
   };
 
   // ✅ Transform & protect against null values
-  const transformedCoins = Array.isArray(coins)
-    ? coins.map((coin) => ({
-        id: coin._id || coin.coinId || coin.id || coin.symbol,
-        name: coin.name || "Unknown",
-        symbol: coin.symbol || "",
-        logo: coin.logo || coin.image || "/default.png",
-        price:
-          typeof coin.price === "number"
-            ? coin.price.toFixed(4)
-            : "0.00",
-        marketCap: formatNumber(coin.marketCap),
-        volume: formatNumber(coin.volume),
-        change24h:
-          typeof coin.priceChange24h === "number"
-            ? coin.priceChange24h.toFixed(2)
-            : 0,
+  // ✅ Transform & protect against null values
+const normalizeToArray = (input) => {
+  if (!input) return [];
+  if (Array.isArray(input)) return input;
+  if (input.data && !Array.isArray(input.data)) return [input.data];
+  if (input.data && Array.isArray(input.data)) return input.data;
+  return [input]; // fallback if it's a single coin object directly
+};
 
-        // ✅ Handle moonshot values safely
-        moonshotScore:
-          coin.moonshotFactor ??
-          coin.Moonshot ??
-          coin.moonshot ??
-          0,
+const transformedCoins = normalizeToArray(coins).map((coin) => ({
+  id: coin._id || coin.coinId || coin.id || coin.symbol,
+  name: coin.name || "Unknown",
+  symbol: coin.symbol || "",
+  logo: coin.logo || coin.image || "/default.png",
+  price:
+    typeof coin.price === "number"
+      ? coin.price.toFixed(4)
+      : "0.00",
+  marketCap: formatNumber(coin.marketCap),
+  volume: formatNumber(coin.volume),
+  change24h:
+    typeof coin.priceChange24h === "number"
+      ? coin.priceChange24h.toFixed(2)
+      : 0,
 
-        volatilityScore:
-          coin.breakdown?.volatilityScore?.score ??
-          coin.MoonshotFactors?.volatilityScore ??
-          0,
-        hypeScore:
-          coin.breakdown?.hypeScore?.score ??
-          coin.MoonshotFactors?.hypeScore ??
-          0,
-        devActivity:
-          coin.breakdown?.devActivity?.score ??
-          coin.MoonshotFactors?.devActivity ??
-          0,
-        socialSentiment:
-          coin.breakdown?.hypeScore?.score ??
-          coin.MoonshotFactors?.socialSentiment ??
-          0,
-        otherFactors:
-          coin.breakdown?.narrativeFactor?.score ??
-          coin.MoonshotFactors?.otherFactors ??
-          0,
+  // ✅ Handle Moonshot Factors directly from backend
+  moonshotScore: coin.Moonshot ?? 0,
+  volatilityScore: coin.MoonshotFactors?.volatilityScore ?? 0,
+  hypeScore: coin.MoonshotFactors?.hypeScore ?? 0,
+  devActivity: coin.MoonshotFactors?.devActivity ?? 0,
+  socialSentiment: coin.MoonshotFactors?.socialSentiment ?? 0,
+  otherFactors: coin.MoonshotFactors?.otherFactors ?? 0,
 
-        cqs: coin.eligibility?.cqs ?? coin.CQS ?? 0,
-        ci: coin.CI ?? 0,
-        ri: coin.RI ?? 0,
-        ts: coin.TS ?? 0,
-      }))
-    : [];
+  // ✅ Core metrics
+  cqs: coin.CQS ?? 0,
+  ci: coin.CI ?? 0,
+  ri: coin.RI ?? 0,
+  ts: coin.TS ?? 0,
+}));
+
 
   const sortedCoins = transformedCoins
     .sort((a, b) => b.moonshotScore - a.moonshotScore)
