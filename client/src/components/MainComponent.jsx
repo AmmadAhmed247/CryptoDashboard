@@ -58,12 +58,12 @@ React.useEffect(() => {
   setCoins(prev =>
     prev.map(c => ({ ...c, priceChanged: false }))
   );
-}, 1000);
+}, 1100);
 
   // End loading after short delay
   const timeout = setTimeout(() => {
     setLoading(false);
-  }, 400);
+  }, 1000);
 
   return () => clearTimeout(timeout);
 }, [demoCoins]);
@@ -99,17 +99,16 @@ React.useEffect(() => {
   return (
     <div className="flex-1 overflow-y-auto custom-scrollbar">
       <div className="p-6 space-y-2">
-        {selectedCoins.length > 0 && (
-          <div className="flex justify-end w-full">
-            <button
-              onClick={onClearAnalysis}
-              className="px-3 py-1 bg-red-800 text-white text-xs rounded-lg hover:bg-red-900 transition"
-            >
-              Clear Analysis
-            </button>
-          </div>
-        )}
-
+        {loading ? (<SkeletonLoader rows={1} height="h-32" />
+          // <div className="flex justify-end w-full">
+          //   <button
+          //     onClick={onClearAnalysis}
+          //     className="px-3 py-1 bg-red-800 text-white text-xs rounded-lg hover:bg-red-900 transition"
+          //   >
+          //     Clear Analysis
+          //   </button>
+          // </div>
+        ):(
         <div className="grid grid-cols-4 gap-4">
           {(aggregatedScores
             ? [
@@ -144,6 +143,8 @@ React.useEffect(() => {
             </div>
           ))}
         </div>
+        )}
+
 
         {/* <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-6 border shadow-lg`}>
           <div className="flex items-center justify-between mb-6">
@@ -176,47 +177,26 @@ React.useEffect(() => {
         </div> */}
 
 
-        <div className="flex flex-row w-full gap-2 rounded-3xl">
-          <div className="flex flex-col">
-            
-          </div>
-           <Liveliquidation />
-           {/* <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} w-70 rounded-xl p-4 border shadow-lg`}>
-                    <h3 className={`text-sm font-semibold mb-4 flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                      <Target className="text-[#d0b345]" size={18} />
-                      Quick Alert Setup
-                    </h3>
-                    <div className="space-y-3">
-                      <div>
-                        <label className={`text-xs mb-1 block ${isDarkMode ? 'text-zinc-400' : 'text-gray-600'}`}>Target Price</label>
-                        <input
-                          type="text"
-                          placeholder="$0.20"
-                          className={`w-full px-3 py-2 rounded-lg text-sm ${isDarkMode ? 'bg-zinc-900 border-zinc-700 text-white' : 'bg-white border-gray-300 text-gray-900'} border focus:outline-none focus:ring-2 focus:ring-orange-500`}
-                        />
-                      </div>
-                      <div className="flex gap-2">
-                        <button className={`flex-1 px-3 py-2 ${isDarkMode ? 'bg-zinc-900 hover:bg-zinc-800' : 'bg-gray-100 hover:bg-gray-200'} rounded-lg text-xs font-semibold transition-all`}>
-                          Above
-                        </button>
-                        <button className={`flex-1 px-3 py-2 ${isDarkMode ? 'bg-zinc-900 hover:bg-zinc-800' : 'bg-gray-100 hover:bg-gray-200'} rounded-lg text-xs font-semibold transition-all`}>
-                          Below
-                        </button>
-                      </div>
-                      <button className="w-full bg-[#d0b345] py-2 rounded-lg text-sm font-semibold transition-all shadow-lg hover:shadow-xl hover:scale-105">
-                        Set Alert
-                      </button>
-                    </div>
-       </div> */}
-          <div className="flex flex-col gap-2 w-full">
-          <CryptoMarketCycle />
-      
-          </div>
-          
-         
-          
-    
-        </div>
+    <div className="flex flex-col md:flex-row w-full gap-2 rounded-3xl items-stretch">
+  <div className="hidden [@media(min-width:1660px)]:block flex-[0.3]">
+    {loading ? (
+      <SkeletonLoader rows={1} height="h-64" />
+    ) : (
+      <Liveliquidation />
+    )}
+  </div>
+
+  {/* Right Section: CryptoMarketCycle */}
+  <div className="flex-1 flex flex-col gap-2">
+    {loading ? (
+      <SkeletonLoader rows={1} height="h-64" />
+    ) : (
+      <CryptoMarketCycle />
+    )}
+  </div>
+</div>
+
+
 
 
 

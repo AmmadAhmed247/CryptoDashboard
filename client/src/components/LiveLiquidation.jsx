@@ -73,14 +73,14 @@ const LiveLiquidation = () => {
 
   if (isError) {
     return (
-      <div className="flex items-center justify-center p-6">
+      <div className="flex items-center justify-center w-fit p-6">
         <div className="text-red-400 text-sm">Error loading data</div>
       </div>
     );
   }
 
   return (
-    <div className="w-fit max-w-3xl hidden [@media(min-width:1660px)]:block ">
+    <div className=" max-w-full hidden [@media(min-width:1660px)]:block ">
       <div className="flex flex-col bg-gradient-to-br from-zinc-800 to-zinc-900 border border-zinc-700 px-3 py-3 rounded-xl gap-2 shadow-xl">
         <div className="flex flex-row justify-between items-center mb-2">
           <div className="flex items-center gap-2">

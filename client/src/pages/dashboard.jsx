@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { TrendingUp, TrendingDown, AlertCircle, Bell, ChevronRight, Activity, Flame, Target, Clock, Zap, DollarSign, BarChart3, Award, TrendingUp as TrendUp, Calendar, Users, GitBranch, Radio, Moon, Sun, Sparkles } from 'lucide-react';
 import RightSide from '../components/RightSide';
@@ -100,6 +100,14 @@ const CryptoDashboard = () => {
       setSelectedCoin(demoCoins[0]);
     }
   }, [demoCoins]);
+  const [Loading, setIsLoading] = useState(true);
+
+useEffect(() => {
+  const timer = setTimeout(() => {
+    setIsLoading(false);
+  }, 1500); // Shows skeleton for 1.5 seconds on page load
+  return () => clearTimeout(timer);
+}, []);
 
 
 
@@ -249,6 +257,7 @@ const CryptoDashboard = () => {
             altSeasonIndex={altSeasonIndex}
             marketMetrics={marketMetrics}
             topGainers={topGainers}
+            isLoading={Loading}
           />
         </div>
 
@@ -259,7 +268,7 @@ const CryptoDashboard = () => {
 
         {/* Right Sidebar */}
         <div className="hidden xl:flex w-80 h-full overflow-auto">
-          <RightSide isDarkMode={isDarkMode} selectedCoin={selectedCoin} topCoinsData={topCoinsData} />
+          <RightSide isDarkMode={isDarkMode} selectedCoin={selectedCoin} topCoinsData={topCoinsData} isLoading={Loading}/>
         </div>
         {/* <MoonshotFactor /> */}
       </div>
