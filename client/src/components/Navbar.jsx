@@ -1,21 +1,35 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import {
-  Bell,
-  Sun,
-  Moon,
-  Menu,
-  X,
-} from "lucide-react";
-import Search from "./Search";
+import { data, Link } from "react-router-dom";
+import { Bell, Sun, Moon, Menu, X } from "lucide-react";
 import LiveStatus from "./Time";
 import Login from "../pages/login";
-
+import { useAuth } from "../context/AuthContex"; // ✅ Import Auth context
+import axios from "axios";
+import toast from "react-hot-toast";
 const Navbar = () => {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const[showLogin,setShowLogin]=useState(false);
+  const [showLogin, setShowLogin] = useState(false);
+  const { user, setUser } = useAuth(); // ✅ get user and setter from context
+  const backendurl = import.meta.env.VITE_BACKEND_URL;
+
+  // -------------------- LOGOUT FUNCTION --------------------
+  const handleLogout = async () => {
+  try {
+    const res = await axios.post(
+      `${backendurl}/api/auth/logout`,
+      {},
+      { withCredentials: true }
+    );
+    toast.success(res.data.message || "Logged out successfully ✅");
+    setUser(null); // ✅ clear user context
+  } catch (err) {
+    console.error("Logout failed:", err);
+    toast.error(err.response?.data?.message || "Logout failed ❌");
+  }
+};
+
 
   return (
     <div
@@ -40,30 +54,11 @@ const Navbar = () => {
           <LiveStatus />
         </div>
 
-        {/* Middle Section - Search (hidden on mobile) */}
-        <div className="hidden md:block flex-1 max-w-lg">
-          <Search isDarkMode={isDarkMode} />
-        </div>
 
         {/* Right Section */}
         <div className="flex items-center gap-3">
-          {/* Cycle Info - hidden on small screens */}
-          <div
-            className={`${
-              isDarkMode
-                ? "bg-zinc-800 border-zinc-700"
-                : "bg-gray-100 border-gray-300"
-            } px-4 py-2 rounded-lg border text-sm shadow-md hidden md:block`}
-          >
-            <span className={isDarkMode ? "text-zinc-400" : "text-gray-600"}>
-              Cycle:{" "}
-            </span>
-            <span
-              className={isDarkMode ? "text-[#d0b345]" : "text-zinc-600"}
-            >
-              Early Bear
-            </span>
-          </div>
+          {/* Cycle Info */}
+         
 
           {/* Dark Mode Toggle */}
           <button
@@ -81,33 +76,35 @@ const Navbar = () => {
             )}
           </button>
 
-          {/* Bell Icon */}
-          {/* <button
-            className={`${
-              isDarkMode
-                ? "text-[#d0b345]"
-                : "text-zinc-600"
-            } p-2 rounded-lg transition-all shadow-lg hover:shadow-xl hover:scale-110`}
-          >
-            <Bell size={18} />
-          </button> */}
-
-          {/* Login Button (hidden on small screens) */}
+          {/* ✅ LOGIN / LOGOUT BUTTON */}
           <div>
-      <button
-        onClick={() => setShowLogin(true)}
-        className={`hidden md:block px-4 py-2 rounded-lg font-semibold text-sm shadow-md transition-all ${
-          isDarkMode
-            ? "bg-[#d0b345]/20 text-[#d0b345] hover:bg-[#d0b345]/30"
-            : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-        }`}
-      >
-        Login
-      </button>
-
-      {showLogin && <Login onClose={() => setShowLogin(false)} />}
-
-    </div>
+            {!user ? (
+              <>
+                <button
+                  onClick={() => setShowLogin(true)}
+                  className={`hidden md:block px-4 py-2 rounded-lg font-semibold text-sm shadow-md transition-all ${
+                    isDarkMode
+                      ? "bg-[#d0b345]/20 text-[#d0b345] hover:bg-[#d0b345]/30"
+                      : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                  }`}
+                >
+                  Login
+                </button>
+                {showLogin && <Login onClose={() => setShowLogin(false)} />}
+              </>
+            ) : (
+              <button
+                onClick={handleLogout}
+                className={`hidden md:block px-4 py-2 rounded-lg font-semibold text-sm shadow-md transition-all ${
+                  isDarkMode
+                    ? "bg-[#d0b345]/20 text-[#d0b345] hover:bg-[#d0b345]/30"
+                    : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                }`}
+              >
+                Logout
+              </button>
+            )}
+          </div>
 
           {/* Mobile Menu Toggle */}
           <button
@@ -162,25 +159,43 @@ const Navbar = () => {
               : "bg-white border-gray-200"
           }`}
         >
-          <div>
-      <button
-        onClick={() => setShowLogin(true)}
-        className={` px-4 py-2 rounded-lg font-semibold text-sm shadow-md transition-all ${
-          isDarkMode
-            ? " text-[#d0b345] hover:underline"
-            : "bg-gray-200 text-gray-800 hover:underline"
-        }`}
-      >
-        Login
-      </button>
+          {!user ? (
+            <button
+              onClick={() => setShowLogin(true)}
+              className={` px-4 py-2 rounded-lg font-semibold text-sm shadow-md transition-all ${
+                isDarkMode
+                  ? " text-[#d0b345] hover:underline"
+                  : "bg-gray-200 text-gray-800 hover:underline"
+              }`}
+            >
+              Login
+            </button>
+          ) : (
+            <button
+              onClick={handleLogout}
+              className={` px-4 py-2 rounded-lg font-semibold text-sm shadow-md transition-all ${
+                isDarkMode
+                  ? " text-[#d0b345] hover:underline"
+                  : "bg-gray-200 text-gray-800 hover:underline"
+              }`}
+            >
+              Logout
+            </button>
+          )}
+          {showLogin && <Login onClose={() => setShowLogin(false)} />}
 
-      {showLogin && <Login onClose={() => setShowLogin(false)} />}
-
-    </div>
-         <Link className="block px-3 py-2 text-sm font-semibold text-[#d0b345] hover:underline" to={"/"} >
-         Dashboard</Link>
-         <Link className="block px-3 py-2 text-sm font-semibold text-[#d0b345] hover:underline" to={"/hotcoins"} >
-         HotCoins</Link>
+          <Link
+            className="block px-3 py-2 text-sm font-semibold text-[#d0b345] hover:underline"
+            to={"/"}
+          >
+            Dashboard
+          </Link>
+          <Link
+            className="block px-3 py-2 text-sm font-semibold text-[#d0b345] hover:underline"
+            to={"/hotcoins"}
+          >
+            HotCoins
+          </Link>
         </div>
       )}
     </div>

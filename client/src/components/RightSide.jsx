@@ -4,6 +4,7 @@ import { TrendingUp, TrendingDown, AlertCircle, Bell, ChevronRight, Activity, Fl
 import MoonshotFactorMini from './Moonshot';
 import CryptoNews from './CryptoNews'
 import EntryRecommendation from './Entry';
+import Alert from './Alert';
 const formatNumber = (num) => {
   // Remove $ sign and commas if present
   const cleanNum = typeof num === 'string'
@@ -140,6 +141,8 @@ const RightSide = ({ isDarkMode, selectedCoin, topCoinsData }) => {
                 ))}
               </div>
             </div> */}
+            <Alert isDarkMode={isDarkMode} />
+
         <MoonshotFactorMini coins={topCoinsData} analyzeCoin={selectedCoin} />
 
         {/* Alerts */}

@@ -6,6 +6,7 @@ import CryptoMarketCycle from './bitcoinCycle';
 import LIEFCard from './MAF';
 import { Plus } from "lucide-react";
 import Liveliquidation from "./LiveLiquidation.jsx"
+import SkeletonLoader from './Skeleton.jsx';
 const macroData = [
   { date: "2024-01", ism: 0.42, m2: 0.61, dxyInv: 0.38, maf: 0.47 },
   { date: "2024-02", ism: 0.48, m2: 0.63, dxyInv: 0.42, maf: 0.51 },
@@ -20,46 +21,55 @@ function getColor(value) {
 }
 
 const MainContent = ({ isDarkMode, demoCoins, narrativeTrends, ScoreCard, onSelectCoin, selectedCoins, onAddToAnalysis, onClearAnalysis }) => {
+  const [loading, setLoading] = React.useState(true);
+  
 
-  const [coins, setCoins] = React.useState(demoCoins);
+  const [coins, setCoins] = React.useState(
+  [...demoCoins].sort((a, b) => b.average - a.average)
+);
+
   const prevCoinsRef = React.useRef(demoCoins);
   
 
   // Detect when demoCoins prop changes and mark which coins changed
-  React.useEffect(() => {
-    const prevCoins = prevCoinsRef.current;
+React.useEffect(() => {
+  if (coins.length === 0) {
+  setLoading(true);
+}
 
-    const updatedCoins = demoCoins.map((coin, idx) => {
-      const prevCoin = prevCoins[idx];
+  const prevCoins = prevCoinsRef.current;
 
-      if (prevCoin && prevCoin.price !== coin.price) {
-        const oldPrice = parseFloat(prevCoin.price.replace(/[$,]/g, ''));
-        const newPrice = parseFloat(coin.price.replace(/[$,]/g, ''));
-        const isUp = newPrice > oldPrice;
+  const updatedCoins = demoCoins.map((coin, idx) => {
+    const prevCoin = prevCoins[idx];
+    if (prevCoin && prevCoin.price !== coin.price) {
+      const oldPrice = parseFloat(prevCoin.price.replace(/[$,]/g, ''));
+      const newPrice = parseFloat(coin.price.replace(/[$,]/g, ''));
+      const isUp = newPrice > oldPrice;
 
-        return {
-          ...coin,
-          priceChanged: true,
-          priceDirection: isUp ? "up" : "down"
-        };
-      }
+      return { ...coin, priceChanged: true, priceDirection: isUp ? "up" : "down" };
+    }
+    return { ...coin, priceChanged: false };
+  });
 
-      return coin;
-    });
+  const sortedCoins = [...updatedCoins].sort((a, b) => b.average - a.average);
+  setCoins(sortedCoins);
+  prevCoinsRef.current = demoCoins;
+  setTimeout(() => {
+  setCoins(prev =>
+    prev.map(c => ({ ...c, priceChanged: false }))
+  );
+}, 1000);
 
-    setCoins(updatedCoins);
-    prevCoinsRef.current = demoCoins;
+  // End loading after short delay
+  const timeout = setTimeout(() => {
+    setLoading(false);
+  }, 400);
 
-    // Reset glow after 500ms
-    const timeout = setTimeout(() => {
-      setCoins(demoCoins.map(coin => ({
-        ...coin,
-        priceChanged: false
-      })));
-    }, 500);
+  return () => clearTimeout(timeout);
+}, [demoCoins]);
 
-    return () => clearTimeout(timeout);
-  }, [demoCoins]);
+
+
  
 
 
@@ -84,6 +94,7 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends, ScoreCard, onSele
       ri: (total.ri / count).toFixed(0),
     };
   }, [selectedCoins]);
+
 
   return (
     <div className="flex-1 overflow-y-auto custom-scrollbar">
@@ -166,11 +177,11 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends, ScoreCard, onSele
 
 
         <div className="flex flex-row w-full gap-2 rounded-3xl">
-           
-          <div className="flex flex-col gap-2 w-170">
-          <CryptoMarketCycle />
-          {/* Price Alerts Setup */}
-                  <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-4 border shadow-lg`}>
+          <div className="flex flex-col">
+            
+          </div>
+           <Liveliquidation />
+           {/* <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} w-70 rounded-xl p-4 border shadow-lg`}>
                     <h3 className={`text-sm font-semibold mb-4 flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                       <Target className="text-[#d0b345]" size={18} />
                       Quick Alert Setup
@@ -196,9 +207,12 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends, ScoreCard, onSele
                         Set Alert
                       </button>
                     </div>
-                  </div>
+       </div> */}
+          <div className="flex flex-col gap-2 w-full">
+          <CryptoMarketCycle />
+      
           </div>
-          <Liveliquidation />
+          
          
           
     
@@ -222,33 +236,37 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends, ScoreCard, onSele
           </div>
 
           <div className="overflow-x-auto custom-scrollbar">
-            <table className="w-full">
-              <thead>
-                <tr className="border-zinc-700 border-b">
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-zinc-400">Coin</th>
-                  <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">Price</th>
-                  <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">24h</th>
-                  <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">Volume</th>
-                  <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">CQS</th>
-                  <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">TS</th>
-                  <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">CI</th>
-                  <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">RI</th>
-                  <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">Moonshot</th>
-                  <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">Action</th>
-                  <th className="text-middle w-12 py-3 px-4 text-sm font-semibold text-zinc-400">Add To Analysis</th>
-                </tr>
-              </thead>
-              <tbody>
-                {coins.map((coin, idx) => (
-                  <tr
-                    key={idx}
-                    className={`${isDarkMode
-                      ? "border-zinc-700 hover:bg-zinc-700/50"
-                      : "border-gray-200 hover:bg-gray-100"
-                      } border-b text-left transition-all cursor-pointer group`}
-                    onClick={() => onSelectCoin(coin)}
-                  >
-                    <td className="py-4 px-4">
+  {loading ? (
+    <SkeletonLoader rows={10} height="h-8" />
+  ) : (
+    <table className="w-full">
+      <thead>
+        <tr className="border-zinc-700 border-b">
+          <th className="text-left py-3 px-4 text-sm font-semibold text-zinc-400">Coin</th>
+          <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">Price</th>
+          <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">24h</th>
+          <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">Volume</th>
+          <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">CQS</th>
+          <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">TS</th>
+          <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">CI</th>
+          <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">RI</th>
+          <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">Moonshot</th>
+          <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">Action</th>
+          <th className="text-middle w-12 py-3 px-4 text-sm font-semibold text-zinc-400">Add To Analysis</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {coins.map((coin, idx) => (
+          <tr
+            key={idx}
+            className={`${isDarkMode
+              ? "border-zinc-700 hover:bg-zinc-700/50"
+              : "border-gray-200 hover:bg-gray-100"
+              } border-b text-left transition-all cursor-pointer group`}
+            onClick={() => onSelectCoin(coin)}
+          >
+            <td className="py-4 px-4">
                       <Link
                         to={`https://coinmarketcap.com/currencies/${coin.id || coin.name.toLowerCase().replace(/\s+/g, "-")}`}
                         target="_blank"
@@ -351,13 +369,13 @@ const MainContent = ({ isDarkMode, demoCoins, narrativeTrends, ScoreCard, onSele
     <Plus className="w-4 h-4 text-white" />
   </button>
 </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )}
+</div>
 
-
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
         </div>
       </div>
     </div>

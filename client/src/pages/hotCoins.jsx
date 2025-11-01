@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Flame, Target, Award, Sparkles, Trash2 } from 'lucide-react';
 import { Plus } from "lucide-react";
 
-const HotCoins = () => {
+const HotCoins = ({coin}) => {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [portfolio, setPortfolio] = useState([]);
 

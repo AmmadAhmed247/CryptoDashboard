@@ -72,7 +72,7 @@ const CryptoMarketCycle = () => {
       </div>
 
       {/* Chart */}
-      <div className="h-80">
+      <div className="h-84">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 10, right: 0, bottom: 0, left: 0 }}>
             <defs>

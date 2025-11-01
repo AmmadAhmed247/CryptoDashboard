@@ -56,7 +56,7 @@ const LiveLiquidation = () => {
     return safeData.filter((d) => d.exchange?.toLowerCase() === selected.toLowerCase());
   }, [selected, safeData]);
 
-  const displayData = useMemo(() => filtered.slice(0, 15), [filtered]);
+  const displayData = useMemo(() => filtered.slice(0, 10), [filtered]);
 
   const handleExchangeSelect = (exchange) => {
     setSelected(exchange);
@@ -80,7 +80,7 @@ const LiveLiquidation = () => {
   }
 
   return (
-    <div className="w-fit max-w-3xl">
+    <div className="w-fit max-w-3xl hidden [@media(min-width:1660px)]:block ">
       <div className="flex flex-col bg-gradient-to-br from-zinc-800 to-zinc-900 border border-zinc-700 px-3 py-3 rounded-xl gap-2 shadow-xl">
         <div className="flex flex-row justify-between items-center mb-2">
           <div className="flex items-center gap-2">

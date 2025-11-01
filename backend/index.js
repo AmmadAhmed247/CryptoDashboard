@@ -13,8 +13,9 @@ import { startAllSocket } from "./controllers/allLiquidation.controller.js";
 import backtestRoutes from './routes/test.js';
 import "./CronJobs/autoUpdateCoins.js"
 import { startGCMICron } from "./CronJobs/gcmiCron.js";
-import { updateGCMIData } from "./controllers/GcmiFactor.controller.js";
-
+import AlertRouter from "./routes/alert.route.js";
+import { checkAlerts } from "./services/alert.service.js";
+import AuthRoute from "./routes/auth.route.js"
 const app = express();
 app.use(express.json());
 
@@ -33,6 +34,9 @@ app.use('/api', cqsRoute);
 app.use('/api/data', coinRoute);
 app.use('/api/', hotCoinsRoute);
 app.use('/api/', GcmiRoute);
+app.use("/api/alerts",AlertRouter);
+app.use("/api/auth",AuthRoute)
+setInterval(checkAlerts,60000);
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });

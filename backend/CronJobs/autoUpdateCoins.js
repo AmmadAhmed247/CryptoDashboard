@@ -32,7 +32,6 @@ cron.schedule("*/2 * * * *", async () => {
     console.error(`❌ Failed to update ${coin.name}:`, err.message);
   }
 
-  // Move to next coin
   currentIndex = (currentIndex + 1) % coinsCache.length;
   isRunning = false;
 });
