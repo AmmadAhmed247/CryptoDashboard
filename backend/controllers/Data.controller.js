@@ -40,24 +40,24 @@ export const getHalvingData = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch halving data" });
   }
 };
-
 export const getAltseasonIndex = async (req, res) => {
   try {
+    // Fetch global crypto market data from CoinGecko
     const response = await axios.get(
-      "https://www.blockchaincenter.net/en/altcoin-season-index/",
-      {
-        headers: {
-          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-        }
-      }
+      "https://api.coingecko.com/api/v3/global"
     );
 
-    const $ = cheerio.load(response.data);
-    // Look for the index value in the page structure
-    const indexValue = $('[data-altseason-index]').text() || 
-                       $('.altseason-index-value').text();
+    const data = response.data.data;
 
-    res.json({ value: parseInt(indexValue) });
+    // Extract Bitcoin dominance (used as a rough indicator for altseason)
+    const btcDominance = data.market_cap_percentage?.btc;
+
+    // Approximate Altseason Index (for demonstration)
+    // Example logic: higher BTC dominance = less altseason
+    // So Altseason Index = 100 - BTC dominance
+    const altseasonIndex = 100 - btcDominance;
+
+    res.json({ value: parseFloat(altseasonIndex.toFixed(0)) });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

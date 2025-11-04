@@ -7,6 +7,7 @@ import LIEFCard from './MAF';
 import { Plus } from "lucide-react";
 import Liveliquidation from "./LiveLiquidation.jsx"
 import SkeletonLoader from './Skeleton.jsx';
+import { useTheme } from "../context/ThemeContext.jsx";
 const macroData = [
   { date: "2024-01", ism: 0.42, m2: 0.61, dxyInv: 0.38, maf: 0.47 },
   { date: "2024-02", ism: 0.48, m2: 0.63, dxyInv: 0.42, maf: 0.51 },
@@ -20,8 +21,10 @@ function getColor(value) {
   return value < 50 ? 'bg-red-800' : 'bg-green-700';
 }
 
-const MainContent = ({ isDarkMode, demoCoins, narrativeTrends, ScoreCard, onSelectCoin, selectedCoins, onAddToAnalysis, onClearAnalysis }) => {
+const MainContent = ({  demoCoins, narrativeTrends, ScoreCard, onSelectCoin, selectedCoins, onAddToAnalysis, onClearAnalysis }) => {
+  const { isDarkMode } = useTheme();
   const [loading, setLoading] = React.useState(true);
+  
   
 
   const [coins, setCoins] = React.useState(
@@ -97,7 +100,12 @@ React.useEffect(() => {
 
 
   return (
-    <div className="flex-1 overflow-y-auto custom-scrollbar">
+    <div
+  className={`flex-1 overflow-y-auto custom-scrollbar ${
+    isDarkMode ? "bg-zinc-900" : "bg-white"
+  }`}
+>
+
       <div className="p-6 space-y-2">
         {loading ? (<SkeletonLoader rows={1} height="h-32" />
           // <div className="flex justify-end w-full">
@@ -272,7 +280,7 @@ React.useEffect(() => {
                         className={`font-semibold transition-all duration-300 inline-block ${coin.priceChanged && coin.priceDirection === 'up'
                             ? "!text-green-500 drop-shadow-[0_0_12px_rgba(74,222,128,0.8)]"
                             : coin.priceChanged && coin.priceDirection === 'down'
-                              ? "!text-red-500 drop-shadow-[0_0_12px_rgba(248,113,113,0.8)]"
+                              ? "!text-red-700 drop-shadow-[0_0_12px_rgba(248,113,113,0.8)]"
                               : isDarkMode ? "text-white" : "text-gray-900"
                           }`}
                       >
@@ -282,7 +290,7 @@ React.useEffect(() => {
 
                     <td className="text-right py-4 px-4">
                       <span
-                        className={`${parseFloat(coin.change) >= 0 ? "text-green-400" : "text-red-400"} font-semibold transition-all duration-300 ${coin.priceChanged && coin.priceDirection === 'up'
+                        className={`${parseFloat(coin.change) >= 0 ? "text-green-400" : "text-red-600"} font-semibold transition-all duration-300 ${coin.priceChanged && coin.priceDirection === 'up'
                             ? "drop-shadow-[0_0_8px_rgba(74,222,128,0.6)]"
                             : coin.priceChanged && coin.priceDirection === 'down'
                               ? "drop-shadow-[0_0_8px_rgba(248,113,113,0.6)]"

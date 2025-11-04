@@ -6,7 +6,7 @@ import CryptoNews from './CryptoNews'
 import EntryRecommendation from './Entry';
 import Alert from './Alert';
 import SkeletonLoader from './Skeleton';
-
+import { useTheme } from "../context/ThemeContext";
 const formatNumber = (num) => {
   // Remove $ sign and commas if present
   const cleanNum = typeof num === 'string'
@@ -30,7 +30,8 @@ const formatNumber = (num) => {
   }
 };
 
-const RightSide = ({ isDarkMode, selectedCoin, topCoinsData, isLoading = false }) => {
+const RightSide = ({ selectedCoin, topCoinsData, isLoading = false }) => {
+  const { isDarkMode } = useTheme();
 
   return (
     <div className={`w-96 ${isDarkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-gray-200'} border-l overflow-y-auto custom-scrollbar`}>
@@ -52,7 +53,7 @@ const RightSide = ({ isDarkMode, selectedCoin, topCoinsData, isLoading = false }
               <div className="text-right ">
                 <div className={`text-md font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{selectedCoin?.price}</div>
                 <div
-                  className={` ${parseFloat(selectedCoin?.change) >= 0 ? 'text-green-400' : 'text-red-400'}
+                  className={` ${parseFloat(selectedCoin?.change) >= 0 ? 'text-green-400' : 'text-red-700'}
                   text-sm font-semibold`}
                 >
                   {selectedCoin?.change}
@@ -84,18 +85,18 @@ const RightSide = ({ isDarkMode, selectedCoin, topCoinsData, isLoading = false }
           </div>
         )}
 
-        {/* Alert */}
+        {/* Alert
         {isLoading ? (
           <SkeletonLoader rows={1} height="h-32" />
         ) : (
           <Alert isDarkMode={isDarkMode} />
-        )}
+        )} */}
 
         {/* Moonshot Factor Mini */}
         {isLoading ? (
           <SkeletonLoader rows={1} height="h-40" />
         ) : (
-          <MoonshotFactorMini coins={topCoinsData} analyzeCoin={selectedCoin} />
+          <MoonshotFactorMini isDarkMode={isDarkMode} coins={topCoinsData} analyzeCoin={selectedCoin} />
         )}
 
         {/* Crypto News */}

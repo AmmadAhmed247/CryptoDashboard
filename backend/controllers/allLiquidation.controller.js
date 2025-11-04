@@ -12,16 +12,16 @@ export const startAllSocket = () => {
         liquidationData.push(data)
         if (liquidationData.length > 500) liquidationData.shift()
     })
-    connectToBybit((data) => {
-        liquidationData.push(data)
-        if (liquidationData.length > 500) liquidationData.shift()
-    })
-    connectToOkx((data) => {
-        liquidationData.push(data)
-        if (liquidationData.length > 500) {
-            liquidationData.shift()
-        }
-    })
+    // connectToBybit((data) => {
+    //     liquidationData.push(data)
+    //     if (liquidationData.length > 500) liquidationData.shift()
+    // })
+    // connectToOkx((data) => {
+    //     liquidationData.push(data)
+    //     if (liquidationData.length > 500) {
+    //         liquidationData.shift()
+    //     }
+    // })
     
 }
 

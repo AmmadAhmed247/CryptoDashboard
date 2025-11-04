@@ -14,7 +14,7 @@ import backtestRoutes from './routes/test.js';
 import "./CronJobs/autoUpdateCoins.js"
 import { startGCMICron } from "./CronJobs/gcmiCron.js";
 import AlertRouter from "./routes/alert.route.js";
-import { checkAlerts } from "./services/alert.service.js";
+import { startAlertCron } from "./CronJobs/alertCron.js";
 import AuthRoute from "./routes/auth.route.js"
 const app = express();
 app.use(express.json());
@@ -26,8 +26,8 @@ connectDB();
 app.get('/api/status', (req, res) => {
   res.json({ status: 'API is running' });
 });
-startAllSocket()
-app.use("/api",liquidationRoute)
+startAllSocket();
+app.use("/api",liquidationRoute);
 app.use('/api', backtestRoutes);
 app.use('/api/data', dataRoutes);
 app.use('/api', cqsRoute);
@@ -35,8 +35,8 @@ app.use('/api/data', coinRoute);
 app.use('/api/', hotCoinsRoute);
 app.use('/api/', GcmiRoute);
 app.use("/api/alerts",AlertRouter);
-app.use("/api/auth",AuthRoute)
-setInterval(checkAlerts,60000);
+app.use("/api/auth",AuthRoute);
+startAlertCron();
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });

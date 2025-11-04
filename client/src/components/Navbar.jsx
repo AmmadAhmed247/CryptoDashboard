@@ -6,8 +6,9 @@ import Login from "../pages/login";
 import { useAuth } from "../context/AuthContex"; // ✅ Import Auth context
 import axios from "axios";
 import toast from "react-hot-toast";
+import { useTheme } from "../context/ThemeContext";
 const Navbar = () => {
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const { isDarkMode, setIsDarkMode } = useTheme();
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
@@ -47,9 +48,9 @@ const Navbar = () => {
               alt="Logo"
               className="w-fit h-12 rounded-2xl animate-slowspin"
             />
-            <h1 className="text-3xl text-[#d0b345] font-semibold">
+            <Link to={"/"} className="text-3xl text-[#d0b345] font-semibold">
               MEIN KRYPTO
-            </h1>
+            </Link>
           </div>
           <LiveStatus />
         </div>
@@ -123,7 +124,7 @@ const Navbar = () => {
         } rounded-2xl mt-2 border-b px-6 shadow-md backdrop-blur-sm hidden md:block`}
       >
         <div className="flex gap-1">
-          {["Dashboard", "Hot Coins"].map((tab) => (
+          {["Dashboard", "Top Coins"].map((tab) => (
             <Link
               to={
                 tab === "Dashboard"
@@ -192,9 +193,9 @@ const Navbar = () => {
           </Link>
           <Link
             className="block px-3 py-2 text-sm font-semibold text-[#d0b345] hover:underline"
-            to={"/hotcoins"}
+            to={"/topcoins"}
           >
-            HotCoins
+            TopCoins
           </Link>
         </div>
       )}

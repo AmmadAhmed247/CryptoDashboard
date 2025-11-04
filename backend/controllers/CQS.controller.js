@@ -26,7 +26,6 @@ export const calculateCQS = async (req, res) => {
         return { githubScore: 0, githubDebug: { error: e.message } };
       }
     })();
-
     const lunarPromise = (async () => {
       try {
         const lc = await axios.get(
