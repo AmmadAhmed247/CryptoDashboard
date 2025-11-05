@@ -5,8 +5,9 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  // ✅ NEW STATE: Set to true initially
+  const [loading, setLoading] = useState(true); 
 
-  // Fetch user when app loads (optional: if you want to persist login)
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -16,6 +17,9 @@ export const AuthProvider = ({ children }) => {
         setUser(res.data.user);
       } catch (err) {
         setUser(null);
+      } finally {
+        // ✅ ALWAYS set loading to false after the request finishes
+        setLoading(false); 
       }
     };
     fetchUser();
@@ -27,7 +31,8 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, logout }}>
+    // ✅ Include loading in the context value
+    <AuthContext.Provider value={{ user, setUser, logout, loading }}> 
       {children}
     </AuthContext.Provider>
   );

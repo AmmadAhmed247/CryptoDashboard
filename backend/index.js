@@ -14,8 +14,9 @@ import backtestRoutes from './routes/test.js';
 import "./CronJobs/autoUpdateCoins.js"
 import { startGCMICron } from "./CronJobs/gcmiCron.js";
 import AlertRouter from "./routes/alert.route.js";
-import { startAlertCron } from "./CronJobs/alertCron.js";
 import AuthRoute from "./routes/auth.route.js"
+import cookieParser from 'cookie-parser';
+
 const app = express();
 app.use(express.json());
 
@@ -23,6 +24,7 @@ const PORT = process.env.PORT;
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 startGCMICron();
 connectDB();
+app.use(cookieParser());
 app.get('/api/status', (req, res) => {
   res.json({ status: 'API is running' });
 });
@@ -36,7 +38,7 @@ app.use('/api/', hotCoinsRoute);
 app.use('/api/', GcmiRoute);
 app.use("/api/alerts",AlertRouter);
 app.use("/api/auth",AuthRoute);
-startAlertCron();
+
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });

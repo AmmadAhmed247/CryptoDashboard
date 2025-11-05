@@ -1,36 +1,36 @@
 import React, { useState } from "react";
-import { data, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Bell, Sun, Moon, Menu, X } from "lucide-react";
 import LiveStatus from "./Time";
 import Login from "../pages/login";
-import { useAuth } from "../context/AuthContex"; // ✅ Import Auth context
+import { useAuth } from "../context/AuthContex";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useTheme } from "../context/ThemeContext";
+
 const Navbar = () => {
   const { isDarkMode, setIsDarkMode } = useTheme();
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
-  const { user, setUser } = useAuth(); // ✅ get user and setter from context
+  const { user, setUser, loading } = useAuth(); // ✅ Get user, setter, and loading from context
   const backendurl = import.meta.env.VITE_BACKEND_URL;
 
   // -------------------- LOGOUT FUNCTION --------------------
   const handleLogout = async () => {
-  try {
-    const res = await axios.post(
-      `${backendurl}/api/auth/logout`,
-      {},
-      { withCredentials: true }
-    );
-    toast.success(res.data.message || "Logged out successfully ✅");
-    setUser(null); // ✅ clear user context
-  } catch (err) {
-    console.error("Logout failed:", err);
-    toast.error(err.response?.data?.message || "Logout failed ❌");
-  }
-};
-
+    try {
+      const res = await axios.post(
+        `${backendurl}/api/auth/logout`,
+        {},
+        { withCredentials: true }
+      );
+      toast.success(res.data.message || "Logged out successfully ✅");
+      setUser(null); // ✅ Clear user context
+    } catch (err) {
+      console.error("Logout failed:", err);
+      toast.error(err.response?.data?.message || "Logout failed ❌");
+    }
+  };
 
   return (
     <div
@@ -55,12 +55,8 @@ const Navbar = () => {
           <LiveStatus />
         </div>
 
-
         {/* Right Section */}
         <div className="flex items-center gap-3">
-          {/* Cycle Info */}
-         
-
           {/* Dark Mode Toggle */}
           <button
             onClick={() => setIsDarkMode(!isDarkMode)}
@@ -77,9 +73,31 @@ const Navbar = () => {
             )}
           </button>
 
-          {/* ✅ LOGIN / LOGOUT BUTTON */}
+          {/* ✅ LOGIN / LOGOUT BUTTON - FIXED LOGIC */}
           <div>
-            {!user ? (
+            {loading ? (
+              // Show loading state while checking auth
+              <div
+                className={`hidden md:block px-4 py-2 rounded-lg font-semibold text-sm ${
+                  isDarkMode ? "text-zinc-500" : "text-gray-400"
+                }`}
+              >
+                Loading...
+              </div>
+            ) : user ? (
+              // ✅ User is logged in - show LOGOUT button
+              <button
+                onClick={handleLogout}
+                className={`hidden md:block px-4 py-2 rounded-lg font-semibold text-sm shadow-md transition-all ${
+                  isDarkMode
+                    ? "bg-[#d0b345]/20 text-[#d0b345] hover:bg-[#d0b345]/30"
+                    : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                }`}
+              >
+                Logout
+              </button>
+            ) : (
+              // ✅ No user - show LOGIN button
               <>
                 <button
                   onClick={() => setShowLogin(true)}
@@ -93,17 +111,6 @@ const Navbar = () => {
                 </button>
                 {showLogin && <Login onClose={() => setShowLogin(false)} />}
               </>
-            ) : (
-              <button
-                onClick={handleLogout}
-                className={`hidden md:block px-4 py-2 rounded-lg font-semibold text-sm shadow-md transition-all ${
-                  isDarkMode
-                    ? "bg-[#d0b345]/20 text-[#d0b345] hover:bg-[#d0b345]/30"
-                    : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-                }`}
-              >
-                Logout
-              </button>
             )}
           </div>
 
@@ -160,30 +167,41 @@ const Navbar = () => {
               : "bg-white border-gray-200"
           }`}
         >
-          {!user ? (
-            <button
-              onClick={() => setShowLogin(true)}
-              className={` px-4 py-2 rounded-lg font-semibold text-sm shadow-md transition-all ${
-                isDarkMode
-                  ? " text-[#d0b345] hover:underline"
-                  : "bg-gray-200 text-gray-800 hover:underline"
+          {/*MOBILE LOGIN/LOGOUT */}
+          {loading ? (
+            <div
+              className={`px-4 py-2 text-sm ${
+                isDarkMode ? "text-zinc-500" : "text-gray-400"
               }`}
             >
-              Login
-            </button>
-          ) : (
+              Loading...
+            </div>
+          ) : user ? (
             <button
               onClick={handleLogout}
-              className={` px-4 py-2 rounded-lg font-semibold text-sm shadow-md transition-all ${
+              className={`px-4 py-2 rounded-lg font-semibold text-sm shadow-md transition-all ${
                 isDarkMode
-                  ? " text-[#d0b345] hover:underline"
+                  ? "text-[#d0b345] hover:underline"
                   : "bg-gray-200 text-gray-800 hover:underline"
               }`}
             >
               Logout
             </button>
+          ) : (
+            <>
+              <button
+                onClick={() => setShowLogin(true)}
+                className={`px-4 py-2 rounded-lg font-semibold text-sm shadow-md transition-all ${
+                  isDarkMode
+                    ? "text-[#d0b345] hover:underline"
+                    : "bg-gray-200 text-gray-800 hover:underline"
+                }`}
+              >
+                Login
+              </button>
+              {showLogin && <Login onClose={() => setShowLogin(false)} />}
+            </>
           )}
-          {showLogin && <Login onClose={() => setShowLogin(false)} />}
 
           <Link
             className="block px-3 py-2 text-sm font-semibold text-[#d0b345] hover:underline"

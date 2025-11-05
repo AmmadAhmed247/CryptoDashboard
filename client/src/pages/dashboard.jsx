@@ -14,12 +14,19 @@ const CryptoDashboard = () => {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [selectedCoins, setSelectedCoins] = useState([]); // ✅ moved here
 
-  const handleAddToAnalysis = (coin) => {
+const handleAddToAnalysis = (coin) => {
+  console.log('Adding coin:', coin.name);
+  console.log('Scores:', { cqs: coin.cqs, ts: coin.ts, ci: coin.ci, ri: coin.ri });
+  
   setSelectedCoins((prev) => {
-    if (prev.find(c => c.name === coin.name)) return prev;
-    return [...prev, coin];
+    if (prev.find(c => c.name === coin.name)) {
+ 
+      return prev;
+    }
+    const newCoins = [...prev, coin];
+   
+    return newCoins;
   });
-
 
   setSelectedCoin(coin);
 };
