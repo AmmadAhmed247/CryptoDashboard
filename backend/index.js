@@ -16,7 +16,7 @@ import { startGCMICron } from "./CronJobs/gcmiCron.js";
 import AlertRouter from "./routes/alert.route.js";
 import AuthRoute from "./routes/auth.route.js"
 import cookieParser from 'cookie-parser';
-
+import portfolioRoutes from "./routes/portfolio.route.js";
 const app = express();
 app.use(express.json());
 
@@ -38,7 +38,7 @@ app.use('/api/', hotCoinsRoute);
 app.use('/api/', GcmiRoute);
 app.use("/api/alerts",AlertRouter);
 app.use("/api/auth",AuthRoute);
-
+app.use("/api/portfolio",portfolioRoutes)
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });

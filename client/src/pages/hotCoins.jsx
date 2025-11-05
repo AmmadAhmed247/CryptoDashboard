@@ -1,13 +1,16 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Flame, Target, Award, Trash2, Plus } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { Link } from 'react-router-dom'
 import { useTheme } from '../context/ThemeContext'
+import toast from 'react-hot-toast'
+import { useAuth } from '../context/AuthContex'
 
 const HotCoins = () => {
   const { isDarkMode } = useTheme()
-  const [portfolio, setPortfolio] = useState([])
+  const [portfolio, setPortfolio] = useState([]);
+  const { user } = useAuth();
 
   const { data: topCoinsData, isLoading, error } = useQuery({
     queryKey: ['topCoins'],
@@ -22,9 +25,10 @@ const HotCoins = () => {
 
   const demoCoins =
     topCoinsData?.map(coin => ({
-      id: coin.id,
+      id: coin.coinId,
       name: coin.name,
       symbol: coin.symbol.toUpperCase(),
+      logo: coin.logo, // ✅ Keep logo URL
       icon: <img src={coin.logo} alt={coin.symbol} className="w-8 h-8 rounded-full" />,
       cqs: coin.CQS.toFixed(0),
       ts: coin.TS.toFixed(0),
@@ -40,15 +44,99 @@ const HotCoins = () => {
       average: coin.average,
     })) || []
 
-  const addToPortfolio = coin => {
-    if (!portfolio.find(c => c.name === coin.name)) {
-      setPortfolio([...portfolio, coin])
+  useEffect(() => {
+    const fetchPortfolio = async () => {
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/portfolio`,
+          { withCredentials: true }
+        );
+        setPortfolio(res.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+ 
+    if (user) {
+      fetchPortfolio();
     }
-  }
+  }, [user]);
 
-  const removeFromPortfolio = coinName => {
-    setPortfolio(portfolio.filter(c => c.name !== coinName))
-  }
+  // ✅ Helper function to enrich portfolio data with logo and formatted values
+  const enrichedPortfolio = portfolio.map(portfolioCoin => {
+    // Find matching coin from demoCoins to get logo
+    const matchingCoin = demoCoins.find(c => c.id === portfolioCoin.id);
+    
+    return {
+      ...portfolioCoin,
+      logo: matchingCoin?.logo || '', // Get logo from API data
+      icon: matchingCoin?.logo ? (
+        <img src={matchingCoin.logo} alt={portfolioCoin.symbol} className="w-8 h-8 rounded-full" />
+      ) : (
+        <div className="w-8 h-8 rounded-full bg-zinc-700 flex items-center justify-center text-xs">
+          {portfolioCoin.symbol?.slice(0, 2)}
+        </div>
+      ),
+      price: `$${Number(portfolioCoin.price).toLocaleString()}`,
+      change: `${Number(portfolioCoin.change24h).toFixed(2)}%`,
+      trend: portfolioCoin.change24h >= 0 ? 'up' : 'down'
+    };
+  });
+
+  // Add coin
+  const addToPortfolio = async (coin) => {
+    try {
+      if (!user) {
+        toast.error("Please login to add coins to portfolio");
+        return;
+      }
+
+      console.log('Adding coin:', coin);
+
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/portfolio/add`,
+        {
+          id: coin.id,
+          symbol: coin.symbol,
+          price: parseFloat(coin.price.replace(/[$,]/g, '')),
+          change24h: parseFloat(coin.change.replace('%', '')),
+          logo: coin.logo
+        },
+        { withCredentials: true }
+      );
+
+      setPortfolio(response.data);
+      toast.success("Coin added to portfolio");
+
+    } catch (error) {
+      console.error("Error adding to portfolio:", error);
+      
+      if (error.response?.status === 401) {
+        toast.error("Please login to add coins to portfolio");
+      } else if (error.response?.status === 400) {
+        toast.info("Coin already in portfolio");
+      } else {
+        toast.error(error.response?.data?.message || "Failed to add coin");
+      }
+    }
+  };
+
+  // Remove coin - ✅ Fixed to use coin.id
+  const removeFromPortfolio = async (coinId) => {
+    try {
+      console.log("Removing coin with ID:", coinId); // Debug log
+      
+      const res = await axios.delete(
+        `${import.meta.env.VITE_BACKEND_URL}/api/portfolio/remove/${coinId}`,
+        { withCredentials: true }
+      );
+      setPortfolio(res.data);
+      toast.success("Coin removed from portfolio");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to remove coin");
+    }
+  };
 
   const themeClasses = isDarkMode
     ? {
@@ -102,7 +190,7 @@ const HotCoins = () => {
                   'CI',
                   'RI',
                   'Moonshot',
-                  
+                  'Action'
                 ].map((head, i) => (
                   <th
                     key={i}
@@ -194,7 +282,7 @@ const HotCoins = () => {
           Portfolio
         </h2>
 
-        {portfolio.length === 0 ? (
+        {enrichedPortfolio.length === 0 ? (
           <div className={`text-center py-12 ${themeClasses.subtext}`}>
             <Target className="mx-auto mb-4 opacity-50" size={48} />
             <p>No coins added yet</p>
@@ -208,15 +296,14 @@ const HotCoins = () => {
               <div className="w-20">Name</div>
               <div className="w-24">Price</div>
               <div className="w-16">24h</div>
-   
             </div>
 
-            {portfolio.map((coin, idx) => (
+            {enrichedPortfolio.map((coin, idx) => (
               <div
                 key={idx}
                 className={`border ${themeClasses.border} rounded-lg px-4 py-3 flex items-center gap-3 transition-all ${themeClasses.hover}`}>
                 <button
-                  onClick={() => removeFromPortfolio(coin.name)}
+                  onClick={() => removeFromPortfolio(coin.id)} 
                   className="text-zinc-500 hover:text-yellow-400 transition-colors w-4">
                   <Trash2 size={16} />
                 </button>
@@ -241,8 +328,6 @@ const HotCoins = () => {
                     {coin.change}
                   </div>
                 </div>
-
-                
               </div>
             ))}
           </div>

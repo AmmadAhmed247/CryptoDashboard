@@ -44,42 +44,41 @@ const Login = ({ onClose }) => {
   });
 
   // --------------------- REGISTER MUTATION ---------------------
-  const registerMutation = useMutation({
-    mutationFn: async (data) => {
-      const res = await axios.post(`${backendurl}/api/auth/register`, data, {
-        withCredentials: true,
-      });
-      return res.data;
-    },
-    onSuccess: (data) => {
-      setMessage(data.message);
-      console.log("✅ User registered:", data.user);
+ const registerMutation = useMutation({
+  mutationFn: async (data) => {
+    const res = await axios.post(`${backendurl}/api/auth/register`, data, {
+      withCredentials: true,
+    });
+    return res.data;
+  },
+  onSuccess: (data) => {
+    toast.success(data.message || 'Signup successful!'); // ✅ Add toast here
+    setMessage(data.message);
+    console.log("✅ User registered:", data.user);
 
-      // ✅ Automatically set user after signup
-      setUser(data.user);
+    // ✅ Automatically set user after signup
+    setUser(data.user);
 
-      setTimeout(onClose, 1000);
-    },
-    onError: (err) => {
-      setMessage(err.response?.data?.message || "Signup Failed");
-    },
-  });
+    setTimeout(onClose, 1000);
+  },
+  onError: (err) => {
+    toast.error(err.response?.data?.message || "Signup Failed"); // ✅ Add error toast here
+    setMessage(err.response?.data?.message || "Signup Failed");
+  },
+});
 
   // --------------------- HANDLE SUBMIT ---------------------
   const handleSubmit = (e) => {
-    e.preventDefault();
-    setMessage("");
-    const { name, email, password } = formData;
+  e.preventDefault();
+  setMessage("");
+  const { name, email, password } = formData;
 
-    if (isLogin) {
-      loginMutation.mutate({ email, password });
-      
-    } else {
-      registerMutation.mutate({ name, email, password });
-      toast.success(res.data.message || 'Signup successful!');
-
-    }
-  };
+  if (isLogin) {
+    loginMutation.mutate({ email, password });
+  } else {
+    registerMutation.mutate({ name, email, password });
+  }
+};
 
   const isLoading = loginMutation.isPending || registerMutation.isPending;
 

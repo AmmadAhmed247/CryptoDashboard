@@ -16,9 +16,9 @@ import {
   QueryClientProvider,
 } from '@tanstack/react-query';
 import { ThemeProvider } from "./context/ThemeContext";
-
+import axios from 'axios';
 const queryClient = new QueryClient();
-
+axios.defaults.withCredentials = true;
 const router = createBrowserRouter([
   {
     path: "/",
