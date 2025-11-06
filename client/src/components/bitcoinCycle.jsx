@@ -12,9 +12,11 @@ import {
   ReferenceArea,
 } from "recharts";
 import { useTheme } from "../context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 const CryptoMarketCycle = () => {
   const { isDarkMode } = useTheme();
+  const { t } = useTranslation();
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["gcmi"],
@@ -40,38 +42,24 @@ const CryptoMarketCycle = () => {
 
   if (isLoading) {
     return (
-      <div
-        className={`p-6 rounded-2xl ${
-          isDarkMode
-            ? "bg-zinc-900 text-gray-400"
-            : "bg-gray-100 text-gray-600"
-        }`}
-      >
-        Loading GCMI data...
+      <div className={`p-6 rounded-2xl ${isDarkMode ? "bg-zinc-900 text-gray-400" : "bg-gray-100 text-gray-600"}`}>
+        {t("loadingGCMI")}
       </div>
     );
   }
 
   if (isError || !data.length) {
     return (
-      <div
-        className={`p-6 rounded-2xl ${
-          isDarkMode
-            ? "bg-zinc-900 text-red-400"
-            : "bg-red-100 text-red-600"
-        }`}
-      >
-        Failed to load GCMI data.
+      <div className={`p-6 rounded-2xl ${isDarkMode ? "bg-zinc-900 text-red-400" : "bg-red-100 text-red-600"}`}>
+        {t("failedLoadGCMI")}
       </div>
     );
   }
 
   const getPhase = (value) => {
-    if (value <= 30)
-      return { name: "Accumulation / Early Bull", color: "#10b981" };
-    if (value <= 50)
-      return { name: "Expansion / Mid Bull", color: "#f59e0b" };
-    return { name: "Euphoria / Late Bull", color: "#ef4444" };
+    if (value <= 30) return { name: t("accumulationEarlyBull"), color: "#10b981" };
+    if (value <= 70) return { name: t("expansionMidBull"), color: "#f59e0b" };
+    return { name: t("euphoriaLateBull"), color: "#ef4444" };
   };
 
   return (
@@ -84,84 +72,43 @@ const CryptoMarketCycle = () => {
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <h2
-          className={`text-lg font-semibold ${
-            isDarkMode ? "text-[#d0b345]" : "text-yellow-600"
-          }`}
-        >
-          Bitcoin Global Cycle Meta Index (GCMI)
+        <h2 className={`text-lg font-semibold ${isDarkMode ? "text-[#d0b345]" : "text-yellow-600"}`}>
+          {t("Bitcoin Global Cycle Meta Index (GCMI)")}
         </h2>
-        <span
-          className={`text-xs ${
-            isDarkMode ? "text-gray-400" : "text-gray-500"
-          }`}
-        >
-          Last 1 Year
+        <span className={`text-xs ${isDarkMode ? "text-gray-400" : "text-gray-500"}`}>
+          {t("last1Year")}
         </span>
       </div>
 
       {/* Chart */}
       <div className="h-84">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart
-            data={data}
-            margin={{ top: 10, right: 0, bottom: 0, left: 0 }}
-          >
+          <LineChart data={data} margin={{ top: 10, right: 0, bottom: 0, left: 0 }}>
             <defs>
               <linearGradient id="gcmiFill" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor={isDarkMode ? "#3b82f6" : "#2563eb"}
-                  stopOpacity={0.4}
-                />
-                <stop
-                  offset="95%"
-                  stopColor={isDarkMode ? "#3b82f6" : "#2563eb"}
-                  stopOpacity={0.05}
-                />
+                <stop offset="5%" stopColor={isDarkMode ? "#3b82f6" : "#2563eb"} stopOpacity={0.4} />
+                <stop offset="95%" stopColor={isDarkMode ? "#3b82f6" : "#2563eb"} stopOpacity={0.05} />
               </linearGradient>
             </defs>
 
-            <CartesianGrid
-              strokeDasharray="3 3"
-              stroke={isDarkMode ? "#2f2f2f" : "#e5e7eb"}
-            />
+            <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? "#2f2f2f" : "#e5e7eb"} />
             <XAxis
               dataKey="date"
-              tick={{
-                fill: isDarkMode ? "#aaa" : "#555",
-                fontSize: 10,
-              }}
+              tick={{ fill: isDarkMode ? "#aaa" : "#555", fontSize: 10 }}
               interval="preserveStartEnd"
               tickFormatter={(date) => {
                 const d = new Date(date);
-                return `${d.toLocaleString("en-US", { month: "short" })} ${d
-                  .getFullYear()
-                  .toString()
-                  .slice(-2)}`;
+                return `${d.toLocaleString("en-US", { month: "short" })} ${d.getFullYear().toString().slice(-2)}`;
               }}
               angle={-30}
               textAnchor="end"
             />
-
-            <YAxis
-              yAxisId="left"
-              domain={[0, 100]}
-              tick={{
-                fill: isDarkMode ? "#aaa" : "#444",
-                fontSize: 12,
-              }}
-            />
+            <YAxis yAxisId="left" domain={[0, 100]} tick={{ fill: isDarkMode ? "#aaa" : "#444", fontSize: 12 }} />
             <YAxis
               yAxisId="right"
               orientation="right"
-              tick={{
-                fill: isDarkMode ? "#aaa" : "#444",
-                fontSize: 12,
-              }}
-              tickFormatter={(v) =>
-                v >= 1000 ? `$${(v / 1000).toFixed(1)}K` : `$${v}`
-              }
+              tick={{ fill: isDarkMode ? "#aaa" : "#444", fontSize: 12 }}
+              tickFormatter={(v) => (v >= 1000 ? `$${(v / 1000).toFixed(1)}K` : `$${v}`)}
             />
 
             {/* Background bands */}
@@ -178,51 +125,21 @@ const CryptoMarketCycle = () => {
               }}
               content={({ active, payload, label }) => {
                 if (active && payload && payload.length) {
-                  const gcmiValue = payload.find(
-                    (p) => p.dataKey === "gcmi"
-                  )?.value;
-                  const btcValue = payload.find(
-                    (p) => p.dataKey === "btcPrice"
-                  )?.value;
+                  const gcmiValue = payload.find((p) => p.dataKey === "gcmi")?.value;
+                  const btcValue = payload.find((p) => p.dataKey === "btcPrice")?.value;
                   const phase = getPhase(gcmiValue);
                   return (
-                    <div
-                      className={`border rounded-lg p-3 shadow-lg ${
-                        isDarkMode
-                          ? "bg-zinc-900 border-zinc-700 text-white"
-                          : "bg-white border-gray-200 text-gray-900"
-                      }`}
-                    >
-                      <p
-                        className={`text-xs mb-2 ${
-                          isDarkMode ? "text-gray-400" : "text-gray-500"
-                        }`}
-                      >
-                        {label}
+                    <div className={`border rounded-lg p-3 shadow-lg ${isDarkMode ? "bg-zinc-900 border-zinc-700 text-white" : "bg-white border-gray-200 text-gray-900"}`}>
+                      <p className={`text-xs mb-2 ${isDarkMode ? "text-gray-400" : "text-gray-500"}`}>{label}</p>
+                      <p className="text-sm">
+                        <span className="text-[#d0b345] font-semibold">{t("gcmi")}:</span> {gcmiValue?.toFixed(1)}
                       </p>
                       <p className="text-sm">
-                        <span className="text-[#d0b345] font-semibold">
-                          GCMI:
-                        </span>{" "}
-                        {gcmiValue?.toFixed(1)}
-                      </p>
-                      <p className="text-sm">
-                        <span
-                          className={`font-semibold ${
-                            isDarkMode ? "text-gray-400" : "text-gray-700"
-                          }`}
-                        >
-                          BTC:
-                        </span>{" "}
-                        {btcValue >= 1000
-                          ? `$${(btcValue / 1000).toFixed(1)}K`
-                          : `$${btcValue?.toFixed(2)}`}
+                        <span className={`font-semibold ${isDarkMode ? "text-gray-400" : "text-gray-700"}`}>{t("btcPrice")}:</span>{" "}
+                        {btcValue >= 1000 ? `$${(btcValue / 1000).toFixed(1)}K` : `$${btcValue?.toFixed(2)}`}
                       </p>
                       <div className="mt-2 pt-2 border-t border-zinc-700">
-                        <p
-                          className="text-xs font-semibold"
-                          style={{ color: phase.color }}
-                        >
+                        <p className="text-xs font-semibold" style={{ color: phase.color }}>
                           {phase.name}
                         </p>
                       </div>
@@ -241,7 +158,7 @@ const CryptoMarketCycle = () => {
               strokeWidth={2.5}
               dot={false}
               isAnimationActive={false}
-              name="GCMI"
+              name={t("gcmi")}
               fillOpacity={1}
               fill="url(#gcmiFill)"
             />
@@ -253,7 +170,7 @@ const CryptoMarketCycle = () => {
               strokeWidth={1.8}
               dot={false}
               isAnimationActive={false}
-              name="BTC Price"
+              name={t("btcPrice")}
             />
           </LineChart>
         </ResponsiveContainer>

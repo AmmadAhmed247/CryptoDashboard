@@ -3,15 +3,18 @@ import { createPortal } from "react-dom";
 import { X, Facebook, Twitter, Chrome } from "lucide-react";
 import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
-import { useAuth } from "../context/AuthContex"; // ✅ for global auth state
+import { useAuth } from "../context/AuthContex";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
+
 const Login = ({ onClose }) => {
+  const { t } = useTranslation();
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({ name: "", email: "", password: "" });
   const [message, setMessage] = useState("");
 
   const backendurl = import.meta.env.VITE_BACKEND_URL;
-  const { setUser } = useAuth(); // ✅ from context
+  const { setUser } = useAuth();
 
   const handleInput = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -20,65 +23,51 @@ const Login = ({ onClose }) => {
   // --------------------- LOGIN MUTATION ---------------------
   const loginMutation = useMutation({
     mutationFn: async (data) => {
-      const res = await axios.post(`${backendurl}/api/auth/login`, data, {
-        withCredentials: true,
-      });
+      const res = await axios.post(`${backendurl}/api/auth/login`, data, { withCredentials: true });
       return res.data;
     },
     onSuccess: (data) => {
-      toast.success(data.message || 'Login successful!');
+      toast.success(data.message || t("Login successful!"));
       setMessage(data.message);
-      console.log("Login success:", data);
-
-    
       setUser(data.user);
-
-   
       setTimeout(onClose, 1000);
     },
     onError: (err) => {
-      setMessage(err.response?.data?.message || "Login Failed");
-
-      toast.error(err.response?.data?.message || "Login Failed ");
+      setMessage(err.response?.data?.message || t("Login Failed"));
+      toast.error(err.response?.data?.message || t("Login Failed"));
     },
   });
 
   // --------------------- REGISTER MUTATION ---------------------
- const registerMutation = useMutation({
-  mutationFn: async (data) => {
-    const res = await axios.post(`${backendurl}/api/auth/register`, data, {
-      withCredentials: true,
-    });
-    return res.data;
-  },
-  onSuccess: (data) => {
-    toast.success(data.message || 'Signup successful!'); // ✅ Add toast here
-    setMessage(data.message);
-    console.log("✅ User registered:", data.user);
-
-    // ✅ Automatically set user after signup
-    setUser(data.user);
-
-    setTimeout(onClose, 1000);
-  },
-  onError: (err) => {
-    toast.error(err.response?.data?.message || "Signup Failed"); // ✅ Add error toast here
-    setMessage(err.response?.data?.message || "Signup Failed");
-  },
-});
+  const registerMutation = useMutation({
+    mutationFn: async (data) => {
+      const res = await axios.post(`${backendurl}/api/auth/register`, data, { withCredentials: true });
+      return res.data;
+    },
+    onSuccess: (data) => {
+      toast.success(data.message || t("Signup successful!"));
+      setMessage(data.message);
+      setUser(data.user);
+      setTimeout(onClose, 1000);
+    },
+    onError: (err) => {
+      toast.error(err.response?.data?.message || t("Signup Failed"));
+      setMessage(err.response?.data?.message || t("Signup Failed"));
+    },
+  });
 
   // --------------------- HANDLE SUBMIT ---------------------
   const handleSubmit = (e) => {
-  e.preventDefault();
-  setMessage("");
-  const { name, email, password } = formData;
+    e.preventDefault();
+    setMessage("");
+    const { name, email, password } = formData;
 
-  if (isLogin) {
-    loginMutation.mutate({ email, password });
-  } else {
-    registerMutation.mutate({ name, email, password });
-  }
-};
+    if (isLogin) {
+      loginMutation.mutate({ email, password });
+    } else {
+      registerMutation.mutate({ name, email, password });
+    }
+  };
 
   const isLoading = loginMutation.isPending || registerMutation.isPending;
 
@@ -102,7 +91,7 @@ const Login = ({ onClose }) => {
               isLogin ? "text-[#d0b345] border-b-2 border-[#d0b345]" : "text-zinc-400"
             }`}
           >
-            Log In
+            {t("Log In")}
           </button>
           <button
             onClick={() => setIsLogin(false)}
@@ -110,7 +99,7 @@ const Login = ({ onClose }) => {
               !isLogin ? "text-[#d0b345] border-b-2 border-[#d0b345]" : "text-zinc-400"
             }`}
           >
-            Sign Up
+            {t("Sign Up")}
           </button>
         </div>
 
@@ -118,13 +107,13 @@ const Login = ({ onClose }) => {
         <form onSubmit={handleSubmit}>
           {!isLogin && (
             <div className="mb-4">
-              <label className="block text-sm text-zinc-400 mb-1">Username</label>
+              <label className="block text-sm text-zinc-400 mb-1">{t("Username")}</label>
               <input
                 type="text"
                 name="name"
                 value={formData.name}
                 onChange={handleInput}
-                placeholder="Choose a username"
+                placeholder={t("Choose a username")}
                 className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-[#d0b345]"
                 required
               />
@@ -132,7 +121,7 @@ const Login = ({ onClose }) => {
           )}
 
           <div className="mb-4">
-            <label className="block text-sm text-zinc-400 mb-1">Email</label>
+            <label className="block text-sm text-zinc-400 mb-1">{t("Email")}</label>
             <input
               type="email"
               name="email"
@@ -145,13 +134,13 @@ const Login = ({ onClose }) => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm text-zinc-400 mb-1">Password</label>
+            <label className="block text-sm text-zinc-400 mb-1">{t("Password")}</label>
             <input
               type="password"
               name="password"
               value={formData.password}
               onChange={handleInput}
-              placeholder={isLogin ? "Enter password" : "Create password"}
+              placeholder={isLogin ? t("Enter password") : t("Create password")}
               className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-2 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-[#d0b345]"
               required
             />
@@ -160,7 +149,7 @@ const Login = ({ onClose }) => {
           {isLogin && (
             <div className="text-right mb-4">
               <button type="button" className="text-xs text-[#d0b345] hover:underline">
-                Forgot Password?
+                {t("Forgot Password?")}
               </button>
             </div>
           )}
@@ -174,11 +163,7 @@ const Login = ({ onClose }) => {
                 : "bg-[#d0b345] hover:bg-[#c0a63e] text-zinc-900"
             }`}
           >
-            {isLoading
-              ? "Processing..."
-              : isLogin
-              ? "Log In"
-              : "Create Account"}
+            {isLoading ? t("Processing...") : isLogin ? t("Log In") : t("Create Account")}
           </button>
         </form>
 
@@ -188,7 +173,7 @@ const Login = ({ onClose }) => {
 
         <div className="flex items-center my-5">
           <div className="flex-grow border-t border-zinc-700"></div>
-          <span className="mx-3 text-xs text-zinc-500">OR</span>
+          <span className="mx-3 text-xs text-zinc-500">{t("OR")}</span>
           <div className="flex-grow border-t border-zinc-700"></div>
         </div>
 
@@ -201,24 +186,20 @@ const Login = ({ onClose }) => {
         <p className="text-[11px] text-zinc-500 mt-5 text-center leading-snug">
           {isLogin ? (
             <>
-              Don’t have an account?{" "}
+              {t("Don’t have an account?")}{" "}
               <span
                 onClick={() => setIsLogin(false)}
                 className="text-[#d0b345] cursor-pointer hover:underline font-semibold"
               >
-                Sign Up
+                {t("Sign Up")}
               </span>
             </>
           ) : (
             <>
-              By signing up, you agree to our{" "}
-              <span className="text-[#d0b345] cursor-pointer hover:underline">
-                Terms
-              </span>{" "}
-              and{" "}
-              <span className="text-[#d0b345] cursor-pointer hover:underline">
-                Privacy Policy
-              </span>
+              {t("By signing up, you agree to our")}{" "}
+              <span className="text-[#d0b345] cursor-pointer hover:underline">{t("Terms")}</span>{" "}
+              {t("and")}{" "}
+              <span className="text-[#d0b345] cursor-pointer hover:underline">{t("Privacy Policy")}</span>
             </>
           )}
         </p>

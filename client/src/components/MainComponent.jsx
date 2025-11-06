@@ -8,6 +8,7 @@ import { Plus } from "lucide-react";
 import Liveliquidation from "./LiveLiquidation.jsx"
 import SkeletonLoader from './Skeleton.jsx';
 import { useTheme } from "../context/ThemeContext.jsx";
+import { useTranslation } from 'react-i18next';
 
 function getColor(value) {
   return value < 50 ? 'bg-red-800' : 'bg-green-700';
@@ -16,9 +17,7 @@ function getColor(value) {
 const MainContent = ({ demoCoins, narrativeTrends, ScoreCard, onSelectCoin, selectedCoins, onAddToAnalysis, onClearAnalysis }) => {
   const { isDarkMode } = useTheme();
   const [loading, setLoading] = React.useState(true);
-
-
-
+  const { t } = useTranslation();
   const [coins, setCoins] = React.useState(
     [...demoCoins].sort((a, b) => b.average - a.average)
   );
@@ -69,36 +68,36 @@ const MainContent = ({ demoCoins, narrativeTrends, ScoreCard, onSelectCoin, sele
 
 
   const aggregatedScores = React.useMemo(() => {
-  console.log('Calculating aggregated scores for:', selectedCoins);
-  
-  if (selectedCoins.length === 0) return null;
+    console.log('Calculating aggregated scores for:', selectedCoins);
 
-  const total = selectedCoins.reduce(
-    (acc, c) => {
-      
-      return {
-        cqs: acc.cqs + (Number(c.cqs) || 0),
-        ts: acc.ts + (Number(c.ts) || 0),
-        ci: acc.ci + (Number(c.ci) || 0),
-        ri: acc.ri + (Number(c.ri) || 0),
-      };
-    },
-    { cqs: 0, ts: 0, ci: 0, ri: 0 }
-  );
+    if (selectedCoins.length === 0) return null;
 
-  
+    const total = selectedCoins.reduce(
+      (acc, c) => {
 
-  const count = selectedCoins.length;
-  const result = {
-    cqs: (total.cqs / count).toFixed(0),
-    ts: (total.ts / count).toFixed(0),
-    ci: (total.ci / count).toFixed(0),
-    ri: (total.ri / count).toFixed(0),
-  };
-  
+        return {
+          cqs: acc.cqs + (Number(c.cqs) || 0),
+          ts: acc.ts + (Number(c.ts) || 0),
+          ci: acc.ci + (Number(c.ci) || 0),
+          ri: acc.ri + (Number(c.ri) || 0),
+        };
+      },
+      { cqs: 0, ts: 0, ci: 0, ri: 0 }
+    );
 
-  return result;
-}, [selectedCoins]);
+
+
+    const count = selectedCoins.length;
+    const result = {
+      cqs: (total.cqs / count).toFixed(0),
+      ts: (total.ts / count).toFixed(0),
+      ci: (total.ci / count).toFixed(0),
+      ri: (total.ri / count).toFixed(0),
+    };
+
+
+    return result;
+  }, [selectedCoins]);
 
 
   return (
@@ -135,7 +134,9 @@ const MainContent = ({ demoCoins, narrativeTrends, ScoreCard, onSelectCoin, sele
                   } rounded-xl p-6 border shadow-lg hover:shadow-2xl transition-all hover:scale-105 group`}>
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <div className={`text-sm mb-1 ${isDarkMode ? 'text-zinc-400' : 'text-gray-600'}`}>{card.label}</div>
+                    <div className={`text-sm mb-1 ${isDarkMode ? 'text-zinc-400' : 'text-gray-600'}`}>
+                      {t(card.label)}
+                    </div>
                     <div className={`text-4xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{card.value}</div>
                   </div>
                   <div className="p-2 bg-zinc-800 border-2 border-[#d0b345] rounded-xl shadow-lg group-hover:scale-110 transition-all hidden md:block">
@@ -213,15 +214,15 @@ const MainContent = ({ demoCoins, narrativeTrends, ScoreCard, onSelectCoin, sele
           <div className="flex items-center justify-between mb-6">
             <h2 className={`text-xl font-bold flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
               <Flame className="text-[#d0b345]" />
-              Hot Coins
+             {t("Hot Coins")}
             </h2>
-            <div className="flex gap-2">
+            {/* <div className="flex gap-2">
               {['All', 'High CI', 'Low Risk'].map(filter => (
                 <button key={filter} className={`px-4 py-2 ${isDarkMode ? 'bg-zinc-700 hover:bg-zinc-600' : 'bg-gray-200 hover:bg-gray-300'} rounded-lg text-sm transition-all hover:scale-105 shadow-md font-semibold`}>
                   {filter}
                 </button>
               ))}
-            </div>
+            </div> */}
           </div>
 
           <div className="overflow-x-auto custom-scrollbar">
@@ -231,17 +232,17 @@ const MainContent = ({ demoCoins, narrativeTrends, ScoreCard, onSelectCoin, sele
               <table className="w-full">
                 <thead>
                   <tr className="border-zinc-700 border-b">
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-zinc-400">Coin</th>
-                    <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">Price</th>
-                    <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">24h</th>
-                    <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">Volume</th>
-                    <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">CQS</th>
-                    <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">TS</th>
-                    <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">CI</th>
-                    <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">RI</th>
-                    <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">Moonshot</th>
-                    <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">Action</th>
-                    <th className="text-middle w-12 py-3 px-4 text-sm font-semibold text-zinc-400">Add To Analysis</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-zinc-400">{t('topCoins')}</th>
+                    <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">{t('price')}</th>
+                    <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">{t('change24h')}</th>
+                    <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">{t('volume24h')}</th>
+                    <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">{t('CQS')}</th>
+                    <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">{t('TS')}</th>
+                    <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">{t('CI')}</th>
+                    <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">{t('RI')}</th>
+                    <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">{t('moonshot')}</th>
+                    <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">{t('action')}</th>
+                    <th className="text-middle w-12 py-3 px-4 text-sm font-semibold text-zinc-400">{t('addToAnalysis')}</th>
                   </tr>
                 </thead>
 

@@ -2,13 +2,14 @@ import React from "react";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
-
+import { useTranslation } from 'react-i18next';
 const fetchCryptoNews = async () => {
   const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/data/cryptonews`);
   return res.data;
 };
 
 const CryptoNews = ({ isDarkMode }) => {
+  const { t } = useTranslation();
   const { data, isLoading, isError } = useQuery({
     queryKey: ["cryptoNews"],
     queryFn: fetchCryptoNews,
@@ -40,11 +41,11 @@ const CryptoNews = ({ isDarkMode }) => {
             : "bg-white text-red-500 border-gray-200"
         }`}
       >
-        Failed to load news
+        {t("Failed to load news")}
       </div>
     );
 
-  const newsItems = data?.articles?.slice(0, 4) || []; // ✅ GNews uses `articles` key
+  const newsItems = data?.articles?.slice(0, 4) || []; 
 
   return (
     <div
@@ -59,7 +60,7 @@ const CryptoNews = ({ isDarkMode }) => {
           isDarkMode ? "text-white" : "text-gray-900"
         }`}
       >
-        Latest Crypto News
+        {t("Latest Crypto News")}
       </h3>
 
       <div className="space-y-3">
@@ -89,7 +90,7 @@ const CryptoNews = ({ isDarkMode }) => {
                     isDarkMode ? "text-zinc-500" : "text-gray-500"
                   }`}
                 >
-                  {news.source?.name ?? "Unknown Source"} —{" "}
+                  {news.source?.name ?? t("Unknown Source")} —{" "}
                   {new Date(news.publishedAt).toLocaleString()}
                 </div>
 
@@ -101,7 +102,7 @@ const CryptoNews = ({ isDarkMode }) => {
                       : "bg-gray-200 text-gray-900 hover:bg-gray-300"
                   }`}
                 >
-                  Read More →
+                  {t("Read More →")}
                 </button>
               </div>
             </div>

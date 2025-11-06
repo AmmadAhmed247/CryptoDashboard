@@ -1,19 +1,21 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Bell, Sun, Moon, Menu, X } from "lucide-react";
+import { Sun, Moon, Menu, X, Globe } from "lucide-react";
 import LiveStatus from "./Time";
 import Login from "../pages/login";
 import { useAuth } from "../context/AuthContex";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useTheme } from "../context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 const Navbar = () => {
   const { isDarkMode, setIsDarkMode } = useTheme();
+  const { t, i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState("dashboard");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
-  const { user, setUser, loading } = useAuth(); // ✅ Get user, setter, and loading from context
+  const { user, setUser, loading } = useAuth();
   const backendurl = import.meta.env.VITE_BACKEND_URL;
 
   // -------------------- LOGOUT FUNCTION --------------------
@@ -24,12 +26,18 @@ const Navbar = () => {
         {},
         { withCredentials: true }
       );
-      toast.success(res.data.message || "Logged out successfully ✅");
-      setUser(null); // ✅ Clear user context
+      toast.success(res.data.message || t("logout_success"));
+      setUser(null);
     } catch (err) {
       console.error("Logout failed:", err);
-      toast.error(err.response?.data?.message || "Logout failed ❌");
+      toast.error(err.response?.data?.message || t("logout_failed"));
     }
+  };
+
+  // -------------------- TOGGLE LANGUAGE MENU --------------------
+  const toggleLangMenu = () => {
+    const menu = document.getElementById("lang-menu");
+    menu.classList.toggle("hidden");
   };
 
   return (
@@ -57,6 +65,48 @@ const Navbar = () => {
 
         {/* Right Section */}
         <div className="flex items-center gap-3">
+          {/* 🌐 Language Switcher */}
+          <div className="relative">
+            <button
+              onClick={toggleLangMenu}
+              className={`p-2 rounded-lg transition-all shadow-md hover:scale-110 ${
+                isDarkMode
+                  ? "bg-zinc-800 hover:bg-zinc-700 text-[#d0b345]"
+                  : "bg-gray-200 hover:bg-gray-300 text-gray-800"
+              }`}
+            >
+              <Globe size={18} />
+            </button>
+
+            <div
+              id="lang-menu"
+              className={`hidden absolute right-0 mt-2 w-32 rounded-lg shadow-lg z-50 ${
+                isDarkMode ? "bg-zinc-900" : "bg-white"
+              }`}
+            >
+              {["en", "de", ].map((lng) => (
+                <button
+                  key={lng}
+                  onClick={() => {
+                    i18n.changeLanguage(lng);
+                    document.getElementById("lang-menu").classList.add("hidden");
+                  }}
+                  className={`block w-full text-left px-3 py-2 text-sm rounded-md ${
+                    isDarkMode
+                      ? "text-[#d0b345] hover:bg-zinc-800"
+                      : "text-gray-800 hover:bg-gray-100"
+                  }`}
+                >
+                  {lng === "en"
+                    ? "🇺🇸 English"
+                    : lng === "de"
+                    ? "🇩🇪 Deutsch"
+                    : "🇫🇷 Français"}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Dark Mode Toggle */}
           <button
             onClick={() => setIsDarkMode(!isDarkMode)}
@@ -73,19 +123,17 @@ const Navbar = () => {
             )}
           </button>
 
-          {/* ✅ LOGIN / LOGOUT BUTTON - FIXED LOGIC */}
+          {/* ✅ LOGIN / LOGOUT BUTTON */}
           <div>
             {loading ? (
-              // Show loading state while checking auth
               <div
                 className={`hidden md:block px-4 py-2 rounded-lg font-semibold text-sm ${
                   isDarkMode ? "text-zinc-500" : "text-gray-400"
                 }`}
               >
-                Loading...
+                {t("loading")}
               </div>
             ) : user ? (
-              // ✅ User is logged in - show LOGOUT button
               <button
                 onClick={handleLogout}
                 className={`hidden md:block px-4 py-2 rounded-lg font-semibold text-sm shadow-md transition-all ${
@@ -94,10 +142,9 @@ const Navbar = () => {
                     : "bg-gray-200 text-gray-800 hover:bg-gray-300"
                 }`}
               >
-                Logout
+                {t("logout")}
               </button>
             ) : (
-              // ✅ No user - show LOGIN button
               <>
                 <button
                   onClick={() => setShowLogin(true)}
@@ -107,7 +154,7 @@ const Navbar = () => {
                       : "bg-gray-200 text-gray-800 hover:bg-gray-300"
                   }`}
                 >
-                  Login
+                  {t("login")}
                 </button>
                 {showLogin && <Login onClose={() => setShowLogin(false)} />}
               </>
@@ -124,39 +171,32 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Bottom Tabs */}
-      <div
-        className={`${
-          isDarkMode ? "bg-zinc-900 border-zinc-800" : "bg-white border-gray-200"
-        } rounded-2xl mt-2 border-b px-6 shadow-md backdrop-blur-sm hidden md:block`}
+      { /* Bottom Tabs */ }
+<div className={`${isDarkMode ? "bg-zinc-900 border-zinc-800" : "bg-white border-gray-200"} rounded-2xl mt-2 border-b px-6 shadow-md backdrop-blur-sm hidden md:block`}>
+  <div className="flex gap-1">
+    {[t("dashboard"), t("topCoins")].map((tab) => (
+      <Link
+        to={tab === t("dashboard") ? "/" : "/topcoins"}
+        key={tab}
+        onClick={() => setActiveTab(tab.toLowerCase())}
+        className={`px-6 py-4 font-semibold transition-all relative group ${
+          activeTab === tab.toLowerCase()
+            ? "text-[#d0b345] bg-gradient-to-r from-yellow-400 to-yellow-500 bg-clip-text"
+            : isDarkMode
+            ? "text-zinc-400 hover:text-white"
+            : "text-gray-600 hover:text-gray-900"
+        }`}
       >
-        <div className="flex gap-1">
-          {["Dashboard", "Top Coins"].map((tab) => (
-            <Link
-              to={
-                tab === "Dashboard"
-                  ? "/"
-                  : `/${tab.toLowerCase().replace(" ", "")}`
-              }
-              key={tab}
-              onClick={() => setActiveTab(tab.toLowerCase())}
-              className={`px-6 py-4 font-semibold transition-all relative group ${
-                activeTab === tab.toLowerCase()
-                  ? "text-[#d0b345] bg-gradient-to-r from-yellow-400 to-yellow-500 bg-clip-text"
-                  : isDarkMode
-                  ? "text-zinc-400 hover:text-white"
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              {tab}
-              {activeTab === tab.toLowerCase() && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-yellow-400 to-yellow-500 shadow-lg shadow-yellow-500/50"></div>
-              )}
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-yellow-400 to-yellow-100 opacity-0 group-hover:opacity-50 transition-all"></div>
-            </Link>
-          ))}
-        </div>
-      </div>
+        {tab}
+        {activeTab === tab.toLowerCase() && (
+          <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-yellow-400 to-yellow-500 shadow-lg shadow-yellow-500/50"></div>
+        )}
+        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-yellow-400 to-yellow-100 opacity-0 group-hover:opacity-50 transition-all"></div>
+      </Link>
+    ))}
+  </div>
+</div>
+
 
       {/* Mobile Dropdown Menu */}
       {isMenuOpen && (
@@ -167,14 +207,13 @@ const Navbar = () => {
               : "bg-white border-gray-200"
           }`}
         >
-          {/*MOBILE LOGIN/LOGOUT */}
           {loading ? (
             <div
               className={`px-4 py-2 text-sm ${
                 isDarkMode ? "text-zinc-500" : "text-gray-400"
               }`}
             >
-              Loading...
+              {t("loading")}
             </div>
           ) : user ? (
             <button
@@ -185,7 +224,7 @@ const Navbar = () => {
                   : "bg-gray-200 text-gray-800 hover:underline"
               }`}
             >
-              Logout
+              {t("logout")}
             </button>
           ) : (
             <>
@@ -197,7 +236,7 @@ const Navbar = () => {
                     : "bg-gray-200 text-gray-800 hover:underline"
                 }`}
               >
-                Login
+                {t("login")}
               </button>
               {showLogin && <Login onClose={() => setShowLogin(false)} />}
             </>
@@ -207,13 +246,13 @@ const Navbar = () => {
             className="block px-3 py-2 text-sm font-semibold text-[#d0b345] hover:underline"
             to={"/"}
           >
-            Dashboard
+            {t("dashboard")}
           </Link>
           <Link
             className="block px-3 py-2 text-sm font-semibold text-[#d0b345] hover:underline"
             to={"/topcoins"}
           >
-            TopCoins
+            {t("topcoins")}
           </Link>
         </div>
       )}

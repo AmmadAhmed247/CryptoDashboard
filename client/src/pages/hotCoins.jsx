@@ -1,34 +1,36 @@
-import React, { useEffect, useState } from 'react'
-import { Flame, Target, Award, Trash2, Plus } from 'lucide-react'
-import { useQuery } from '@tanstack/react-query'
-import axios from 'axios'
-import { Link } from 'react-router-dom'
-import { useTheme } from '../context/ThemeContext'
-import toast from 'react-hot-toast'
-import { useAuth } from '../context/AuthContex'
+import React, { useEffect, useState } from 'react';
+import { Flame, Target, Award, Trash2, Plus } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
+import { Link } from 'react-router-dom';
+import { useTheme } from '../context/ThemeContext';
+import toast from 'react-hot-toast';
+import { useAuth } from '../context/AuthContex';
+import { useTranslation } from 'react-i18next';
 
 const HotCoins = () => {
-  const { isDarkMode } = useTheme()
+  const { isDarkMode } = useTheme();
   const [portfolio, setPortfolio] = useState([]);
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   const { data: topCoinsData, isLoading, error } = useQuery({
     queryKey: ['topCoins'],
     queryFn: async () => {
-      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/top-coins`)
-      return res.data.data
+      const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/top-coins`);
+      return res.data.data;
     },
     refetchInterval: 10 * 1000,
     staleTime: 10 * 1000,
     retry: 1,
-  })
+  });
 
   const demoCoins =
     topCoinsData?.map(coin => ({
       id: coin.coinId,
       name: coin.name,
       symbol: coin.symbol.toUpperCase(),
-      logo: coin.logo, // ✅ Keep logo URL
+      logo: coin.logo,
       icon: <img src={coin.logo} alt={coin.symbol} className="w-8 h-8 rounded-full" />,
       cqs: coin.CQS.toFixed(0),
       ts: coin.TS.toFixed(0),
@@ -42,34 +44,28 @@ const HotCoins = () => {
       mcap: `$${parseFloat(coin.marketCap).toLocaleString()}`,
       moonshot: coin.Moonshot.toFixed(0),
       average: coin.average,
-    })) || []
+    })) || [];
 
   useEffect(() => {
     const fetchPortfolio = async () => {
       try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/portfolio`,
-          { withCredentials: true }
-        );
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/portfolio`, { withCredentials: true });
         setPortfolio(res.data);
       } catch (err) {
         console.error(err);
       }
     };
- 
+
     if (user) {
       fetchPortfolio();
     }
   }, [user]);
 
-  // ✅ Helper function to enrich portfolio data with logo and formatted values
   const enrichedPortfolio = portfolio.map(portfolioCoin => {
-    // Find matching coin from demoCoins to get logo
     const matchingCoin = demoCoins.find(c => c.id === portfolioCoin.id);
-    
     return {
       ...portfolioCoin,
-      logo: matchingCoin?.logo || '', // Get logo from API data
+      logo: matchingCoin?.logo || '',
       icon: matchingCoin?.logo ? (
         <img src={matchingCoin.logo} alt={portfolioCoin.symbol} className="w-8 h-8 rounded-full" />
       ) : (
@@ -79,19 +75,16 @@ const HotCoins = () => {
       ),
       price: `$${Number(portfolioCoin.price).toLocaleString()}`,
       change: `${Number(portfolioCoin.change24h).toFixed(2)}%`,
-      trend: portfolioCoin.change24h >= 0 ? 'up' : 'down'
+      trend: portfolioCoin.change24h >= 0 ? 'up' : 'down',
     };
   });
 
-  // Add coin
   const addToPortfolio = async (coin) => {
     try {
       if (!user) {
-        toast.error("Please login to add coins to portfolio");
+        toast.error(t("Please login to add coins to portfolio"));
         return;
       }
-
-      console.log('Adding coin:', coin);
 
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/portfolio/add`,
@@ -106,35 +99,30 @@ const HotCoins = () => {
       );
 
       setPortfolio(response.data);
-      toast.success("Coin added to portfolio");
+      toast.success(t("Coin added to portfolio"));
 
     } catch (error) {
-      console.error("Error adding to portfolio:", error);
-      
       if (error.response?.status === 401) {
-        toast.error("Please login to add coins to portfolio");
+        toast.error(t("Please login to add coins to portfolio"));
       } else if (error.response?.status === 400) {
-        toast.info("Coin already in portfolio");
+        toast.info(t("Coin already in portfolio"));
       } else {
-        toast.error(error.response?.data?.message || "Failed to add coin");
+        toast.error(error.response?.data?.message || t("Failed to add coin"));
       }
     }
   };
 
-  // Remove coin - ✅ Fixed to use coin.id
   const removeFromPortfolio = async (coinId) => {
     try {
-      console.log("Removing coin with ID:", coinId); // Debug log
-      
       const res = await axios.delete(
         `${import.meta.env.VITE_BACKEND_URL}/api/portfolio/remove/${coinId}`,
         { withCredentials: true }
       );
       setPortfolio(res.data);
-      toast.success("Coin removed from portfolio");
+      toast.success(t("Coin removed from portfolio"));
     } catch (err) {
       console.error(err);
-      toast.error("Failed to remove coin");
+      toast.error(t("Failed to remove coin"));
     }
   };
 
@@ -154,26 +142,26 @@ const HotCoins = () => {
         subtext: 'text-gray-600',
         hover: 'hover:bg-gray-100',
         border: 'border-gray-300',
-      }
+      };
 
   return (
     <div className={`flex gap-6 p-6 h-fit ${themeClasses.bg}`}>
-      {/* ==== LEFT SIDE (Hot Coins Table) ==== */}
+      {/* LEFT SIDE (Hot Coins Table) */}
       <div className={`${themeClasses.card} flex-1 p-6 border shadow-lg rounded-lg`}>
         <div className="flex items-center justify-between mb-6">
           <h2 className={`text-xl font-bold flex items-center gap-2 ${themeClasses.text}`}>
             <Flame className="text-[#d0b345]" />
-            Hot Coins
+            {t("Hot Coins")}
           </h2>
-          <div className="flex gap-2">
+          {/* <div className="flex gap-2">
             {['All', 'High CI', 'Low Risk'].map(filter => (
               <button
                 key={filter}
                 className={`px-4 py-2 ${isDarkMode ? 'bg-zinc-700 hover:bg-zinc-600' : 'bg-gray-200 hover:bg-gray-300'} rounded-lg text-sm transition-all hover:scale-105 shadow-md font-semibold ${themeClasses.text}`}>
-                {filter}
+                {t(filter)}
               </button>
             ))}
-          </div>
+          </div> */}
         </div>
 
         <div className="overflow-x-auto">
@@ -181,23 +169,12 @@ const HotCoins = () => {
             <thead>
               <tr className={themeClasses.border + ' border-b'}>
                 {[
-                  'Coin',
-                  'Price',
-                  '24h',
-                  'Volume',
-                  'CQS',
-                  'TS',
-                  'CI',
-                  'RI',
-                  'Moonshot',
-                  'Action'
+                  'Coin', 'Price', '24h', 'Volume', 'CQS', 'TS', 'CI', 'RI', 'Moonshot', 'Action'
                 ].map((head, i) => (
                   <th
                     key={i}
-                    className={`${
-                      i === 0 ? 'text-left' : 'text-right'
-                    } py-3 px-4 text-sm font-semibold ${themeClasses.subtext}`}>
-                    {head}
+                    className={`${i === 0 ? 'text-left' : 'text-right'} py-3 px-4 text-sm font-semibold ${themeClasses.subtext}`}>
+                    {t(head)}
                   </th>
                 ))}
               </tr>
@@ -209,9 +186,7 @@ const HotCoins = () => {
                   className={`${themeClasses.border} border-b ${themeClasses.hover} transition-all cursor-pointer group`}>
                   <td className="py-4 px-4">
                     <Link
-                      to={`https://coinmarketcap.com/currencies/${coin.id || coin.name
-                        .toLowerCase()
-                        .replace(/\s+/g, '-')}`}
+                      to={`https://coinmarketcap.com/currencies/${coin.id || coin.name.toLowerCase().replace(/\s+/g, '-')}`}
                       target="_blank"
                       className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-all">
@@ -223,42 +198,26 @@ const HotCoins = () => {
                       </div>
                     </Link>
                   </td>
-                  <td className={`text-right py-4 px-4 font-semibold ${themeClasses.text}`}>
-                    {coin.price}
-                  </td>
+                  <td className={`text-right py-4 px-4 font-semibold ${themeClasses.text}`}>{coin.price}</td>
                   <td className="text-right py-4 px-4">
-                    <span
-                      className={`font-semibold ${
-                        coin.trend === 'up' ? 'text-green-500' : 'text-red-500'
-                      }`}>
+                    <span className={`font-semibold ${coin.trend === 'up' ? 'text-green-500' : 'text-red-500'}`}>
                       {coin.change}
                     </span>
                   </td>
-                  <td className={`text-right py-4 px-4 ${themeClasses.subtext}`}>
-                    {coin.volume}
-                  </td>
+                  <td className={`text-right py-4 px-4 ${themeClasses.subtext}`}>{coin.volume}</td>
                   {[coin.cqs, coin.ts, coin.ci, coin.ri].map((metric, i) => (
                     <td key={i} className="text-right py-4 px-4">
-                      <span
-                        className={`px-2 py-1 rounded-lg text-xs font-semibold shadow-md ${
-                          metric >= 70
-                            ? 'bg-green-500/20 text-green-500'
-                            : 'bg-yellow-500/20 text-yellow-500'
-                        }`}>
-                        {metric}
-                      </span>
+                      <span className={`px-2 py-1 rounded-lg text-xs font-semibold shadow-md ${
+                        metric >= 70 ? 'bg-green-500/20 text-green-500' : 'bg-yellow-500/20 text-yellow-500'
+                      }`}>{metric}</span>
                     </td>
                   ))}
                   <td className="text-right py-4 px-4">
                     <div className="flex items-center justify-end gap-2">
                       <div className="w-16 bg-zinc-700 rounded-full h-2 overflow-hidden">
-                        <div
-                          className="bg-[#d0b345] h-2 rounded-full shadow-md"
-                          style={{ width: `${coin.moonshot}%` }}></div>
+                        <div className="bg-[#d0b345] h-2 rounded-full shadow-md" style={{ width: `${coin.moonshot}%` }}></div>
                       </div>
-                      <span className="text-xs bg-[#d0b345] bg-clip-text text-transparent font-bold">
-                        {coin.moonshot}
-                      </span>
+                      <span className="text-xs bg-[#d0b345] bg-clip-text text-transparent font-bold">{coin.moonshot}</span>
                     </div>
                   </td>
                   <td className="py-4 px-4 flex justify-center">
@@ -275,27 +234,26 @@ const HotCoins = () => {
         </div>
       </div>
 
-      {/* ==== RIGHT SIDE (Portfolio) ==== */}
+      {/* RIGHT SIDE (Portfolio) */}
       <div className={`${themeClasses.card} w-96 p-6 border shadow-lg rounded-lg`}>
         <h2 className={`text-xl font-bold flex items-center gap-2 mb-6 ${themeClasses.text}`}>
           <Award className="text-[#d0b345]" />
-          Portfolio
+          {t("Portfolio")}
         </h2>
 
         {enrichedPortfolio.length === 0 ? (
           <div className={`text-center py-12 ${themeClasses.subtext}`}>
             <Target className="mx-auto mb-4 opacity-50" size={48} />
-            <p>No coins added yet</p>
-            <p className="text-sm mt-2">Click "+" to build your portfolio</p>
+            <p>{t("No coins added yet")}</p>
+            <p className="text-sm mt-2">{t('Click "+" to build your portfolio')}</p>
           </div>
         ) : (
           <div className="space-y-2">
-            <div
-              className={`flex items-center gap-3 px-4 text-xs font-semibold ${themeClasses.subtext} mb-2`}>
+            <div className={`flex items-center gap-3 px-4 text-xs font-semibold ${themeClasses.subtext} mb-2`}>
               <div className="w-4"></div>
-              <div className="w-20">Name</div>
-              <div className="w-24">Price</div>
-              <div className="w-16">24h</div>
+              <div className="w-20">{t("Name")}</div>
+              <div className="w-24">{t("Price")}</div>
+              <div className="w-16">{t("24h")}</div>
             </div>
 
             {enrichedPortfolio.map((coin, idx) => (
@@ -321,10 +279,7 @@ const HotCoins = () => {
                 </div>
 
                 <div className="w-16 text-left">
-                  <div
-                    className={`font-semibold text-sm ${
-                      coin.trend === 'up' ? 'text-green-500' : 'text-red-500'
-                    }`}>
+                  <div className={`font-semibold text-sm ${coin.trend === 'up' ? 'text-green-500' : 'text-red-500'}`}>
                     {coin.change}
                   </div>
                 </div>
@@ -334,7 +289,7 @@ const HotCoins = () => {
         )}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default HotCoins
+export default HotCoins;

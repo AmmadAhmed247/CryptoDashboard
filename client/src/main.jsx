@@ -17,6 +17,8 @@ import {
 } from '@tanstack/react-query';
 import { ThemeProvider } from "./context/ThemeContext";
 import axios from 'axios';
+import "./i18n.js";
+
 const queryClient = new QueryClient();
 axios.defaults.withCredentials = true;
 const router = createBrowserRouter([

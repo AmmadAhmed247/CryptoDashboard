@@ -1,26 +1,24 @@
-import {
-  AlertCircle,
-  Sparkles,
-  Award,
-} from "lucide-react";
+import { AlertCircle, Sparkles, Award } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const FearGreedGauge = ({ value, isDarkMode }) => {
+  const { t } = useTranslation();
+
   const getLabel = () => {
-    if (value <= 20) return "Extreme Fear";
-    if (value <= 40) return "Fear";
-    if (value <= 60) return "Neutral";
-    if (value <= 80) return "Greed";
-    return "Extreme Greed";
+    if (value <= 20) return t("extremeFear");
+    if (value <= 40) return t("fear");
+    if (value <= 60) return t("neutral");
+    if (value <= 80) return t("greed");
+    return t("extremeGreed");
   };
 
-const getColor = (value) => {
-  const v = Number(value);
-  if (isNaN(v)) return "#DC2626"; // fallback to red
-
-  if (v <= 50) return "#DC2626";      // Tailwind red-600
-  if (v <= 80) return "#22C55D";      // Tailwind green-500
-  return "#16A34A";                   // Tailwind green-600 (extreme)
-};
+  const getColor = (v) => {
+    const num = Number(v);
+    if (isNaN(num)) return "#DC2626"; // fallback red
+    if (num <= 50) return "#DC2626"; // red-600
+    if (num <= 80) return "#22C55D"; // green-500
+    return "#16A34A"; // green-600 extreme
+  };
 
   return (
     <div
@@ -36,7 +34,7 @@ const getColor = (value) => {
             isDarkMode ? "text-white" : "text-gray-900"
           }`}
         >
-          Fear & Greed Index
+          {t("fearGreedIndex")}
         </h3>
         <AlertCircle
           size={16}
@@ -46,10 +44,7 @@ const getColor = (value) => {
 
       <div className="flex items-center justify-between">
         <div>
-          <div
-            className="text-3xl font-bold"
-            style={{ color: getColor() }}
-          >
+          <div className="text-3xl font-bold" style={{ color: getColor(value) }}>
             {value}
           </div>
           <div
@@ -65,17 +60,13 @@ const getColor = (value) => {
             }`}
           >
             <Sparkles size={15} />
-            Buy Signal Active
+            {t("buySignalActive")}
           </div>
         </div>
 
-        {/* ✅ Perfect Circle Gauge with Center Sticker */}
+        {/* Circle Gauge */}
         <div className="relative w-20 h-20 flex items-center justify-center">
-          <svg
-            className="w-full h-full -rotate-90"
-            viewBox="0 0 36 36"
-          >
-            {/* Background Circle */}
+          <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
             <circle
               className="stroke-[3]"
               stroke={isDarkMode ? "#27272a" : "#e5e7eb"}
@@ -84,10 +75,9 @@ const getColor = (value) => {
               cy="18"
               r="15.9155"
             />
-            {/* Progress Circle */}
             <circle
               className="stroke-[3] transition-all duration-700"
-              stroke={getColor()}
+              stroke={getColor(value)}
               fill="none"
               strokeDasharray={`${Math.min(value * 1.75, 100)} 100`}
               strokeLinecap="round"
@@ -97,8 +87,9 @@ const getColor = (value) => {
             />
           </svg>
 
-          {/* 🧠 Sticker in the middle */}
-          <div className={`absolute text-2xl ${getColor()}`}>{<Award className={` text-2xl text-red-600`} />}</div>
+          <div className={`absolute text-2xl text-red-600`}>
+            <Award className="text-2xl text-red-600" />
+          </div>
         </div>
       </div>
     </div>
