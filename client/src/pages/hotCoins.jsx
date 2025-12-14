@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Flame, Target, Award, Trash2, Plus } from 'lucide-react';
+import { Flame, Target, Award, Trash2, Plus ,Zap} from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
@@ -45,6 +45,19 @@ const HotCoins = () => {
       moonshot: coin.Moonshot.toFixed(0),
       average: coin.average,
     })) || [];
+    
+
+const sortedCoins = [...demoCoins].sort((a, b) => {
+  if (a.symbol === 'BTC') return -1;
+  if (b.symbol === 'BTC') return 1;
+  if (a.symbol === 'KAS') return -1;
+  if (b.symbol === 'KAS') return 1;
+  const mcapA = parseFloat(a.mcap.replace(/[$,]/g, '')) || 0;
+  const mcapB = parseFloat(b.mcap.replace(/[$,]/g, '')) || 0;
+  return mcapB - mcapA;
+});
+
+
 
   useEffect(() => {
     const fetchPortfolio = async () => {
@@ -150,8 +163,8 @@ const HotCoins = () => {
       <div className={`${themeClasses.card} flex-1 p-6 border shadow-lg rounded-lg`}>
         <div className="flex items-center justify-between mb-6">
           <h2 className={`text-xl font-bold flex items-center gap-2 ${themeClasses.text}`}>
-            <Flame className="text-[#d0b345]" />
-            {t("Hot Coins")}
+            <Zap className="text-[#d0b345]" />
+            {t("Top Coins")}
           </h2>
           {/* <div className="flex gap-2">
             {['All', 'High CI', 'Low Risk'].map(filter => (
@@ -180,56 +193,57 @@ const HotCoins = () => {
               </tr>
             </thead>
             <tbody>
-              {demoCoins.map((coin, idx) => (
-                <tr
-                  key={idx}
-                  className={`${themeClasses.border} border-b ${themeClasses.hover} transition-all cursor-pointer group`}>
-                  <td className="py-4 px-4">
-                    <Link
-                      to={`https://coinmarketcap.com/currencies/${coin.id || coin.name.toLowerCase().replace(/\s+/g, '-')}`}
-                      target="_blank"
-                      className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-all">
-                        {coin.icon}
-                      </div>
-                      <div>
-                        <div className={`font-semibold ${themeClasses.text}`}>{coin.name}</div>
-                        <div className={`text-xs ${themeClasses.subtext}`}>{coin.narrative}</div>
-                      </div>
-                    </Link>
-                  </td>
-                  <td className={`text-right py-4 px-4 font-semibold ${themeClasses.text}`}>{coin.price}</td>
-                  <td className="text-right py-4 px-4">
-                    <span className={`font-semibold ${coin.trend === 'up' ? 'text-green-500' : 'text-red-500'}`}>
-                      {coin.change}
-                    </span>
-                  </td>
-                  <td className={`text-right py-4 px-4 ${themeClasses.subtext}`}>{coin.volume}</td>
-                  {[coin.cqs, coin.ts, coin.ci, coin.ri].map((metric, i) => (
-                    <td key={i} className="text-right py-4 px-4">
-                      <span className={`px-2 py-1 rounded-lg text-xs font-semibold shadow-md ${
-                        metric >= 70 ? 'bg-green-500/20 text-green-500' : 'bg-yellow-500/20 text-yellow-500'
-                      }`}>{metric}</span>
-                    </td>
-                  ))}
-                  <td className="text-right py-4 px-4">
-                    <div className="flex items-center justify-end gap-2">
-                      <div className="w-16 bg-zinc-700 rounded-full h-2 overflow-hidden">
-                        <div className="bg-[#d0b345] h-2 rounded-full shadow-md" style={{ width: `${coin.moonshot}%` }}></div>
-                      </div>
-                      <span className="text-xs bg-[#d0b345] bg-clip-text text-transparent font-bold">{coin.moonshot}</span>
-                    </div>
-                  </td>
-                  <td className="py-4 px-4 flex justify-center">
-                    <button
-                      onClick={() => addToPortfolio(coin)}
-                      className="p-2 bg-[#d0b345] rounded-lg text-xs font-semibold text-white transition-all shadow-lg hover:shadow-xl hover:scale-110 flex items-center">
-                      <Plus size={16} />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+  {sortedCoins.map((coin, idx) => (
+    <tr
+      key={idx}
+      className={`${themeClasses.border} border-b ${themeClasses.hover} transition-all cursor-pointer group`}>
+      <td className="py-4 px-4">
+        <Link
+          to={`https://coinmarketcap.com/currencies/${coin.id || coin.name.toLowerCase().replace(/\s+/g, '-')}`}
+          target="_blank"
+          className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-all">
+            {coin.icon}
+          </div>
+          <div>
+            <div className={`font-semibold ${themeClasses.text}`}>{coin.name}</div>
+            <div className={`text-xs ${themeClasses.subtext}`}>{coin.narrative}</div>
+          </div>
+        </Link>
+      </td>
+      <td className={`text-right py-4 px-4 font-semibold ${themeClasses.text}`}>{coin.price}</td>
+      <td className="text-right py-4 px-4">
+        <span className={`font-semibold ${coin.trend === 'up' ? 'text-green-500' : 'text-red-500'}`}>
+          {coin.change}
+        </span>
+      </td>
+      <td className={`text-right py-4 px-4 ${themeClasses.subtext}`}>{coin.volume}</td>
+      {[coin.cqs, coin.ts, coin.ci, coin.ri].map((metric, i) => (
+        <td key={i} className="text-right py-4 px-4">
+          <span className={`px-2 py-1 rounded-lg text-xs font-semibold shadow-md ${
+            metric >= 50 ? 'bg-green-500/20 text-green-500' : 'bg-red-500/20 text-red-500'
+          }`}>{metric}</span>
+        </td>
+      ))}
+      <td className="text-right py-4 px-4">
+        <div className="flex items-center justify-end gap-2">
+          <div className="w-16 bg-zinc-700 rounded-full h-2 overflow-hidden">
+            <div className="bg-[#d0b345] h-2 rounded-full shadow-md" style={{ width: `${coin.moonshot}%` }}></div>
+          </div>
+          <span className="text-xs bg-[#d0b345] bg-clip-text text-transparent font-bold">{coin.moonshot}</span>
+        </div>
+      </td>
+      <td className="py-4 px-4 flex justify-center">
+        <button
+          onClick={() => addToPortfolio(coin)}
+          className="p-2 bg-[#d0b345] rounded-lg text-xs font-semibold text-white transition-all shadow-lg hover:shadow-xl hover:scale-110 flex items-center">
+          <Plus size={16} />
+        </button>
+      </td>
+    </tr>
+  ))}
+</tbody>
+
           </table>
         </div>
       </div>
@@ -250,7 +264,7 @@ const HotCoins = () => {
         ) : (
           <div className="space-y-2">
             <div className={`flex items-center gap-3 px-4 text-xs font-semibold ${themeClasses.subtext} mb-2`}>
-              <div className="w-4"></div>
+              <div className="w-7"></div>
               <div className="w-20">{t("Name")}</div>
               <div className="w-24">{t("Price")}</div>
               <div className="w-16">{t("24h")}</div>

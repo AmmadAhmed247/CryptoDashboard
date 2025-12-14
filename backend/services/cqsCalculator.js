@@ -1,6 +1,6 @@
 import axios from "axios";
 
-// ----------------- Helper Functions -----------------
+
 export const logNormalize = (value, min = 1, max = 1e12) => {
   if (!value || value <= min) return 0;
   if (value >= max) return 100;
@@ -13,16 +13,17 @@ export const ratioNormalize = (value, min = 0, max = 1) => {
   return ((value - min) / (max - min)) * 100;
 };
 
-// ----------------- CQS Value Calculation -----------------
+
 export const calculateCQSValue = (coinData, lunarcrushData = null, githubData = null, ccData = null) => {
-  // 1️⃣ FLF (Coin Age / Fair Launch)
   let FLF = 0;
   if (coinData.genesis_date) {
     const ageYears = (Date.now() - new Date(coinData.genesis_date).getTime()) / (1000 * 60 * 60 * 24 * 365);
     FLF = Math.min(100, (ageYears / 20) * 100);
   }
+  console.log(FLF);
+  
 
-  // 2️⃣ TKS (Token Supply Ratios)
+  // TKS (Token Supply Ratios)
   const circ = coinData.market_data?.circulating_supply || 0;
   const total = coinData.market_data?.total_supply || circ || 1;
   const max = coinData.market_data?.max_supply || null;
@@ -34,7 +35,7 @@ export const calculateCQSValue = (coinData, lunarcrushData = null, githubData = 
   }
   TKS = Math.min(100, TKS * 100);
 
-  // 3️⃣ LRS (Listings & Liquidity)
+  // LRS (Listings & Liquidity)
   const tickers = coinData.tickers || [];
   let LRS = logNormalize(tickers.length, 1, 1000);
   const topExchanges = ["binance", "coinbase", "kraken", "okx", "bybit"];
@@ -42,6 +43,8 @@ export const calculateCQSValue = (coinData, lunarcrushData = null, githubData = 
     topExchanges.includes(t.market?.identifier?.toLowerCase())
   ).length;
   LRS += Math.min(10, topExchangeCount * 2);
+
+  
 
   if (ccData) {
     const volume = ccData.VOLUME24HOUR || 0;
@@ -51,7 +54,7 @@ export const calculateCQSValue = (coinData, lunarcrushData = null, githubData = 
   }
   LRS = Math.min(100, LRS);
 
-  // 4️⃣ DEV (Developer Activity)
+  // DEV (Developer Activity)
   const dd = coinData.developer_data || {};
   const commits = logNormalize(dd.commit_count_4_weeks || 0, 1, 5000);
   const contributors = logNormalize(dd.contributors || 0, 1, 1000);
@@ -65,7 +68,7 @@ export const calculateCQSValue = (coinData, lunarcrushData = null, githubData = 
   if (githubData) DEV += githubData.githubScore * 0.2;
   DEV = Math.min(100, DEV);
 
-  // 5️⃣ CS_quarterly (Community Score)
+  // CS_quarterly (Community Score)
   const baseScore = coinData.community_score || 0;
   const cd = coinData.community_data || {};
   let CS_quarterly = ratioNormalize(baseScore, 0, 100);
@@ -75,14 +78,10 @@ export const calculateCQSValue = (coinData, lunarcrushData = null, githubData = 
   socialBonus += logNormalize(cd.telegram_channel_user_count || 0, 1, 500_000) * 0.03;
   if (lunarcrushData) socialBonus += lunarcrushData.lunarScore * 0.2;
   CS_quarterly = Math.min(100, CS_quarterly + socialBonus);
-
-  // ----------------- Final CQS -----------------
   const CQS = 0.15 * FLF + 0.2 * TKS + 0.2 * LRS + 0.2 * DEV + 0.25 * CS_quarterly;
-
   let quality = "Low Quality";
   if (CQS >= 70) quality = "High Quality";
   else if (CQS >= 50) quality = "Medium Quality";
-
   return {
     CQS: Number(CQS.toFixed(2)),
     breakdown: {

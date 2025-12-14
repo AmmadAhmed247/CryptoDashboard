@@ -57,19 +57,20 @@ const CryptoMarketCycle = () => {
   }
 
   const getPhase = (value) => {
-    if (value <= 30) return { name: t("accumulationEarlyBull"), color: "#10b981" };
-    if (value <= 70) return { name: t("expansionMidBull"), color: "#f59e0b" };
-    return { name: t("euphoriaLateBull"), color: "#ef4444" };
+    if (value <= 30) return { name: t("Accumulation EarlyBull"), color: "#10b981" };
+    if (value <= 70) return { name: t("Expansion MidBull"), color: "#f59e0b" };
+    return { name: t("Euphoria LateBull"), color: "#ef4444" };
   };
 
   return (
     <div
-      className={`w-full p-6 rounded-2xl shadow-lg border-2 transition-all duration-300 ${
-        isDarkMode
+      className={`w-full p-6 rounded-2xl shadow-lg border-2 transition-all duration-300 ${isDarkMode
           ? "bg-gradient-to-br from-zinc-900 to-zinc-800 border-zinc-700 text-white"
           : "bg-gradient-to-br from-white to-gray-100 border-gray-300 text-gray-900"
-      }`}
+        }`}
     >
+      {/* Bull Market Peak Indicators section */}
+      
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h2 className={`text-lg font-semibold ${isDarkMode ? "text-[#d0b345]" : "text-yellow-600"}`}>
@@ -80,8 +81,10 @@ const CryptoMarketCycle = () => {
         </span>
       </div>
 
+
+      
       {/* Chart */}
-      <div className="h-84">
+      <div className="h-93">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 10, right: 0, bottom: 0, left: 0 }}>
             <defs>
@@ -174,6 +177,18 @@ const CryptoMarketCycle = () => {
             />
           </LineChart>
         </ResponsiveContainer>
+        {/* Legend */}
+        <div className="flex items-center justify-center gap-4 mt-2">
+          <div className="flex items-center gap-1">
+            <span className="w-3 h-3 rounded-full" style={{ backgroundColor: "#d0b345" }}></span>
+            <span className="text-xs">{t("GCMI")}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="w-3 h-3 rounded-full" style={{ backgroundColor: isDarkMode ? "#9ca3af" : "#6b7280" }}></span>
+            <span className="text-xs">{t("BTC Price")}</span>
+          </div>
+        </div>
+
       </div>
     </div>
   );

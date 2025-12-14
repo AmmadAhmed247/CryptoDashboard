@@ -26,7 +26,7 @@ const Navbar = () => {
         {},
         { withCredentials: true }
       );
-      toast.success(res.data.message || t("logout_success"));
+      toast.success(res.data.message || t("Logout Successfully"));
       setUser(null);
     } catch (err) {
       console.error("Logout failed:", err);
@@ -65,6 +65,8 @@ const Navbar = () => {
 
         {/* Right Section */}
         <div className="flex items-center gap-3">
+          
+
           {/* 🌐 Language Switcher */}
           <div className="relative">
             <button
@@ -174,26 +176,37 @@ const Navbar = () => {
       { /* Bottom Tabs */ }
 <div className={`${isDarkMode ? "bg-zinc-900 border-zinc-800" : "bg-white border-gray-200"} rounded-2xl mt-2 border-b px-6 shadow-md backdrop-blur-sm hidden md:block`}>
   <div className="flex gap-1">
-    {[t("dashboard"), t("topCoins")].map((tab) => (
-      <Link
-        to={tab === t("dashboard") ? "/" : "/topcoins"}
-        key={tab}
-        onClick={() => setActiveTab(tab.toLowerCase())}
-        className={`px-6 py-4 font-semibold transition-all relative group ${
-          activeTab === tab.toLowerCase()
-            ? "text-[#d0b345] bg-gradient-to-r from-yellow-400 to-yellow-500 bg-clip-text"
-            : isDarkMode
-            ? "text-zinc-400 hover:text-white"
-            : "text-gray-600 hover:text-gray-900"
-        }`}
-      >
-        {tab}
-        {activeTab === tab.toLowerCase() && (
-          <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-yellow-400 to-yellow-500 shadow-lg shadow-yellow-500/50"></div>
-        )}
-        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-yellow-400 to-yellow-100 opacity-0 group-hover:opacity-50 transition-all"></div>
-      </Link>
-    ))}
+    {[
+      { label: t("dashboard"), path: "/" },
+      { label: t("topCoins"), path: "/topcoins" },
+      { label: t("Bull Signal"), path: "https://www.coinglass.com/bull-market-peak-signals", external: true }
+    ].map((tab) => {
+      const TabComponent = tab.external ? "a" : Link;
+      const linkProps = tab.external 
+        ? { href: tab.path, target: "_blank", rel: "noopener noreferrer" }
+        : { to: tab.path };
+      
+      return (
+        <TabComponent
+          {...linkProps}
+          key={tab.label}
+          onClick={() => !tab.external && setActiveTab(tab.label.toLowerCase())}
+          className={`px-6 py-4 font-semibold transition-all relative group ${
+            activeTab === tab.label.toLowerCase()
+              ? "text-[#d0b345] bg-gradient-to-r from-yellow-400 to-yellow-500 bg-clip-text"
+              : isDarkMode
+              ? "text-zinc-400 hover:text-white"
+              : "text-gray-600 hover:text-gray-900"
+          }`}
+        >
+          {tab.label}
+          {activeTab === tab.label.toLowerCase() && (
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-yellow-400 to-yellow-500 shadow-lg shadow-yellow-500/50"></div>
+          )}
+          <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-yellow-400 to-yellow-100 opacity-0 group-hover:opacity-50 transition-all"></div>
+        </TabComponent>
+      );
+    })}
   </div>
 </div>
 
@@ -252,7 +265,7 @@ const Navbar = () => {
             className="block px-3 py-2 text-sm font-semibold text-[#d0b345] hover:underline"
             to={"/topcoins"}
           >
-            {t("topcoins")}
+            {t("Topcoins")}
           </Link>
         </div>
       )}

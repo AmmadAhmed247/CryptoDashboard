@@ -21,6 +21,8 @@ const formatNumber = (num) => {
 const RightSide = ({ selectedCoin, topCoinsData, isLoading = false }) => {
   const { isDarkMode } = useTheme();
   const { t } = useTranslation();
+  console.log(selectedCoin);
+  
 
   return (
     <div className={`w-96 border-l overflow-y-auto custom-scrollbar ${isDarkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-gray-200'}`}>
@@ -70,9 +72,9 @@ const RightSide = ({ selectedCoin, topCoinsData, isLoading = false }) => {
             </div>
 
             <EntryRecommendation
-              average={selectedCoin?.average ?? 0}
-              isDarkMode={isDarkMode}
-            />
+  coinId={selectedCoin.id}  // Changed from average to coinId
+  isDarkMode={isDarkMode}
+/>
           </div>
         )}
 

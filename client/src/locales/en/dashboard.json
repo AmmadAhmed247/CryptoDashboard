@@ -31,6 +31,35 @@
   "ts": "TS",
   "ci": "CI",
   "ri": "RI",
+   "signals": {
+    "overheating": {
+      "name": "Overheating Zone",
+      "action": "Use this phase to review your positions and focus on reducing risks."
+    },
+    "strong": {
+      "name": "Strong Zone",
+      "action": "The environment is supportive. A careful, well-planned increase can make sense."
+    },
+    "earlyOpportunity": {
+      "name": "Early Opportunity Zone",
+      "action": "Conditions are improving. Slowly adding to existing positions can be reasonable."
+    },
+    "neutral": {
+      "name": "Neutral Zone",
+      "action": "Hold your current positions and wait for clearer signals."
+    },
+    "weak": {
+      "name": "Weak Zone",
+      "action": "Be more cautious and consider lowering your overall risk."
+    },
+    "stress": {
+      "name": "Stress Zone",
+      "action": "Focus on stability and avoid taking on additional risk."
+    }
+  },
+  "signalLevel": "Signal Level",
+  "loadingScoreData": "Loading score data...",
+  "error": "Error",
   "moonshot": "Moonshot",
   "action": "Action",
   "addToAnalysis": "Add To Analysis",

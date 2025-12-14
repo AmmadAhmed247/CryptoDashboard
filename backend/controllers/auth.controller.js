@@ -98,3 +98,46 @@ export const getCurrentUser = async (req, res) => {
   }
 };
 
+
+export const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (!user)
+      return res.status(404).json({ message: "No account found with that email" });
+
+    // Generate reset token valid for 15 minutes
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "15m" });
+
+    const resetLink = `${process.env.CLIENT_URL}/reset-password/${token}`;
+
+    await sendEmail(
+      email,
+      "Password Reset Request",
+      `<p>Hi ${user.name || ""},</p>
+      <p>Click <a href="${resetLink}">here</a> to reset your password. This link expires in 15 minutes.</p>`
+    );
+
+    res.json({ message: "Password reset link sent to your email." });
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    res.status(500).json({ message: "Something went wrong while sending the email." });
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  const { token } = req.params;
+  const { newPassword } = req.body;
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await User.findByIdAndUpdate(decoded.id, { password: hashedPassword });
+
+    res.json({ message: "Password reset successful!" });
+  } catch (error) {
+    console.error("Reset password error:", error);
+    res.status(400).json({ message: "Invalid or expired reset token." });
+  }
+};

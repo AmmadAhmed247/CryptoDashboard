@@ -12,10 +12,8 @@ const apiLimiter = rateLimit({
   message: "Too many requests, please try again later.",
 });
 
-// Public endpoint - get GCMI data
-router.get("/gcmi", apiLimiter, getGCMI);
 
-// Admin endpoint - manually trigger update (optional, protect with auth)
+router.get("/gcmi", apiLimiter, getGCMI);
 router.post("/gcmi/update", triggerUpdate);
 
 export default router;

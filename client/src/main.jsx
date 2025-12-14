@@ -18,7 +18,7 @@ import {
 import { ThemeProvider } from "./context/ThemeContext";
 import axios from 'axios';
 import "./i18n.js";
-
+import ForgotPassword from './pages/forgetPassword.jsx';
 const queryClient = new QueryClient();
 axios.defaults.withCredentials = true;
 const router = createBrowserRouter([
@@ -29,6 +29,8 @@ const router = createBrowserRouter([
       { path: "/", element: <Dashboard /> },
       { path: "/topcoins", element: <HotCoins /> },
       { path: "/home", element: <Home /> },
+      { path: "/forgetpassword", element: <ForgotPassword /> },
+ 
     ],
   },
 ]);

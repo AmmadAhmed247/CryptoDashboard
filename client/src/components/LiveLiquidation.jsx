@@ -51,7 +51,7 @@ const LiveLiquidation = () => {
     return safeData.filter((d) => d.exchange?.toLowerCase() === selected.toLowerCase());
   }, [selected, safeData]);
 
-  const displayData = useMemo(() => filtered.slice(0, 10), [filtered]);
+  const displayData = useMemo(() => filtered.slice(0, 11), [filtered]);
 
   const handleExchangeSelect = (exchange) => {
     setSelected(exchange);
@@ -102,7 +102,7 @@ const LiveLiquidation = () => {
 
           {/* Dropdown */}
           <div className="relative flex flex-col" ref={dropdownRef}>
-            <button
+            {/* <button
               onClick={() => setOpen(!open)}
               className={`flex items-center justify-between w-20 px-2 py-1 rounded text-xs cursor-pointer transition-all duration-200 ${
                 isDarkMode
@@ -136,7 +136,8 @@ const LiveLiquidation = () => {
                   </div>
                 ))}
               </div>
-            )}
+            )} */}
+            <span className='text-xs px-3 font-semibold text-zinc-300 bg-zinc-700  rounded-2xl' >Binance</span>
           </div>
         </div>
 

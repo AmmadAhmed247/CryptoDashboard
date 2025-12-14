@@ -142,7 +142,6 @@ export const calculateTimingScore = async (
       }
     }
 
-    // --- 5. Calculate Final TS
     const TS = (
       0.30 * TM + 
       0.20 * VL + 

@@ -23,6 +23,7 @@
     "node-cron": "^4.2.1",
     "nodemailer": "^7.0.10",
     "npm": "^11.6.2",
+    "openai": "^6.10.0",
     "ws": "^8.18.3"
   },
   "type": "module"

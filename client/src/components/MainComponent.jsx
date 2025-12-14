@@ -24,8 +24,6 @@ const MainContent = ({ demoCoins, narrativeTrends, ScoreCard, onSelectCoin, sele
 
   const prevCoinsRef = React.useRef(demoCoins);
 
-
-  // Detect when demoCoins prop changes and mark which coins changed
   React.useEffect(() => {
     if (coins.length === 0) {
       setLoading(true);
@@ -68,7 +66,6 @@ const MainContent = ({ demoCoins, narrativeTrends, ScoreCard, onSelectCoin, sele
 
 
   const aggregatedScores = React.useMemo(() => {
-    console.log('Calculating aggregated scores for:', selectedCoins);
 
     if (selectedCoins.length === 0) return null;
 
@@ -139,9 +136,15 @@ const MainContent = ({ demoCoins, narrativeTrends, ScoreCard, onSelectCoin, sele
                     </div>
                     <div className={`text-4xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{card.value}</div>
                   </div>
-                  <div className="p-2 bg-zinc-800 border-2 border-[#d0b345] rounded-xl shadow-lg group-hover:scale-110 transition-all hidden md:block">
-                    <card.icon size={22} className="text-[#d0b345]" />
+                  <div
+                    className={`p-2 ${isDarkMode ? "bg-zinc-800" : "bg-white"} border-2 border-[#d0b345] rounded-xl shadow-lg group-hover:scale-110 transition-all hidden md:block`}
+                  >
+                    <card.icon
+                      size={22}
+                      className={isDarkMode ? "text-[#d0b345]" : "text-[#d0b345]"}
+                    />
                   </div>
+
                 </div>
                 <div className={`w-full ${isDarkMode ? 'bg-zinc-700' : 'bg-gray-200'} rounded-full h-2 mb-2 overflow-hidden`}>
                   <div
@@ -198,11 +201,13 @@ const MainContent = ({ demoCoins, narrativeTrends, ScoreCard, onSelectCoin, sele
 
           {/* Right Section: CryptoMarketCycle */}
           <div className="flex-1 flex flex-col gap-2">
+
             {loading ? (
               <SkeletonLoader rows={1} height="h-64" />
             ) : (
               <CryptoMarketCycle />
             )}
+
           </div>
         </div>
 
@@ -214,7 +219,7 @@ const MainContent = ({ demoCoins, narrativeTrends, ScoreCard, onSelectCoin, sele
           <div className="flex items-center justify-between mb-6">
             <h2 className={`text-xl font-bold flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
               <Flame className="text-[#d0b345]" />
-             {t("Hot Coins")}
+              {t("Hot Coins")}
             </h2>
             {/* <div className="flex gap-2">
               {['All', 'High CI', 'Low Risk'].map(filter => (
@@ -241,13 +246,12 @@ const MainContent = ({ demoCoins, narrativeTrends, ScoreCard, onSelectCoin, sele
                     <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">{t('CI')}</th>
                     <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">{t('RI')}</th>
                     <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">{t('moonshot')}</th>
-                    <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">{t('action')}</th>
-                    <th className="text-middle w-12 py-3 px-4 text-sm font-semibold text-zinc-400">{t('addToAnalysis')}</th>
+                    {/* <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">{t('action')}</th> */}
+                    <th className="text-middle w-12 py-3 px-4 text-sm font-semibold text-zinc-400">{t('Analyse')}</th>
                   </tr>
                 </thead>
-
                 <tbody>
-                  {coins.map((coin, idx) => (
+                  {coins.slice(0, 10).map((coin, idx) => (
                     <tr
                       key={idx}
                       className={`${isDarkMode
@@ -308,26 +312,36 @@ const MainContent = ({ demoCoins, narrativeTrends, ScoreCard, onSelectCoin, sele
                       </td>
 
                       {["cqs", "ts", "ci", "ri"].map((metric, i) => {
-                        const value = Number(coin[metric] ?? 0);
-                        return (
-                          <td key={i} className="text-right py-4 px-4">
-                            <span
-                              className={`px-2 py-1 rounded-lg text-xs font-semibold shadow-md ${metric === "ri"
-                                ? value < 50
-                                  ? "bg-green-500/20 text-green-400"
-                                  : value < 75
-                                    ? "bg-yellow-500/20 text-yellow-400"
-                                    : "bg-red-500/20 text-red-400"
-                                : value >= 70
-                                  ? "bg-green-500/20 text-green-400"
-                                  : "bg-yellow-500/20 text-yellow-400"
-                                }`}
-                            >
-                              {value?.toFixed(0) || 0}
-                            </span>
-                          </td>
-                        );
-                      })}
+  const value = Number(coin[metric] ?? 0);
+  
+  // Define color logic for each metric
+  const getColorClass = () => {
+    switch(metric) {
+      case "ri": // Risk Index: 50-75 is good (green)
+        if (value < 50) return "bg-red-500/20 text-red-400";
+        if (value < 75) return "bg-green-500/20 text-green-400";
+        return "bg-red-500/20 text-red-400";
+      
+      case "cqs": // Code Quality Score: higher is better
+      case "ts":  // Team Score: higher is better
+      case "ci":  // Community Interest: higher is better
+        if (value >= 70) return "bg-green-500/20 text-green-400";
+        if (value >= 50) return "bg-green-500/20 text-green-400";
+        return "bg-red-500/20 text-red-400";
+      
+      default:
+        return "bg-gray-500/20 text-gray-400";
+    }
+  };
+  
+  return (
+    <td key={i} className="text-right py-4 px-4">
+      <span className={`px-2 py-1 rounded-lg text-xs font-semibold shadow-md ${getColorClass()}`}>
+        {value?.toFixed(0) || 0}
+      </span>
+    </td>
+  );
+})}
 
                       <td className="text-right py-4 px-4">
                         <div className="flex items-center justify-end gap-2">
@@ -343,11 +357,12 @@ const MainContent = ({ demoCoins, narrativeTrends, ScoreCard, onSelectCoin, sele
                         </div>
                       </td>
 
-                      <td className="text-right py-4 px-4">
-                        <button className="px-4 font-semibold py-2 bg-[#d0b345] rounded-lg text-xs transition-all shadow-lg hover:shadow-xl hover:scale-110">
-                          Entry
-                        </button>
-                      </td>
+                      {/* <td className="text-right py-auto">
+                        <span className="px-4 font-semibold py-2 bg-[#d0b345] rounded-lg text-xs transition-all shadow-lg hover:shadow-xl hover:scale-110">
+                          {t(coin.entryState)}
+                        </span>
+                      </td> */}
+
                       <td className="py-4 px-4 flex justify-center">
                         <button
                           onClick={(e) => {

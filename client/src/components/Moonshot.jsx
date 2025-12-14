@@ -126,7 +126,7 @@ export default function MoonshotFactorMini({ coins, isDarkMode }) {
                 </p>
                 <div className="flex items-center justify-end gap-1">
                   <Sparkles className={`w-3 h-3 ${isDarkMode ? "text-amber-400" : "text-yellow-500"}`} />
-                  <p className={`font-bold text-lg ${isDarkMode ? "text-[#E4C35E]" : "text-amber-600"}`}>
+                  <p className={`font-bold text-lg ${isDarkMode ? "text-[#E4C35E]" : "text-[#E4C35E]"}`}>
                     {coin.moonshotScore.toFixed(0)}
                   </p>
                 </div>
@@ -158,7 +158,7 @@ export default function MoonshotFactorMini({ coins, isDarkMode }) {
               </p>
               <div className="flex items-center justify-end gap-1">
                 <Sparkles className="w-3 h-3 text-[#E4C35E]" />
-                <p className={`font-bold text-lg ${isDarkMode ? "text-[#E4C35E]" : "text-amber-600"}`}>
+                <p className={`font-bold text-lg ${isDarkMode ? "text-[#E4C35E]" : "text-[#E4C35E]"}`}>
                   {selectedCoin.moonshotScore.toFixed(0)}
                 </p>
               </div>
@@ -198,7 +198,7 @@ export default function MoonshotFactorMini({ coins, isDarkMode }) {
                 <p className={`text-sm ${isDarkMode ? "text-zinc-400" : "text-gray-600"}`}>
                   {t("Overall Moonshot Score")}
                 </p>
-                <div className={`text-5xl font-bold mt-2 ${isDarkMode ? "text-[#E4C35E]" : "text-amber-600"}`}>
+                <div className={`text-5xl font-bold mt-2 ${isDarkMode ? "text-[#E4C35E]" : "text-[#E4C35E]"}`}>
                   {animateStats ? (selectedCoin.moonshotScore ?? 0).toFixed(0) : 0}
                 </div>
               </div>

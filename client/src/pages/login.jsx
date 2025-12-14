@@ -6,7 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useAuth } from "../context/AuthContex";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-
+import { Link } from "react-router-dom";
 const Login = ({ onClose }) => {
   const { t } = useTranslation();
   const [isLogin, setIsLogin] = useState(true);
@@ -146,13 +146,13 @@ const Login = ({ onClose }) => {
             />
           </div>
 
-          {isLogin && (
-            <div className="text-right mb-4">
-              <button type="button" className="text-xs text-[#d0b345] hover:underline">
-                {t("Forgot Password?")}
-              </button>
-            </div>
-          )}
+          {/* {isLogin && (
+            // <div className="text-right mb-4">
+            //   <Link to={"/forgetpassword"} type="button" className="text-xs text-[#d0b345] hover:underline">
+            //     {t("Forgot Password?")}
+            //   </Link>
+            // </div>
+          )} */}
 
           <button
             type="submit"
@@ -177,11 +177,11 @@ const Login = ({ onClose }) => {
           <div className="flex-grow border-t border-zinc-700"></div>
         </div>
 
-        <div className="flex justify-center gap-5 mt-5">
+        {/* <div className="flex justify-center gap-5 mt-5">
           <Chrome className="text-zinc-400 hover:text-[#d0b345] cursor-pointer transition" size={20} />
           <Twitter className="text-zinc-400 hover:text-[#d0b345] cursor-pointer transition" size={20} />
           <Facebook className="text-zinc-400 hover:text-[#d0b345] cursor-pointer transition" size={20} />
-        </div>
+        </div> */}
 
         <p className="text-[11px] text-zinc-500 mt-5 text-center leading-snug">
           {isLogin ? (

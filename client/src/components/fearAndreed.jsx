@@ -36,10 +36,7 @@ const FearGreedGauge = ({ value, isDarkMode }) => {
         >
           {t("fearGreedIndex")}
         </h3>
-        <AlertCircle
-          size={16}
-          className={isDarkMode ? "text-zinc-500" : "text-gray-400"}
-        />
+        
       </div>
 
       <div className="flex items-center justify-between">

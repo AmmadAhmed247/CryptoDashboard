@@ -1,5 +1,5 @@
 import express from 'express';
-import { updateAndStoreCoin , fetchCoinById} from '../controllers/CoinMaster.controller.js';
+import { updateAndStoreCoin } from '../controllers/CoinMaster.controller.js';
 
 
 const router = express.Router();
@@ -8,6 +8,6 @@ const router = express.Router();
 router.get('/update-coin/:coinId', updateAndStoreCoin);
 
 // Fetch stored coin metrics
-router.get('/coin/:coinId', fetchCoinById);
+// router.get('/coin/:coinId', fetchCoinById);
 
 export default router;

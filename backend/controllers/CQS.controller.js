@@ -1,6 +1,10 @@
 import axios from "axios";
 import { calculateCQSValue } from "../services/cqsCalculator.js"
 
+const logNormalize = (value, min, max) => {
+  if (!value || value <= 0) return 0;
+  return Math.min(1, Math.max(0, Math.log10(value / min) / Math.log10(max / min)));
+};
 export const calculateCQS = async (req, res) => {
   try {
     const { coin } = req.body;
@@ -48,6 +52,8 @@ export const calculateCQS = async (req, res) => {
           `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${coinSymbol}&tsyms=USD&api_key=${process.env.CC_KEY}`
         );
         const raw = cc.data?.RAW?.[coinSymbol]?.USD;
+
+        
         if (!raw) return { liquidityScore: 0, liquidityDebug: {} };
         const liquidityScore =
           logNormalize(raw.VOLUME24HOUR, 1, 1e9) * 0.5 +

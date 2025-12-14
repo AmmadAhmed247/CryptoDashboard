@@ -6,7 +6,7 @@ import LeftPanel from '../components/LeftPanel';
 import MainContent from '../components/MainComponent';
 import Search from '../components/Search';
 import { useQuery } from '@tanstack/react-query';
-
+import ChatWindow from '../components/chatwindow';
 import axios from 'axios';
 
 const CryptoDashboard = () => {
@@ -83,12 +83,14 @@ const handleAddToAnalysis = (coin) => {
 
   const demoCoins = topCoinsData?.map(coin => ({
     name: coin.name,
+    id:coin.coinId,
     symbol: coin.symbol,
     icon: <img src={coin.logo} alt={coin.symbol} className="w-8 h-8 rounded-full" />,
     cqs: coin.CQS,
     ts: coin.TS,
     ci: coin.CI,
     ri: coin.RI,
+    entryState:coin.entryState,
     trend: coin.priceChange24h >= 0 ? 'up' : 'down',
     price: `$${coin.price ? (coin.price).toLocaleString() : '0.00'}`, // format price
     change: `${Number(coin.priceChange24h || 0).toFixed(2)}%`,
@@ -98,6 +100,7 @@ const handleAddToAnalysis = (coin) => {
     moonshot: coin.Moonshot,
     average: coin.average
   })) || [];
+  
   const altSeasonIndex = altSeasonData?.value ?? 40;
   const fearGreedIndex = data ? parseInt(data.value) : 40;
   const bitcoinHalving = halvingData ? halvingData : { days: 910, blocks: 131000, date: 'Apr 2028' };
@@ -140,7 +143,7 @@ useEffect(() => {
     {
       label: 'Active Cryptos',
       value: globalMarketData?.active_cryptocurrencies ?? '0',
-      change: 'N/A',
+      change: '',
       icon: Users,
     },
   ];
@@ -276,6 +279,7 @@ useEffect(() => {
         {/* Right Sidebar */}
         <div className="hidden xl:flex w-80 h-full overflow-auto">
           <RightSide isDarkMode={isDarkMode} selectedCoin={selectedCoin} topCoinsData={topCoinsData} isLoading={Loading}/>
+          {/* <ChatWindow /> */}
         </div>
         {/* <MoonshotFactor /> */}
       </div>
