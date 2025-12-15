@@ -24,7 +24,7 @@ const app = express();
 app.use(express.json());
 
 const PORT = process.env.PORT;
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+app.use(cors({ origin: "http://localhost:5174", credentials: true }));
 startGCMICron();
 
 connectDB();

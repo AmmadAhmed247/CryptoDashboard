@@ -279,7 +279,7 @@ useEffect(() => {
         {/* Right Sidebar */}
         <div className="hidden xl:flex w-80 h-full overflow-auto">
           <RightSide isDarkMode={isDarkMode} selectedCoin={selectedCoin} topCoinsData={topCoinsData} isLoading={Loading}/>
-          {/* <ChatWindow /> */}
+          <ChatWindow />
         </div>
         {/* <MoonshotFactor /> */}
       </div>
