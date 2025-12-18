@@ -24,7 +24,7 @@ const Login = ({ onClose }) => {
   // --------------------- LOGIN MUTATION ---------------------
   const loginMutation = useMutation({
     mutationFn: async (data) => {
-      const res = await axios.post(`${backendurl}/api/auth/login`, data, { withCredentials: true });
+      const res = await axios.post(`${backendurl}/auth/login`, data, { withCredentials: true });
       return res.data;
     },
     onSuccess: (data) => {
@@ -57,7 +57,7 @@ const Login = ({ onClose }) => {
   // --------------------- REGISTER MUTATION ---------------------
   const registerMutation = useMutation({
     mutationFn: async (data) => {
-      const res = await axios.post(`${backendurl}/api/auth/register`, data, { withCredentials: true });
+      const res = await axios.post(`${backendurl}/auth/register`, data, { withCredentials: true });
       return res.data;
     },
     onSuccess: (data) => {
