@@ -27,7 +27,25 @@ const app = express();
 app.use(express.json());
 
 const PORT = process.env.PORT;
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+const allowedOrigins = [
+  "https://meinkrypto.com",
+  "https://www.meinkrypto.com"
+];
+
+app.use(cors({
+  origin: function(origin, callback) {
+
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 startGCMICron();
 
 connectDB();

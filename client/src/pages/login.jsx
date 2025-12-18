@@ -21,7 +21,7 @@ const Login = ({ onClose }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // --------------------- LOGIN MUTATION ---------------------
+
   const loginMutation = useMutation({
     mutationFn: async (data) => {
       const res = await axios.post(`${backendurl}/auth/login`, data, { withCredentials: true });
