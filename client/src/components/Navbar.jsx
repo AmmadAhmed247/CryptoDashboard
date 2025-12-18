@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Sun, Moon, Menu, X, Globe } from "lucide-react";
 import LiveStatus from "./Time";
 import Login from "../pages/login";
-import { useAuth } from "../context/AuthContex";
+import { useAuth } from "../context/AuthContext.jsx";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useTheme } from "../context/ThemeContext";

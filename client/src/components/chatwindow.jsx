@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Send, Sparkles, Bot, User, MessageCircle, X } from 'lucide-react';
 import axios from 'axios';
+import { useTheme } from "../context/ThemeContext";
 
 const Chatwindow = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { isDarkMode } = useTheme();
   const [message, setMessages] = useState([
     { sender: "bot", text: "Hi! Ask me about any crypto coin." }
   ]);
@@ -44,6 +46,38 @@ const Chatwindow = () => {
     }
   };
 
+  const themeClasses = isDarkMode
+    ? {
+        chatBg: 'bg-zinc-900',
+        chatBorder: 'border-zinc-800',
+        messageBg: 'bg-zinc-800',
+        messageBorder: 'border-zinc-700',
+        inputBg: 'bg-zinc-800',
+        inputBorder: 'border-zinc-700',
+        inputFocus: 'focus-within:border-[#d0b345]',
+        text: 'text-zinc-100',
+        placeholder: 'placeholder:text-zinc-500',
+        subtext: 'text-zinc-600',
+        userAvatar: 'bg-zinc-700',
+        userAvatarIcon: 'text-zinc-300',
+        scrollThumb: 'scrollbar-thumb-zinc-700',
+      }
+    : {
+        chatBg: 'bg-white',
+        chatBorder: 'border-gray-200',
+        messageBg: 'bg-gray-100',
+        messageBorder: 'border-gray-200',
+        inputBg: 'bg-gray-100',
+        inputBorder: 'border-gray-300',
+        inputFocus: 'focus-within:border-[#d0b345]',
+        text: 'text-gray-900',
+        placeholder: 'placeholder:text-gray-400',
+        subtext: 'text-gray-500',
+        userAvatar: 'bg-gray-300',
+        userAvatarIcon: 'text-gray-700',
+        scrollThumb: 'scrollbar-thumb-gray-300',
+      };
+
   return (
     <>
       {/* Floating Chat Button */}
@@ -61,7 +95,7 @@ const Chatwindow = () => {
 
       {/* Chat Window Popup */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 w-[420px] h-[600px] flex flex-col bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-800 overflow-hidden z-50 animate-[slideUp_0.3s_ease-out]">
+        <div className={`fixed bottom-24 right-6 w-[420px] h-[600px] flex flex-col ${themeClasses.chatBg} rounded-2xl shadow-2xl border ${themeClasses.chatBorder} overflow-hidden z-50 animate-[slideUp_0.3s_ease-out]`}>
           {/* Header */}
           <div className="w-full px-6 py-4 bg-gradient-to-r from-[#d0b345] to-[#b8993a] flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -82,7 +116,7 @@ const Chatwindow = () => {
           </div>
 
           {/* Messages Container */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-zinc-900 scrollbar-thin scrollbar-thumb-zinc-700 scrollbar-track-transparent">
+          <div className={`flex-1 overflow-y-auto p-4 space-y-4 ${themeClasses.chatBg} scrollbar-thin ${themeClasses.scrollThumb} scrollbar-track-transparent`}>
             {message.map((msg, idx) => (
               <div 
                 key={idx}
@@ -97,14 +131,14 @@ const Chatwindow = () => {
                 <div className={`max-w-[75%] px-4 py-3 rounded-2xl text-sm leading-relaxed shadow-lg transition-all hover:shadow-xl ${
                   msg.sender === "user" 
                     ? "bg-[#d0b345] text-zinc-900 rounded-br-sm font-medium" 
-                    : "bg-zinc-800 text-zinc-100 rounded-bl-sm border border-zinc-700"
+                    : `${themeClasses.messageBg} ${themeClasses.text} rounded-bl-sm border ${themeClasses.messageBorder}`
                 }`}>
                   {msg.text}
                 </div>
 
                 {msg.sender === "user" && (
-                  <div className="w-8 h-8 rounded-full bg-zinc-700 flex items-center justify-center flex-shrink-0 shadow-lg">
-                    <User className="w-5 h-5 text-zinc-300" />
+                  <div className={`w-8 h-8 rounded-full ${themeClasses.userAvatar} flex items-center justify-center flex-shrink-0 shadow-lg`}>
+                    <User className={`w-5 h-5 ${themeClasses.userAvatarIcon}`} />
                   </div>
                 )}
               </div>
@@ -115,7 +149,7 @@ const Chatwindow = () => {
                 <div className="w-8 h-8 rounded-full bg-[#d0b345] flex items-center justify-center flex-shrink-0 shadow-lg shadow-[#d0b345]/20">
                   <Bot className="w-5 h-5 text-zinc-900" />
                 </div>
-                <div className="bg-zinc-800 border border-zinc-700 px-4 py-3 rounded-2xl rounded-bl-sm shadow-lg">
+                <div className={`${themeClasses.messageBg} border ${themeClasses.messageBorder} px-4 py-3 rounded-2xl rounded-bl-sm shadow-lg`}>
                   <div className="flex gap-1">
                     <div className="w-2 h-2 bg-[#d0b345] rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
                     <div className="w-2 h-2 bg-[#d0b345] rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
@@ -128,14 +162,14 @@ const Chatwindow = () => {
           </div>
 
           {/* Input Area */}
-          <div className="p-4 bg-zinc-900 border-t border-zinc-800">
-            <div className="flex gap-2 items-center bg-zinc-800 rounded-full px-2 py-2 border border-zinc-700 focus-within:border-[#d0b345] transition-all shadow-lg">
+          <div className={`p-4 ${themeClasses.chatBg} border-t ${themeClasses.chatBorder}`}>
+            <div className={`flex gap-2 items-center ${themeClasses.inputBg} rounded-full px-2 py-2 border ${themeClasses.inputBorder} ${themeClasses.inputFocus} transition-all shadow-lg`}>
               <input 
                 value={input} 
                 onChange={(e) => setinput(e.target.value)} 
                 onKeyDown={handleKeydown} 
                 placeholder='Ask about any cryptocurrency...' 
-                className='flex-1 bg-transparent px-4 py-1 text-zinc-100 placeholder:text-zinc-500 focus:outline-none text-sm'
+                className={`flex-1 bg-transparent px-4 py-1 ${themeClasses.text} ${themeClasses.placeholder} focus:outline-none text-sm`}
               />
               <button 
                 onClick={sendMessage} 
@@ -145,7 +179,7 @@ const Chatwindow = () => {
                 <Send className="w-5 h-5" />
               </button>
             </div>
-            <p className="text-xs text-zinc-600 text-center mt-2">Powered by AI • Real-time crypto insights</p>
+            <p className={`text-xs ${themeClasses.subtext} text-center mt-2`}>Powered by AI • Real-time crypto insights</p>
           </div>
         </div>
       )}
@@ -179,6 +213,11 @@ const Chatwindow = () => {
         
         .scrollbar-thumb-zinc-700::-webkit-scrollbar-thumb {
           background-color: #3f3f46;
+          border-radius: 3px;
+        }
+        
+        .scrollbar-thumb-gray-300::-webkit-scrollbar-thumb {
+          background-color: #d1d5db;
           border-radius: 3px;
         }
         

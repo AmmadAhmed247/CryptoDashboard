@@ -9,7 +9,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import '@fontsource/montserrat/400.css';
 import '@fontsource/montserrat/700.css';
 import Login from "./pages/login.jsx";
-import { AuthProvider } from './context/AuthContex.jsx';
+import { AuthProvider } from './context/AuthContext.jsx';
 import { Toaster } from 'react-hot-toast';
 import {
   QueryClient,
@@ -19,6 +19,8 @@ import { ThemeProvider } from "./context/ThemeContext";
 import axios from 'axios';
 import "./i18n.js";
 import ForgotPassword from './pages/forgetPassword.jsx';
+import BlurWrapper from './components/BlurWrapper.jsx';
+
 const queryClient = new QueryClient();
 axios.defaults.withCredentials = true;
 const router = createBrowserRouter([
@@ -30,6 +32,7 @@ const router = createBrowserRouter([
       { path: "/topcoins", element: <HotCoins /> },
       { path: "/home", element: <Home /> },
       { path: "/forgetpassword", element: <ForgotPassword /> },
+      { path: "/login", element: <Login /> },
  
     ],
   },

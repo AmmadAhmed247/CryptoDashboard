@@ -21,7 +21,7 @@ const formatNumber = (num) => {
 const RightSide = ({ selectedCoin, topCoinsData, isLoading = false }) => {
   const { isDarkMode } = useTheme();
   const { t } = useTranslation();
-  console.log(selectedCoin);
+  // console.log(selectedCoin);
   
 
   return (
@@ -71,10 +71,12 @@ const RightSide = ({ selectedCoin, topCoinsData, isLoading = false }) => {
               ))}
             </div>
 
-            <EntryRecommendation
-  coinId={selectedCoin.id}  // Changed from average to coinId
-  isDarkMode={isDarkMode}
-/>
+           {selectedCoin && (
+  <EntryRecommendation
+    coinId={selectedCoin.id}
+    isDarkMode={isDarkMode}
+  />
+)}
           </div>
         )}
 

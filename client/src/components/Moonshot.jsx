@@ -56,7 +56,7 @@ export default function MoonshotFactorMini({ coins, isDarkMode }) {
 
   const sortedCoins = transformedCoins
     .sort((a, b) => b.moonshotScore - a.moonshotScore)
-    .slice(0, 3);
+    .slice(0, 5);
 
   if (sortedCoins.length === 0) {
     return (
@@ -72,13 +72,13 @@ export default function MoonshotFactorMini({ coins, isDarkMode }) {
     );
   }
 
-  const handleEnter = (coin) => {
-    setSelectedCoin(coin);
-    setShowAnalytics(true);
-    setAnimateStats(false);
-    setTimeout(() => setAnimateStats(true), 200);
-    setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 100);
-  };
+  // const handleEnter = (coin) => {
+  //   setSelectedCoin(coin);
+  //   setShowAnalytics(true);
+  //   setAnimateStats(false);
+  //   setTimeout(() => setAnimateStats(true), 200);
+  //   setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 100);
+  // };
 
   return (
     <div className="bg-zinc-850 text-white p-6 rounded-2xl border border-zinc-700 max-w-xl mx-auto">
@@ -136,7 +136,7 @@ export default function MoonshotFactorMini({ coins, isDarkMode }) {
         </div>
       )}
 
-      {selectedCoin && (
+      {/* {selectedCoin && (
         <div className={`${isDarkMode ? "bg-zinc-900 border-zinc-800" : "bg-white border-gray-200"} rounded-xl p-5 mt-4 transition-all`}>
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -217,7 +217,7 @@ export default function MoonshotFactorMini({ coins, isDarkMode }) {
             </div>
           )}
         </div>
-      )}
+      )} */}
     </div>
   );
 }

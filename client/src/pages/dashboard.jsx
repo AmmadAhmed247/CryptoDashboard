@@ -12,29 +12,49 @@ import axios from 'axios';
 const CryptoDashboard = () => {
   const [selectedCoin, setSelectedCoin] = useState(null);
   const [isDarkMode, setIsDarkMode] = useState(true);
-  const [selectedCoins, setSelectedCoins] = useState([]); // ✅ moved here
+  const [selectedCoins, setSelectedCoins] = useState([]);
 
-const handleAddToAnalysis = (coin) => {
-  console.log('Adding coin:', coin.name);
-  console.log('Scores:', { cqs: coin.cqs, ts: coin.ts, ci: coin.ci, ri: coin.ri });
+  const handleAddToAnalysis = (coin) => {
+  // console.log('=== ADD TO ANALYSIS CALLED ===');
+  // console.log('Adding coin:', coin.name);
+  // console.log('Coin scores:', { 
+  //   cqs: coin.cqs, 
+  //   ts: coin.ts, 
+  //   ci: coin.ci, 
+  //   ri: coin.ri 
+  // });
   
-  setSelectedCoins((prev) => {
-    if (prev.find(c => c.name === coin.name)) {
- 
-      return prev;
-    }
-    const newCoins = [...prev, coin];
-   
-    return newCoins;
-  });
-
+  // Check for duplicate
+  const alreadyExists = selectedCoins.some(c => 
+    c.name === coin.name || c.id === coin.id || c.symbol === coin.symbol
+  );
+  
+  if (alreadyExists) {
+    // console.log('⚠️ Coin already in analysis');
+    // Optional: still switch view to this coin even if already added
+    setSelectedCoin(coin);
+    return;
+  }
+  
+  // Add to analysis basket
+  setSelectedCoins(prev => [...prev, coin]);
+  
+  // ALWAYS update the viewed coin on the right side
   setSelectedCoin(coin);
+  
+  // console.log('=== ADD COMPLETE - Now viewing:', coin.name);
 };
 
-  const handleClearAnalysis = () => setSelectedCoins([]);
+  const handleClearAnalysis = () => {
+   
+    setSelectedCoins([]);
+    // Reset to first coin when clearing
+    if (demoCoins && demoCoins.length > 0) {
+      setSelectedCoin(demoCoins[0]);
+    }
+  };
+
   // Replace the static demoCoins with dynamic data from backend
-
-
   const { data, isLoading, error } = useQuery({
     queryKey: ['fearGreedIndex'],
     queryFn: async () => {
@@ -43,14 +63,16 @@ const handleAddToAnalysis = (coin) => {
     },
     refetchInterval: 1000 * 60 * 60, //every 1 hour
   });
+
   const { data: halvingData } = useQuery({
     queryKey: ['halvingData'],
     queryFn: async () => {
       const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/data/halving`);
       return res.data;
     },
-    refetchInterval: 1000 * 60 * 30, //every 1 minute
+    refetchInterval: 1000 * 60 * 30, //every 30 minutes
   });
+
   const { data: altSeasonData } = useQuery({
     queryKey: ['altSeasonData'],
     queryFn: async () => {
@@ -61,6 +83,7 @@ const handleAddToAnalysis = (coin) => {
     staleTime: 1000 * 60 * 10,
     retry: 2,
   });
+
   const { data: globalMarketData } = useQuery({
     queryKey: ['globalMarketData'],
     queryFn: async () => {
@@ -69,32 +92,35 @@ const handleAddToAnalysis = (coin) => {
     },
     refetchInterval: 1000 * 60 * 30, //every 30 minutes
   });
+
   const { data: topCoinsData, isLoading: coinsLoading, error: coinsError } = useQuery({
     queryKey: ['topCoins'],
     queryFn: async () => {
       const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/top-coins`);
       return res.data.data; // assuming your controller returns { success, data }
     },
-    refetchInterval: 10 * 1000, // every 10 seconds
-    staleTime: 10 * 1000, // 1 sec
+    refetchInterval: 5 * 1000, // Refetch every second
     retry: 1, // Retry once on failure
   });
 
-
   const demoCoins = topCoinsData?.map(coin => ({
     name: coin.name,
-    id:coin.coinId,
+    id: coin.coinId,
     symbol: coin.symbol,
     icon: <img src={coin.logo} alt={coin.symbol} className="w-8 h-8 rounded-full" />,
     cqs: coin.CQS,
     ts: coin.TS,
     ci: coin.CI,
     ri: coin.RI,
-    entryState:coin.entryState,
+    cms: coin.CMS,
+    entryState: coin.entryState,
     trend: coin.priceChange24h >= 0 ? 'up' : 'down',
-    price: `$${coin.price ? (coin.price).toLocaleString() : '0.00'}`, // format price
+    price: `$${Number(coin.price || 0).toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 8
+      })}`,
     change: `${Number(coin.priceChange24h || 0).toFixed(2)}%`,
-    narrative: coin.narrative || coin.symbol, // optional, fallback to symbol
+    narrative: coin.narrative || coin.symbol,
     volume: `$${parseFloat(coin.volume).toLocaleString()}`,
     mcap: `$${parseFloat(coin.marketCap).toLocaleString()}`,
     moonshot: coin.Moonshot,
@@ -110,16 +136,20 @@ const handleAddToAnalysis = (coin) => {
       setSelectedCoin(demoCoins[0]);
     }
   }, [demoCoins]);
+
   const [Loading, setIsLoading] = useState(true);
 
-useEffect(() => {
-  const timer = setTimeout(() => {
-    setIsLoading(false);
-  }, 1500); // Shows skeleton for 1.5 seconds on page load
-  return () => clearTimeout(timer);
-}, []);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
-
+  // Debug: Log whenever selectedCoins changes
+  useEffect(() => {
+    // console.log('🔄 selectedCoins state updated:', selectedCoins);
+  }, [selectedCoins]);
 
   const marketMetrics = [
     {
@@ -147,6 +177,7 @@ useEffect(() => {
       icon: Users,
     },
   ];
+
   const ScoreCard = selectedCoin
     ? [
       {
@@ -205,13 +236,10 @@ useEffect(() => {
     { name: 'GameFi', score: 64, trend: 'down', color: 'bg-[#d0b345]' },
     { name: 'Meme', score: 88, trend: 'up', color: 'bg-[#d0b345]' },
   ];
+
   const topGainers = demoCoins
     .sort((a, b) => parseFloat(b.change) - parseFloat(a.change))
     .slice(0, 9);
-
-
-
-
 
   return (
     <div className={`min-h-screen ${isDarkMode ? 'bg-zinc-900 text-white' : 'bg-gray-50 text-gray-900'} transition-all duration-300`}>
@@ -250,12 +278,6 @@ useEffect(() => {
         }
       `}</style>
 
-      {/* Top Bar */}
-
-
-      {/* Navigation */}
-
-
       {/* Main Content */}
       <div className="flex h-full relative">
         {/* Left Sidebar */}
@@ -272,16 +294,22 @@ useEffect(() => {
         </div>
 
         {/* Main Content Area */}
-        <MainContent selectedCoins={selectedCoins}
+        <MainContent 
+          selectedCoins={selectedCoins}
           onAddToAnalysis={handleAddToAnalysis}
-          onClearAnalysis={handleClearAnalysis} onSelectCoin={setSelectedCoin} isDarkMode={isDarkMode} demoCoins={demoCoins} narrativeTrends={narrativeTrends} ScoreCard={ScoreCard} />
+          onClearAnalysis={handleClearAnalysis} 
+          onSelectCoin={setSelectedCoin} 
+          isDarkMode={isDarkMode} 
+          demoCoins={demoCoins}  
+          narrativeTrends={narrativeTrends} 
+          ScoreCard={ScoreCard} 
+        />
 
         {/* Right Sidebar */}
         <div className="hidden xl:flex w-80 h-full overflow-auto">
           <RightSide isDarkMode={isDarkMode} selectedCoin={selectedCoin} topCoinsData={topCoinsData} isLoading={Loading}/>
           <ChatWindow />
         </div>
-        {/* <MoonshotFactor /> */}
       </div>
     </div>
   );

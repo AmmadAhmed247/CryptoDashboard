@@ -3,10 +3,11 @@ import { createPortal } from "react-dom";
 import { X, Facebook, Twitter, Chrome } from "lucide-react";
 import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
-import { useAuth } from "../context/AuthContex";
+import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+
 const Login = ({ onClose }) => {
   const { t } = useTranslation();
   const [isLogin, setIsLogin] = useState(true);
@@ -14,7 +15,7 @@ const Login = ({ onClose }) => {
   const [message, setMessage] = useState("");
 
   const backendurl = import.meta.env.VITE_BACKEND_URL;
-  const { setUser } = useAuth();
+  const { setUser, redirectToCheckout, setRedirectToCheckout } = useAuth();
 
   const handleInput = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -28,13 +29,28 @@ const Login = ({ onClose }) => {
     },
     onSuccess: (data) => {
       toast.success(data.message || t("Login successful!"));
+      toast.error(data.user.buyStatus);
       setMessage(data.message);
       setUser(data.user);
-      setTimeout(onClose, 1000);
+      
+      // Check if should redirect to checkout
+     if (redirectToCheckout && !data.user.buyStatus) {
+        setRedirectToCheckout(false);
+        setTimeout(() => {
+          window.location.href = `${import.meta.env.VITE_CHECKOUT_URL}?email=${data.user.email}`;
+        }, 1000);
+      } else if (data.user.buyStatus) {
+        // User has paid - redirect to dashboard
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 1000);
+      } else {
+        setTimeout(onClose, 1000);
+      }
     },
     onError: (err) => {
-      setMessage(err.response?.data?.message || t("Login Failed"));
-      toast.error(err.response?.data?.message || t("Login Failed"));
+      toast.error(err.response?.data?.message || t("Signup Failed"));
+      setMessage(err.response?.data?.message || t("Signup Failed"));
     },
   });
 
@@ -48,7 +64,21 @@ const Login = ({ onClose }) => {
       toast.success(data.message || t("Signup successful!"));
       setMessage(data.message);
       setUser(data.user);
-      setTimeout(onClose, 1000);
+      
+      // Check if should redirect to checkout
+      if (redirectToCheckout && !data.user.buyStatus) {
+        setRedirectToCheckout(false);
+        setTimeout(() => {
+          window.location.href = `${import.meta.env.VITE_CHECKOUT_URL}?email=${data.user.email}`;
+        }, 1000);
+      } else if (data.user.buyStatus) {
+        // User has paid - redirect to dashboard
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 1000);
+      } else {
+        setTimeout(onClose, 1000);
+      }
     },
     onError: (err) => {
       toast.error(err.response?.data?.message || t("Signup Failed"));
@@ -73,7 +103,7 @@ const Login = ({ onClose }) => {
 
   // --------------------- MODAL UI ---------------------
   const modalContent = (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999]">
+    <div className="fixed inset-0 bg-black/100 flex items-center justify-center z-[9999]">
       <div className="bg-zinc-800 w-[380px] rounded-2xl shadow-2xl p-6 text-white relative">
         {/* Close button */}
         <button
@@ -146,14 +176,6 @@ const Login = ({ onClose }) => {
             />
           </div>
 
-          {/* {isLogin && (
-            // <div className="text-right mb-4">
-            //   <Link to={"/forgetpassword"} type="button" className="text-xs text-[#d0b345] hover:underline">
-            //     {t("Forgot Password?")}
-            //   </Link>
-            // </div>
-          )} */}
-
           <button
             type="submit"
             disabled={isLoading}
@@ -177,16 +199,10 @@ const Login = ({ onClose }) => {
           <div className="flex-grow border-t border-zinc-700"></div>
         </div>
 
-        {/* <div className="flex justify-center gap-5 mt-5">
-          <Chrome className="text-zinc-400 hover:text-[#d0b345] cursor-pointer transition" size={20} />
-          <Twitter className="text-zinc-400 hover:text-[#d0b345] cursor-pointer transition" size={20} />
-          <Facebook className="text-zinc-400 hover:text-[#d0b345] cursor-pointer transition" size={20} />
-        </div> */}
-
         <p className="text-[11px] text-zinc-500 mt-5 text-center leading-snug">
           {isLogin ? (
             <>
-              {t("Don’t have an account?")}{" "}
+              {t("Don't have an account?")}{" "}
               <span
                 onClick={() => setIsLogin(false)}
                 className="text-[#d0b345] cursor-pointer hover:underline font-semibold"

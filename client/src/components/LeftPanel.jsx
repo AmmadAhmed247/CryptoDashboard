@@ -211,8 +211,8 @@ const LeftPanel = ({
                       {coin.icon}
                     </div>
                     <div>
-                      <span className={`text-sm font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                        {coin.name}
+                      <span className={`text-xs font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                        {coin.symbol}
                       </span>
                       <div className={`text-xs ${isDarkMode ? 'text-zinc-500' : 'text-gray-500'}`}>
                         {coin.price}

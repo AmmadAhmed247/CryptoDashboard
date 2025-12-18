@@ -87,7 +87,7 @@ const EntryRecommendation = ({ coinId, isDarkMode }) => {
         
         const response = await axios.post(url);
         
-        console.log('Response received:', response.data);
+        // console.log('Response received:', response.data);
         setScoreData(response.data);
         
       } catch (err) {
@@ -183,19 +183,19 @@ const EntryRecommendation = ({ coinId, isDarkMode }) => {
         {entry.signal}
       </div>
 
-      <div className={`text-sm font-bold ${isDarkMode ? "text-zinc-200" : "text-gray-800"} mb-1`}>
+      {/* <div className={`text-sm font-bold ${isDarkMode ? "text-zinc-200" : "text-gray-800"} mb-1`}>
         {t("positionSize")}: {entry.position}
-      </div>
+      </div> */}
 
       <div className={`text-xs mt-2 ${isDarkMode ? "text-zinc-400" : "text-gray-600"}`}>
         {entry.description}
       </div>
       
-      {/* {scoreData.signalLevel && (
+      {scoreData.signalLevel && (
         <div className={`text-xs mt-2 pt-2 border-t ${isDarkMode ? "border-zinc-700 text-zinc-500" : "border-gray-200 text-gray-500"}`}>
-          {t("signalLevel")}: {scoreData.signalLevel}
+          {scoreData.marketPhase}
         </div>
-      )} */}
+      )}
     </div>
   );
 };
