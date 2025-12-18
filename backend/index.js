@@ -51,7 +51,7 @@ app.use("/api/auth",AuthRoute);
 app.use("/api/portfolio",portfolioRoutes)
 app.listen(PORT,async () => {
   console.log(`Server is running on http://localhost:${PORT}`);
-  // await initializeCronJob();
+  await initializeCronJob();
   // await updateSingleCoin();
 });
 
