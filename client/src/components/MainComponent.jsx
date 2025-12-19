@@ -1,12 +1,12 @@
 import React from 'react';
-import { TrendingUp, TrendingDown, Activity, Flame, Target, Award, Zap, Plus } from 'lucide-react';
+import { TrendingUp, TrendingDown, Activity, Flame, Target, Award, Zap, Plus ,Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import CryptoMarketCycle from './bitcoinCycle';
 import Liveliquidation from "./LiveLiquidation.jsx";
 import SkeletonLoader from './Skeleton.jsx';
 import { useTheme } from "../context/ThemeContext.jsx";
 import { useTranslation } from 'react-i18next';
-
+import EntryRecommendation from './Entry.jsx';
 function getColor(value) {
   return value < 50 ? 'bg-red-800' : 'bg-green-700';
 }
@@ -15,6 +15,8 @@ const MainContent = ({ demoCoins, narrativeTrends, ScoreCard, onSelectCoin, sele
   const { isDarkMode } = useTheme();
   const [loading, setLoading] = React.useState(true);
   const { t } = useTranslation();
+  console.log(selectedCoins);
+  
 
   // Track previous raw prices for accurate change detection
   const prevRawPricesRef = React.useRef({});
@@ -75,8 +77,9 @@ const MainContent = ({ demoCoins, narrativeTrends, ScoreCard, onSelectCoin, sele
         ts: acc.ts + (Number(c.ts) || 0),
         ci: acc.ci + (Number(c.ci) || 0),
         ri: acc.ri + (Number(c.ri) || 0),
+        cms: acc.cms + (Number(c.cms) || 0),
       }),
-      { cqs: 0, ts: 0, ci: 0, ri: 0 }
+      { cqs: 0, ts: 0, ci: 0, ri: 0,cms:0 }
     );
 
     const count = selectedCoins.length;
@@ -85,6 +88,7 @@ const MainContent = ({ demoCoins, narrativeTrends, ScoreCard, onSelectCoin, sele
       ts: (total.ts / count).toFixed(0),
       ci: (total.ci / count).toFixed(0),
       ri: (total.ri / count).toFixed(0),
+      cms: (total.cms / count).toFixed(0),
     };
   }, [selectedCoins]);
 
@@ -95,7 +99,7 @@ const MainContent = ({ demoCoins, narrativeTrends, ScoreCard, onSelectCoin, sele
 {loading && coins.length === 0 ? (
   <SkeletonLoader rows={1} height="h-32" />
 ) : (
-  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+  <div className="grid grid-cols-5 md:grid-cols-5 lg:grid-cols-5 gap-4">
     {/* Use ScoreCard from CryptoDashboard if no selectedCoins, otherwise use last selected coin */}
     {(selectedCoins.length > 0 
       ? [
@@ -123,6 +127,12 @@ const MainContent = ({ demoCoins, narrativeTrends, ScoreCard, onSelectCoin, sele
             icon: Flame,
             status: "Risk Index"
           },
+          {
+            label: "CMS",
+            value: Number(selectedCoins[selectedCoins.length - 1].cms || 0).toFixed(0),
+            icon: Star,
+            status: "CMS"
+          },
         ]
       : ScoreCard
     ).map((card, idx) => (
@@ -138,7 +148,10 @@ const MainContent = ({ demoCoins, narrativeTrends, ScoreCard, onSelectCoin, sele
             <div className={`text-sm mb-1 ${isDarkMode ? 'text-zinc-400' : 'text-gray-600'}`}>
               {t(card.label)}
             </div>
-            <div className={`text-4xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{card.value}</div>
+            <div className={`text-2xl md:text-4xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+  {card.value}
+</div>
+
           </div>
           <div className={`p-2 ${isDarkMode ? "bg-zinc-800" : "bg-white"} border-2 border-[#d0b345] rounded-xl shadow-lg group-hover:scale-110 transition-all hidden md:block`}>
             <card.icon size={22} className="text-[#d0b345]" />
@@ -146,7 +159,7 @@ const MainContent = ({ demoCoins, narrativeTrends, ScoreCard, onSelectCoin, sele
         </div>
         <div className={`w-full ${isDarkMode ? 'bg-zinc-700' : 'bg-gray-200'} rounded-full h-2 mb-2 overflow-hidden`}>
           <div
-            className={`bg-gradient-to-r ${getColor(card.value)} h-2 rounded-full shadow-lg transition-all duration-1000`}
+            className={`bg-gradient-to-r ${getColor(card.value)}  h-2 rounded-full shadow-lg transition-all duration-1000`}
             style={{ width: `${card.value}%` }}
           ></div>
         </div>
@@ -165,7 +178,15 @@ const MainContent = ({ demoCoins, narrativeTrends, ScoreCard, onSelectCoin, sele
             {loading ? <SkeletonLoader rows={1} height="h-64" /> : <CryptoMarketCycle />}
           </div>
         </div>
+{/* EntryRecommendation - only visible on mobile */}
+.
+<div className="block md:hidden ">
+  <EntryRecommendation 
+  coinId={selectedCoins.length > 0 ? selectedCoins[selectedCoins.length - 1].id : null} 
+  isDarkMode={isDarkMode} 
+/>
 
+</div>
         <div className={`${isDarkMode ? 'bg-gradient-to-br from-zinc-800 to-zinc-900 border-zinc-700' : 'bg-gradient-to-br from-white to-gray-50 border-gray-200'} rounded-xl p-6 border shadow-lg`}>
           <div className="flex items-center justify-between mb-6">
             <h2 className={`text-xl font-bold flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
@@ -181,7 +202,7 @@ const MainContent = ({ demoCoins, narrativeTrends, ScoreCard, onSelectCoin, sele
               <table className="w-full">
                 <thead>
                   <tr className="border-zinc-700 border-b">
-                    <th className="text-left py-3 px-4 text-sm font-semibold text-zinc-400">{t('topCoins')}</th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-zinc-400">{t('Hot Coins')}</th>
                     <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">{t('price')}</th>
                     <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">{t('change24h')}</th>
                     <th className="text-right py-3 px-4 text-sm font-semibold text-zinc-400">{t('volume24h')}</th>
@@ -254,13 +275,7 @@ const MainContent = ({ demoCoins, narrativeTrends, ScoreCard, onSelectCoin, sele
                           <span
                             className={`font-semibold transition-all duration-300 ${
                               parseFloat(coin.change) >= 0 ? "text-green-400" : "text-red-600"
-                            } ${
-                              isUp
-                                ? "drop-shadow-[0_0_8px_rgba(74,222,128,0.6)]"
-                                : isDown
-                                  ? "drop-shadow-[0_0_8px_rgba(248,113,113,0.6)]"
-                                  : ""
-                            }`}
+                            } `}
                           >
                             {coin.change}
                           </span>

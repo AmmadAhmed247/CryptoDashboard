@@ -68,21 +68,22 @@ const BlurWrapper = ({ children }) => {
 
               {/* Title */}
               <h2 className="text-3xl md:text-4xl font-bold text-center mb-3 bg-gradient-to-r from-[#d0b345] via-yellow-500 to-[#d0b345] bg-clip-text text-transparent">
-                Unlock Premium
+                Schalte Premium frei
+
               </h2>
               
               {/* Subtitle */}
               <p className="text-zinc-300 text-center mb-8 text-lg">
-                Upgrade to access the full dashboard and unlock all premium features
+                Führen Sie ein Upgrade durch, um auf das vollständige Dashboard zuzugreifen und alle Premium-Funktionen freizuschalten.
               </p>
 
               {/* Features */}
               <div className="space-y-3 mb-8">
                 {[
-                  'Full dashboard access',
-                  'Advanced analytics & insights',
-                  'Priority support',
-                  'Unlimited features'
+                  'Vollständiger Dashboard-Zugriff',
+                  'Fortgeschrittene Analysen und Erkenntnisse',
+                  'Vorrangiger Support',
+                  'Unbegrenzte Funktionen'
                 ].map((feature, i) => (
                   <div key={i} className="flex items-center gap-3 text-zinc-200">
                     <div className="w-5 h-5 bg-gradient-to-br from-[#d0b345] to-yellow-600 rounded-full flex items-center justify-center flex-shrink-0">

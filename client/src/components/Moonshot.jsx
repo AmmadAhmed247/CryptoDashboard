@@ -113,17 +113,17 @@ export default function MoonshotFactorMini({ coins, isDarkMode }) {
                     {coin.name}
                   </h3>
                   <p className={`text-xs ${isDarkMode ? "text-zinc-400" : "text-gray-600"}`}>
-                    {coin.marketCap}
+                    {coin.volume}
                   </p>
                 </div>
               </div>
 
               {/* Right */}
               <div className="text-right">
-                <p className={`text-sm font-bold ${parseFloat(coin.change24h) > 0 ? "text-green-400" : "text-red-600"}`}>
+                {/* <p className={`text-sm font-bold ${parseFloat(coin.change24h) > 0 ? "text-green-400" : "text-red-600"}`}>
                   {parseFloat(coin.change24h) > 0 ? "+" : ""}
                   {coin.change24h}%
-                </p>
+                </p> */}
                 <div className="flex items-center justify-end gap-1">
                   <Sparkles className={`w-3 h-3 ${isDarkMode ? "text-amber-400" : "text-yellow-500"}`} />
                   <p className={`font-bold text-lg ${isDarkMode ? "text-[#E4C35E]" : "text-[#E4C35E]"}`}>

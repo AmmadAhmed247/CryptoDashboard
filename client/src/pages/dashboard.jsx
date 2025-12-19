@@ -117,7 +117,7 @@ const CryptoDashboard = () => {
     trend: coin.priceChange24h >= 0 ? 'up' : 'down',
     price: `$${Number(coin.price || 0).toLocaleString(undefined, {
         minimumFractionDigits: 2,
-        maximumFractionDigits: 8
+        maximumFractionDigits: 4
       })}`,
     change: `${Number(coin.priceChange24h || 0).toFixed(2)}%`,
     narrative: coin.narrative || coin.symbol,
@@ -223,6 +223,17 @@ const CryptoDashboard = () => {
           selectedCoin.ri < 40
             ? "Low Risk"
             : selectedCoin.ri < 70
+              ? "Medium Risk"
+              : "High Risk",
+      },
+      {
+        label: "CMS ",
+        value: selectedCoin.cms.toFixed(0) ?? 0,
+        icon: AlertCircle,
+        status:
+          selectedCoin.cms < 40
+            ? "Low Risk"
+            : selectedCoin.cms < 70
               ? "Medium Risk"
               : "High Risk",
       },

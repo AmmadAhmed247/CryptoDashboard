@@ -5,7 +5,7 @@ import BlurWrapper from '../components/BlurWrapper.jsx';
 
 const MainLayout = () => {
   return (
-    <div className='flex flex-col h-screen'>
+    <div className='flex overflow-x-hidden min-h-screen flex-col h-screen'>
       <BlurWrapper>
       <Navbar />
       {/* Wrap all children routes with BlurWrapper */}

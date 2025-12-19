@@ -64,7 +64,7 @@ const CryptoMarketCycle = () => {
 
   return (
     <div
-      className={`w-full p-6 rounded-2xl shadow-lg border-2 transition-all duration-300 ${isDarkMode
+      className={`w-full p-6 hidden md:block rounded-2xl shadow-lg border-2 transition-all duration-300 ${isDarkMode
           ? "bg-gradient-to-br from-zinc-900 to-zinc-800 border-zinc-700 text-white"
           : "bg-gradient-to-br from-white to-gray-100 border-gray-300 text-gray-900"
         }`}

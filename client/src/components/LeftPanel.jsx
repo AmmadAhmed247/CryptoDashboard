@@ -4,7 +4,7 @@ import SkeletonLoader from './Skeleton.jsx';
 import { TrendingUp, Clock, Zap } from 'lucide-react';
 import { useTheme } from "../context/ThemeContext";
 import { useTranslation } from 'react-i18next';
-
+import { Link } from 'react-router-dom';
 const LeftPanel = ({ 
   fearGreedIndex, 
   bitcoinHalving, 
@@ -214,9 +214,13 @@ const LeftPanel = ({
                       <span className={`text-xs font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                         {coin.symbol}
                       </span>
-                      <div className={`text-xs ${isDarkMode ? 'text-zinc-500' : 'text-gray-500'}`}>
+                      <Link to={`https://coinmarketcap.com/currencies/${coin.id || coin.name.toLowerCase().replace(/\s+/g, "-")}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center text-sm gap-3"
+                          >
                         {coin.price}
-                      </div>
+                      </Link>
                     </div>
                   </div>
                   <span className={`${
