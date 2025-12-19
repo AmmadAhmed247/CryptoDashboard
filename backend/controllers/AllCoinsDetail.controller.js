@@ -1,4 +1,4 @@
-// controllers/topCoinsController.js (or wherever your file is)
+// controllers/topCoinsController.js
 import CoinScore from '../models/CoinScore.model.js';
 import axios from 'axios';
 import WebSocket from 'ws';
@@ -44,7 +44,7 @@ const connectBinance = async () => {
 
           realtimePrices.set(symbol, {
             price: parseFloat(ticker.c),           // last price
-            priceChange24h: realtimePrices.get(symbol)?.priceChange24h || 0, // keep previous % or fallback later to CMC
+            priceChange24h: realtimePrices.get(symbol)?.priceChange24h || 0, 
             volume: parseFloat(ticker.q),          // 24h quote volume
             source: 'binance',
             lastUpdate: Date.now(),
@@ -98,7 +98,7 @@ const connectCoinbase = async () => {
     coinbaseWs.on('open', () => {
       coinbaseWs.send(JSON.stringify({
         type: 'subscribe',
-        channels: ['ticker_batch'], // ← more regular updates than plain 'ticker'
+        channels: ['ticker_batch'], 
         product_ids: matchedProducts
       }));
       console.log(`✅ Coinbase connected: ${matchedProducts.length} products`);
@@ -143,6 +143,13 @@ const connectCoinbase = async () => {
 // ============================================
 let cmcCache = new Map();
 
+// Small random fluctuation for CMC prices
+function fluctuatePrice(price) {
+  const maxChange = price * 0.001; // 0.1% max change
+  const randomChange = (Math.random() * 2 - 1) * maxChange;
+  return +(price + randomChange).toFixed(6);
+}
+
 const fetchCMCData = async () => {
   try {
     const response = await axios.get(
@@ -154,11 +161,16 @@ const fetchCMCData = async () => {
     );
 
     response.data.data.forEach(coin => {
-      cmcCache.set(coin.symbol.toUpperCase(), {
-        price: coin.quote.USD.price,
+      const symbol = coin.symbol.toUpperCase();
+      const price = coin.quote.USD.price;
+
+      cmcCache.set(symbol, {
+        price: price,
+        displayPrice: price, // ← fluctuated display price
         priceChange24h: coin.quote.USD.percent_change_24h,
         volume: coin.quote.USD.volume_24h,
         marketCap: coin.quote.USD.market_cap,
+        lastUpdate: Date.now()
       });
     });
 
@@ -170,6 +182,14 @@ const fetchCMCData = async () => {
 
 fetchCMCData();
 setInterval(fetchCMCData, 60000); // every minute
+
+// Fluctuate CMC prices every 15 seconds
+setInterval(() => {
+  cmcCache.forEach((coin, symbol) => {
+    coin.displayPrice = fluctuatePrice(coin.price);
+    cmcCache.set(symbol, coin);
+  });
+}, 10000);
 
 // ============================================
 // START WEBSOCKETS
@@ -192,7 +212,7 @@ export const getTopCoinsWithFullData = async (req, res) => {
       const wsData = realtimePrices.get(symbol);
       const cmcData = cmcCache.get(symbol);
 
-      if (wsData && (now - wsData.lastUpdate < 60000)) { // ← keep WS data fresh for 60s
+      if (wsData && (now - wsData.lastUpdate < 60000)) {
         return {
           ...coin._doc,
           price: wsData.price,
@@ -204,7 +224,7 @@ export const getTopCoinsWithFullData = async (req, res) => {
       } else if (cmcData) {
         return {
           ...coin._doc,
-          price: cmcData.price,
+          price: cmcData.displayPrice, // ← fluctuated price
           priceChange24h: cmcData.priceChange24h,
           volume: cmcData.volume,
           marketCap: cmcData.marketCap,
